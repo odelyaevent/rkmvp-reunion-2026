@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gate Scanner – RKMVP Reunion 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lato:wght@400;700&display=swap" rel="stylesheet"/>
+  <!-- QR Scanner library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyAAW9zZmE1cEUUWLEwT1hWtY1fQoiGt_No",
+    authDomain: "rkmvp-reunion-2026.firebaseapp.com",
+    projectId: "rkmvp-reunion-2026",
+    storageBucket: "rkmvp-reunion-2026.firebasestorage.app",
+    messagingSenderId: "552260116936",
+    appId: "1:552260116936:web:5d731a1fa2746ad149e0fd"
+  };
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+    const auth = getAuth(app);
+    window._db = db; window._auth = auth;
+    window._doc = doc; window._getDoc = getDoc; window._updateDoc = updateDoc;
+    window._signIn = signInWithEmailAndPassword;
+    window._signOut = signOut;
+    window._firebaseReady = true;
+    onAuthStateChanged(auth, user => {
+      if (user) showScanner();
+      else showLogin();
+    });
+  </script>
+  <style>
+    :root{--saffron:#E8560A;--gold:#FFD700;--deep-blue:#0D2B5E;--light-blue:#1A4A9E;--cream:#FDF6E3;--white:#FFFFFF;--red:#CC0000;--success:#1A7A3C;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Lato',sans-serif;background:var(--cream);min-height:100vh;padding-bottom:30px;}
+    header{background:linear-gradient(135deg,var(--deep-blue),var(--light-blue));padding:16px 18px;text-align:center;border-bottom:4px solid var(--gold);}
+    header h1{font-family:'Cinzel',serif;color:var(--white);font-size:clamp(1.5rem, 6.5vw, 2.2rem);letter-spacing:0.04em;}
+    header .subtitle{color:var(--gold);font-family:'Cinzel',serif;font-size:0.82rem;margin-top:4px;letter-spacing:0.06em;}
+    .top-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#E8F0FE;border-bottom:1px solid #C5D3E8;}
+    .top-bar span{font-size:0.78rem;color:var(--deep-blue);font-weight:700;}
+    .btn-sm{padding:6px 14px;border:none;border-radius:6px;font-size:0.78rem;font-weight:700;cursor:pointer;}
+    .btn-logout{background:var(--red);color:white;}
+    /* Login */
+    .login-card{background:var(--white);margin:30px 14px;border-radius:14px;border:1.5px solid #FFD70055;box-shadow:0 4px 24px #0D2B5E18;overflow:hidden;}
+    .card-header{background:linear-gradient(90deg,var(--deep-blue),var(--light-blue));padding:12px 18px;}
+    .card-header h2{font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;letter-spacing:0.05em;}
+    .card-body{padding:24px 18px;}
+    label{display:block;font-weight:700;color:var(--deep-blue);font-size:0.85rem;margin-bottom:5px;}
+    input{width:100%;padding:11px 13px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.95rem;font-family:'Lato',sans-serif;background:#F7FAFF;margin-bottom:14px;-webkit-appearance:none;}
+    input:focus{outline:none;border-color:var(--light-blue);}
+    .btn-main{width:100%;padding:13px;background:linear-gradient(135deg,var(--saffron),#C9400A);color:var(--white);font-family:'Cinzel',serif;font-size:1rem;font-weight:700;letter-spacing:0.06em;border:none;border-radius:10px;cursor:pointer;}
+    .btn-main:disabled{opacity:0.6;cursor:not-allowed;}
+    .err-msg{color:var(--red);font-size:0.82rem;margin-bottom:10px;display:none;font-weight:700;}
+    .spinner{display:inline-block;width:16px;height:16px;border:3px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    /* Scanner section */
+    #scanner-section{display:none;}
+    .scan-card{background:var(--white);margin:16px 14px 0;border-radius:14px;border:1.5px solid #FFD70055;box-shadow:0 4px 24px #0D2B5E18;overflow:hidden;}
+    #reader{width:100%;border-radius:0;}
+    .scan-instruction{text-align:center;padding:12px;font-size:0.85rem;color:#555;background:#F7FAFF;border-top:1px solid #eee;}
+    /* Result overlay - full screen */
+    #result-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:100;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+    #result-overlay.active{display:flex;}
+    #result-overlay.green{background:#1A7A3C;}
+    #result-overlay.red{background:#CC0000;}
+    #result-overlay.warning{background:#856404;}
+    .result-icon{font-size:5rem;margin-bottom:16px;animation:pop 0.3s ease;}
+    @keyframes pop{0%{transform:scale(0.5);}100%{transform:scale(1);}}
+    .result-status{font-family:'Cinzel',serif;font-size:clamp(2rem,10vw,3rem);font-weight:900;color:white;letter-spacing:0.06em;margin-bottom:10px;text-align:center;}
+    .result-name{font-size:1.1rem;color:rgba(255,255,255,0.9);font-weight:700;margin-bottom:6px;text-align:center;}
+    .result-detail{font-size:0.88rem;color:rgba(255,255,255,0.8);text-align:center;line-height:1.6;margin-bottom:20px;}
+    .btn-next{padding:14px 40px;background:white;border:none;border-radius:10px;font-family:'Cinzel',serif;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:0.05em;}
+    #result-overlay.green .btn-next{color:var(--success);}
+    #result-overlay.red .btn-next{color:var(--red);}
+    #result-overlay.warning .btn-next{color:#856404;}
+    /* Manual count buttons */
+    .count-row{display:flex;align-items:center;justify-content:center;gap:16px;margin:10px 0;}
+    .count-btn{width:44px;height:44px;border-radius:50%;border:none;font-size:1.4rem;font-weight:700;cursor:pointer;background:white;display:flex;align-items:center;justify-content:center;}
+    #result-overlay.green .count-btn{color:var(--success);}
+    #result-overlay.red .count-btn{color:var(--red);}
+    .count-display{font-size:1.4rem;font-weight:900;color:white;min-width:40px;text-align:center;}
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>RKMVP Alumni Association</h1>
+  <div class="subtitle">Gate Scanner – Reunion 2026</div>
+</header>
+
+<!-- LOGIN -->
+<div id="login-section">
+  <div class="login-card">
+    <div class="card-header"><h2>Attendant Login</h2></div>
+    <div class="card-body">
+      <div class="err-msg" id="login-err">Invalid email or password.</div>
+      <label>Email</label>
+      <input type="email" id="att-email" placeholder="attendant@email.com"/>
+      <label>Password</label>
+      <input type="password" id="att-pass" placeholder="Password"/>
+      <button class="btn-main" id="btn-login" onclick="attLogin()">LOGIN</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCANNER -->
+<div id="scanner-section">
+  <div class="top-bar">
+    <span id="att-email-display">Attendant</span>
+    <button class="btn-sm btn-logout" onclick="attLogout()">LOGOUT</button>
+  </div>
+  <div class="scan-card">
+    <div id="reader"></div>
+    <div class="scan-instruction">📷 Point camera at guest's meal QR code</div>
+  </div>
+</div>
+
+<!-- RESULT OVERLAY -->
+<div id="result-overlay">
+  <div class="result-icon" id="result-icon"></div>
+  <div class="result-status" id="result-status"></div>
+  <div class="result-name" id="result-name"></div>
+  <div class="result-detail" id="result-detail"></div>
+  <!-- How many people entering -->
+  <div class="count-row" id="count-row" style="display:none;">
+    <button class="count-btn" onclick="changeCount(-1)">−</button>
+    <div class="count-display" id="count-display">1</div>
+    <button class="count-btn" onclick="changeCount(1)">+</button>
+  </div>
+  <button class="btn-next" id="btn-confirm" onclick="confirmEntry()">CONFIRM ENTRY</button>
+  <button class="btn-next" style="margin-top:8px;background:transparent;color:white;border:2px solid white;" onclick="dismissResult()">CANCEL</button>
+</div>
+
+<script>
+  let scanner = null;
+  let pendingData = null;
+  let entryCount = 1;
+  let maxCount = 1;
+
+  function attLogin() {
+    const email = document.getElementById('att-email').value.trim();
+    const pass  = document.getElementById('att-pass').value.trim();
+    const btn   = document.getElementById('btn-login');
+    const err   = document.getElementById('login-err');
+    err.style.display = 'none';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>';
+    window._signIn(window._auth, email, pass).catch(() => {
+      err.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'LOGIN';
+    });
+  }
+
+  function attLogout() {
+    if (scanner) { scanner.stop().catch(()=>{}); scanner = null; }
+    window._signOut(window._auth);
+  }
+
+  function showLogin() {
+    document.getElementById('login-section').style.display = 'block';
+    document.getElementById('scanner-section').style.display = 'none';
+  }
+
+  function showScanner() {
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('scanner-section').style.display = 'block';
+    const u = window._auth.currentUser;
+    if (u) document.getElementById('att-email-display').textContent = u.email;
+    startScanner();
+  }
+
+  function startScanner() {
+    if (scanner) return;
+    scanner = new Html5Qrcode('reader');
+    scanner.start(
+      { facingMode: 'environment' },
+      { fps: 10, qrbox: { width: 260, height: 260 } },
+      onScanSuccess,
+      () => {}
+    ).catch(err => {
+      document.querySelector('.scan-instruction').textContent = '⚠️ Camera access denied. Please allow camera permission.';
+      console.error(err);
+    });
+  }
+
+  async function onScanSuccess(rawText) {
+    if (!window._firebaseReady) return;
+    // Pause scanner
+    if (scanner) scanner.pause();
+
+    let data;
+    try { data = JSON.parse(rawText); }
+    catch { showResult('red', '❌', 'INVALID', 'Invalid QR code.', '', null, 0); return; }
+
+    const { guestId, meal, day, total, name } = data;
+    if (!guestId || !meal || !day) {
+      showResult('red', '❌', 'INVALID', 'Unrecognized QR format.', '', null, 0);
+      return;
+    }
+
+    try {
+      const ref = window._doc(window._db, 'guests', guestId);
+      const snap = await window._getDoc(ref);
+      if (!snap.exists()) {
+        showResult('red', '❌', 'NOT FOUND', 'Guest not found in database.', name || '', null, 0);
+        return;
+      }
+
+      const g = snap.data();
+      if (!g.approved) {
+        showResult('warning', '⚠️', 'NOT APPROVED', 'This guest has not been approved yet.', g.name, null, 0);
+        return;
+      }
+
+      const dayKey = 'day' + day;
+      const used   = (g.meals && g.meals[dayKey] && g.meals[dayKey][meal]) || 0;
+      const allowed = total || ((g.familyCount || 0) + 1);
+      const remaining = allowed - used;
+
+      if (remaining <= 0) {
+        showResult('red', '❌', 'LIMIT REACHED',
+          `${g.name}\n${meal.toUpperCase()} Day ${day} — All ${allowed} entries used.`,
+          g.name, null, 0);
+        return;
+      }
+
+      // OK — show green with count selector
+      pendingData = { ref, g, dayKey, meal, used, allowed };
+      entryCount = 1;
+      maxCount = remaining;
+
+      showResult('green', '✅', 'ALLOWED',
+        `Day ${day} ${meal.toUpperCase()}\nUsed: ${used} / ${allowed} — ${remaining} remaining`,
+        g.name, remaining, 1);
+
+    } catch(e) {
+      console.error(e);
+      showResult('red', '❌', 'ERROR', 'Database error. Try again.', '', null, 0);
+    }
+  }
+
+  function showResult(color, icon, status, detail, name, remaining, count) {
+    const overlay = document.getElementById('result-overlay');
+    overlay.className = `active ${color}`;
+    document.getElementById('result-icon').textContent = icon;
+    document.getElementById('result-status').textContent = status;
+    document.getElementById('result-name').textContent = name;
+    document.getElementById('result-detail').textContent = detail;
+
+    const countRow = document.getElementById('count-row');
+    if (remaining && remaining > 0 && color === 'green') {
+      countRow.style.display = 'flex';
+      entryCount = count;
+      document.getElementById('count-display').textContent = entryCount;
+      document.getElementById('btn-confirm').style.display = 'block';
+    } else {
+      countRow.style.display = 'none';
+      document.getElementById('btn-confirm').style.display = color === 'green' ? 'block' : 'none';
+    }
+  }
+
+  function changeCount(delta) {
+    entryCount = Math.max(1, Math.min(maxCount, entryCount + delta));
+    document.getElementById('count-display').textContent = entryCount;
+  }
+
+  async function confirmEntry() {
+    if (!pendingData) { dismissResult(); return; }
+    const { ref, g, dayKey, meal, used, allowed } = pendingData;
+    const newUsed = Math.min(used + entryCount, allowed);
+    try {
+      const updatePath = `meals.${dayKey}.${meal}`;
+      await window._updateDoc(ref, { [updatePath]: newUsed });
+    } catch(e) { console.error(e); }
+    pendingData = null;
+    dismissResult();
+  }
+
+  function dismissResult() {
+    document.getElementById('result-overlay').className = '';
+    pendingData = null;
+    // Resume scanner
+    if (scanner) {
+      try { scanner.resume(); } catch(e) { startScanner(); }
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin – RKMVP Reunion 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lato:wght@400;700&display=swap" rel="stylesheet"/>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs, doc, updateDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyAAW9zZmE1cEUUWLEwT1hWtY1fQoiGt_No",
+    authDomain: "rkmvp-reunion-2026.firebaseapp.com",
+    projectId: "rkmvp-reunion-2026",
+    storageBucket: "rkmvp-reunion-2026.firebasestorage.app",
+    messagingSenderId: "552260116936",
+    appId: "1:552260116936:web:5d731a1fa2746ad149e0fd"
+  };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    window._db = db; window._auth = auth;
+    window._collection = collection; window._query = query;
+    window._where = where; window._getDocs = getDocs;
+    window._doc = doc; window._updateDoc = updateDoc;
+    window._orderBy = orderBy;
+    window._signIn = signInWithEmailAndPassword;
+    window._signOut = signOut;
+    window._onAuth = onAuthStateChanged;
+    window._firebaseReady = true;
+
+    onAuthStateChanged(auth, user => {
+      if (user) { showDashboard(); }
+      else { showLogin(); }
+    });
+  </script>
+  <style>
+    :root{--saffron:#E8560A;--gold:#FFD700;--deep-blue:#0D2B5E;--light-blue:#1A4A9E;--cream:#FDF6E3;--white:#FFFFFF;--red:#CC0000;--success:#1A7A3C;--border:#FFD70055;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Lato',sans-serif;background:var(--cream);min-height:100vh;padding-bottom:40px;}
+    header{background:linear-gradient(135deg,var(--deep-blue),var(--light-blue));padding:16px 18px;text-align:center;border-bottom:4px solid var(--gold);}
+    header h1{font-family:'Cinzel',serif;color:var(--white);font-size:clamp(1.5rem, 6.5vw, 2.2rem);letter-spacing:0.04em;}
+    header .subtitle{color:var(--gold);font-family:'Cinzel',serif;font-size:0.85rem;margin-top:4px;letter-spacing:0.06em;}
+    .top-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#E8F0FE;border-bottom:1px solid #C5D3E8;}
+    .top-bar span{font-size:0.8rem;color:var(--deep-blue);font-weight:700;}
+    .btn-sm{padding:6px 14px;border:none;border-radius:6px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;}
+    .btn-logout{background:var(--red);color:white;}
+    .section{display:none;}
+    /* Login */
+    #login-section{display:block;}
+    .login-card{background:var(--white);margin:30px 14px;border-radius:14px;border:1.5px solid var(--border);box-shadow:0 4px 24px #0D2B5E18;overflow:hidden;}
+    .card-header{background:linear-gradient(90deg,var(--deep-blue),var(--light-blue));padding:12px 18px;}
+    .card-header h2{font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;letter-spacing:0.05em;}
+    .card-body{padding:24px 18px;}
+    label{display:block;font-weight:700;color:var(--deep-blue);font-size:0.85rem;margin-bottom:5px;}
+    input[type=email],input[type=password],input[type=text],input[type=number]{width:100%;padding:11px 13px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.95rem;font-family:'Lato',sans-serif;background:#F7FAFF;margin-bottom:14px;-webkit-appearance:none;}
+    input:focus{outline:none;border-color:var(--light-blue);box-shadow:0 0 0 3px #1A4A9E22;}
+    .btn-main{width:100%;padding:13px;background:linear-gradient(135deg,var(--saffron),#C9400A);color:var(--white);font-family:'Cinzel',serif;font-size:1rem;font-weight:700;letter-spacing:0.06em;border:none;border-radius:10px;cursor:pointer;}
+    .btn-main:disabled{opacity:0.6;cursor:not-allowed;}
+    .err-msg{color:var(--red);font-size:0.82rem;margin-bottom:10px;display:none;font-weight:700;}
+    .spinner{display:inline-block;width:16px;height:16px;border:3px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    /* Dashboard */
+    #dashboard-section{display:none;}
+    .tabs{display:flex;background:var(--deep-blue);overflow:hidden;}
+    .tab{flex:1;padding:11px 4px;text-align:center;font-family:'Cinzel',serif;font-size:0.72rem;color:#B8CFFF;cursor:pointer;border-bottom:3px solid transparent;letter-spacing:0.03em;transition:all 0.2s;}
+    .tab.active{color:var(--gold);border-bottom-color:var(--gold);background:#1A4A9E;}
+    .tab-content{display:none;}
+    .tab-content.active{display:block;}
+    /* Search */
+    .search-box{padding:16px 14px 0;}
+    .search-row{display:flex;gap:8px;margin-bottom:10px;}
+    .search-row select{flex:1;padding:10px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.9rem;background:#F7FAFF;font-family:'Lato',sans-serif;}
+    .search-row input{flex:2;padding:10px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.9rem;background:#F7FAFF;font-family:'Lato',sans-serif;}
+    .btn-search{padding:10px 18px;background:var(--light-blue);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.85rem;cursor:pointer;white-space:nowrap;}
+    /* Guest card */
+    .guest-card{background:var(--white);margin:10px 14px;border-radius:10px;border:1.5px solid var(--border);box-shadow:0 2px 10px #0D2B5E10;overflow:hidden;}
+    .guest-card-header{background:#F0F4FF;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E0E8F8;}
+    .guest-name{font-weight:700;color:var(--deep-blue);font-size:0.95rem;}
+    .guest-batch{font-size:0.78rem;color:#777;}
+    .status-badge{padding:3px 10px;border-radius:12px;font-size:0.72rem;font-weight:700;}
+    .status-pending{background:#FFF3CD;color:#856404;}
+    .status-approved{background:#D4EDDA;color:#155724;}
+    .guest-card-body{padding:12px 14px;}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;}
+    .info-item{font-size:0.82rem;color:#444;}
+    .info-item strong{color:var(--deep-blue);display:block;font-size:0.76rem;}
+    /* Meal grid */
+    .meal-grid{margin-bottom:12px;}
+    .meal-grid-title{font-size:0.78rem;font-weight:700;color:var(--deep-blue);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;}
+    .meal-row{display:flex;gap:6px;margin-bottom:5px;align-items:center;}
+    .meal-row label{font-size:0.75rem;color:#555;margin:0;min-width:70px;font-weight:700;}
+    .meal-row input{width:55px;padding:5px 8px;border:1.5px solid #C5D3E8;border-radius:6px;font-size:0.85rem;text-align:center;margin:0;}
+    .meal-row span{font-size:0.72rem;color:#999;}
+    /* Action buttons */
+    .action-row{display:flex;gap:8px;flex-wrap:wrap;}
+    .btn-approve{flex:1;padding:9px;background:var(--success);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;min-width:100px;}
+    .btn-generate{flex:1;padding:9px;background:var(--light-blue);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;min-width:100px;}
+    .btn-save{flex:1;padding:9px;background:var(--saffron);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;min-width:100px;}
+    .btn-unapprove{flex:1;padding:9px;background:#999;color:white;border:none;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;min-width:100px;}
+    .action-msg{font-size:0.78rem;color:var(--success);font-weight:700;margin-top:6px;display:none;}
+    /* Stats */
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;}
+    .stat-card{background:var(--white);border-radius:10px;border:1.5px solid var(--border);padding:14px;text-align:center;}
+    .stat-num{font-family:'Cinzel',serif;font-size:1.8rem;font-weight:900;color:var(--deep-blue);}
+    .stat-label{font-size:0.75rem;color:#777;margin-top:4px;}
+    /* All guests list */
+    .filter-row{padding:10px 14px 0;display:flex;gap:8px;}
+    .filter-row select{flex:1;padding:9px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.85rem;background:#F7FAFF;font-family:'Lato',sans-serif;}
+    .list-count{padding:6px 14px;font-size:0.8rem;color:#777;}
+    /* Generate QR overlay */
+    .qr-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#000000CC;z-index:100;align-items:center;justify-content:center;}
+    .qr-overlay.active{display:flex;}
+    .qr-popup{background:white;border-radius:14px;padding:24px 20px;text-align:center;max-width:300px;width:90%;border:3px solid var(--gold);}
+    .qr-popup h3{font-family:'Cinzel',serif;color:var(--deep-blue);font-size:1rem;margin-bottom:8px;}
+    .qr-popup p{font-size:0.82rem;color:#555;margin-bottom:16px;}
+    #admin-qr-canvas{display:inline-block;}
+    .amount-red{font-size:1.2rem;font-weight:900;color:var(--red);font-family:'Cinzel',serif;margin:10px 0;}
+    .btn-close-qr{margin-top:14px;padding:9px 24px;background:var(--red);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;}
+    .no-results{text-align:center;padding:30px 14px;color:#888;font-size:0.9rem;}
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>RKMVP Alumni Association</h1>
+  <div class="subtitle">Admin Dashboard – Reunion 2026</div>
+</header>
+
+<!-- LOGIN -->
+<div id="login-section" class="section" style="display:block;">
+  <div class="login-card">
+    <div class="card-header"><h2>Admin Login</h2></div>
+    <div class="card-body">
+      <div class="err-msg" id="login-err">Invalid email or password.</div>
+      <label>Email</label>
+      <input type="email" id="admin-email" placeholder="admin@email.com"/>
+      <label>Password</label>
+      <input type="password" id="admin-pass" placeholder="Password"/>
+      <button class="btn-main" id="btn-login" onclick="adminLogin()">LOGIN</button>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard-section" class="section">
+  <div class="top-bar">
+    <span id="admin-email-display">Admin</span>
+    <button class="btn-sm btn-logout" onclick="adminLogout()">LOGOUT</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('search')">🔍 Search</div>
+    <div class="tab" onclick="switchTab('all')">👥 All Guests</div>
+    <div class="tab" onclick="switchTab('stats')">📊 Stats</div>
+  </div>
+
+  <!-- SEARCH TAB -->
+  <div id="tab-search" class="tab-content active">
+    <div class="search-box">
+      <div class="search-row">
+        <select id="search-type">
+          <option value="pin">PIN</option>
+          <option value="name">Name</option>
+          <option value="batch">Batch</option>
+        </select>
+        <input type="text" id="search-val" placeholder="Search..."/>
+        <button class="btn-search" onclick="searchGuest()">GO</button>
+      </div>
+    </div>
+    <div id="search-results"></div>
+  </div>
+
+  <!-- ALL GUESTS TAB -->
+  <div id="tab-all" class="tab-content">
+    <div class="filter-row">
+      <select id="filter-status" onchange="loadAllGuests()">
+        <option value="all">All Guests</option>
+        <option value="pending">Pending Only</option>
+        <option value="approved">Approved Only</option>
+      </select>
+    </div>
+    <div class="list-count" id="list-count"></div>
+    <div id="all-guests-list"></div>
+  </div>
+
+  <!-- STATS TAB -->
+  <div id="tab-stats" class="tab-content">
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card"><div class="stat-num" id="st-total">—</div><div class="stat-label">Total Registered</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-approved">—</div><div class="stat-label">Approved</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-pending">—</div><div class="stat-label">Pending</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-family">—</div><div class="stat-label">Total People</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- BANK QR POPUP -->
+<div class="qr-overlay" id="qr-overlay" onclick="closeQR()">
+  <div class="qr-popup" onclick="event.stopPropagation()">
+    <h3 id="qr-guest-name"></h3>
+    <p id="qr-guest-detail"></p>
+    <img src="bank-qr.png" style="width:200px;height:200px;border:3px solid var(--gold);border-radius:8px;" alt="Bank QR"/>
+    <div class="amount-red" id="qr-popup-amount"></div>
+    <button class="btn-close-qr" onclick="closeQR()">CLOSE</button>
+  </div>
+</div>
+
+<script>
+  // ── Auth ──
+  function adminLogin() {
+    const email = document.getElementById('admin-email').value.trim();
+    const pass  = document.getElementById('admin-pass').value.trim();
+    const btn   = document.getElementById('btn-login');
+    const err   = document.getElementById('login-err');
+    err.style.display = 'none';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Logging in...';
+    window._signIn(window._auth, email, pass)
+      .then(() => {})
+      .catch(() => {
+        err.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'LOGIN';
+      });
+  }
+  function adminLogout() {
+    window._signOut(window._auth);
+  }
+  function showLogin() {
+    document.getElementById('login-section').style.display = 'block';
+    document.getElementById('dashboard-section').style.display = 'none';
+  }
+  function showDashboard() {
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('dashboard-section').style.display = 'block';
+    const u = window._auth.currentUser;
+    if (u) document.getElementById('admin-email-display').textContent = u.email;
+    loadStats();
+  }
+
+  // ── Tabs ──
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    const tabs = ['search','all','stats'];
+    const idx = tabs.indexOf(name);
+    document.querySelectorAll('.tab')[idx].classList.add('active');
+    document.getElementById('tab-'+name).classList.add('active');
+    if (name === 'all') loadAllGuests();
+    if (name === 'stats') loadStats();
+  }
+
+  // ── Build Guest Card HTML ──
+  function buildGuestCard(docId, g) {
+    const total = (g.familyCount || 0) + 1;
+    const m = g.meals || { day1:{breakfast:0,lunch:0,dinner:0}, day2:{breakfast:0,lunch:0,dinner:0} };
+    const d1 = m.day1 || {}; const d2 = m.day2 || {};
+    return `
+    <div class="guest-card" id="gc-${docId}">
+      <div class="guest-card-header">
+        <div>
+          <div class="guest-name">${g.name}</div>
+          <div class="guest-batch">Batch: ${g.batch} &nbsp;|&nbsp; PIN: ${g.pin} &nbsp;|&nbsp; Family: ${g.familyCount||0}</div>
+        </div>
+        <div class="status-badge ${g.approved ? 'status-approved':'status-pending'}" id="badge-${docId}">
+          ${g.approved ? '✅ Approved':'⏳ Pending'}
+        </div>
+      </div>
+      <div class="guest-card-body">
+        <div class="info-grid">
+          <div class="info-item"><strong>Amount</strong>Rs. ${g.amount || (10+(g.familyCount||0)*5)}/-</div>
+          <div class="info-item"><strong>Total People</strong>${total}</div>
+          <div class="info-item"><strong>Registered</strong>${g.registeredAt ? g.registeredAt.split('T')[0] : '—'}</div>
+          <div class="info-item"><strong>Status</strong>${g.approved ? 'Approved':'Pending'}</div>
+        </div>
+        <!-- Edit fields -->
+        <div style="margin-bottom:10px;">
+          <label>Name</label>
+          <input type="text" id="edit-name-${docId}" value="${g.name}" style="margin-bottom:6px;"/>
+          <label>Batch Year</label>
+          <input type="number" id="edit-batch-${docId}" value="${g.batch}" style="margin-bottom:6px;"/>
+          <label>Family Members</label>
+          <input type="number" id="edit-family-${docId}" value="${g.familyCount||0}" min="0" style="margin-bottom:0;"/>
+        </div>
+        <!-- Meal attendance -->
+        <div class="meal-grid">
+          <div class="meal-grid-title">Day 1 Attendance (out of ${total})</div>
+          <div class="meal-row"><label>Breakfast</label><input type="number" id="d1b-${docId}" value="${d1.breakfast||0}" min="0" max="${total}"/><span>/ ${total}</span></div>
+          <div class="meal-row"><label>Lunch</label><input type="number" id="d1l-${docId}" value="${d1.lunch||0}" min="0" max="${total}"/><span>/ ${total}</span></div>
+          <div class="meal-row"><label>Dinner</label><input type="number" id="d1d-${docId}" value="${d1.dinner||0}" min="0" max="${total}"/><span>/ ${total}</span></div>
+        </div>
+        <div class="meal-grid">
+          <div class="meal-grid-title">Day 2 Attendance (out of ${total})</div>
+          <div class="meal-row"><label>Breakfast</label><input type="number" id="d2b-${docId}" value="${d2.breakfast||0}" min="0" max="${total}"/><span>/ ${total}</span></div>
+          <div class="meal-row"><label>Lunch</label><input type="number" id="d2l-${docId}" value="${d2.lunch||0}" min="0" max="${total}"/><span>/ ${total}</span></div>
+          <div class="meal-row"><label>Dinner</label><input type="number" id="d2d-${docId}" value="${d2.dinner||0}" min="0" max="${total}"/><span>/ ${total}</span></div>
+        </div>
+        <div class="action-row">
+          <button class="btn-generate" onclick="generateQR('${docId}','${g.name}',${g.amount||(10+(g.familyCount||0)*5)},${g.familyCount||0})">💳 Generate QR</button>
+          <button class="btn-approve" id="appbtn-${docId}" onclick="toggleApprove('${docId}',${g.approved})">${g.approved?'❌ Unapprove':'✅ Approve'}</button>
+        </div>
+        <div class="action-row" style="margin-top:8px;">
+          <button class="btn-save" onclick="saveGuest('${docId}')">💾 Save Changes</button>
+        </div>
+        <div class="action-msg" id="msg-${docId}">✅ Saved successfully!</div>
+      </div>
+    </div>`;
+  }
+
+  // ── Search ──
+  async function searchGuest() {
+    if (!window._firebaseReady) return;
+    const type = document.getElementById('search-type').value;
+    const val  = document.getElementById('search-val').value.trim();
+    const res  = document.getElementById('search-results');
+    if (!val) return;
+    res.innerHTML = '<p style="padding:14px;color:#888;font-size:0.85rem;">Searching...</p>';
+    try {
+      let q;
+      if (type === 'pin')   q = window._query(window._collection(window._db,'guests'), window._where('pin','==',val));
+      else if (type === 'batch') q = window._query(window._collection(window._db,'guests'), window._where('batch','==',parseInt(val)));
+      else q = window._query(window._collection(window._db,'guests'), window._where('name','>=',val), window._where('name','<=',val+'\uf8ff'));
+      const snap = await window._getDocs(q);
+      if (snap.empty) { res.innerHTML = '<p class="no-results">No guest found.</p>'; return; }
+      res.innerHTML = '';
+      snap.docs.forEach(d => { res.innerHTML += buildGuestCard(d.id, d.data()); });
+    } catch(e) { console.error(e); res.innerHTML = '<p class="no-results">Error. Try again.</p>'; }
+  }
+
+  // ── All Guests ──
+  async function loadAllGuests() {
+    if (!window._firebaseReady) return;
+    const filter = document.getElementById('filter-status').value;
+    const list   = document.getElementById('all-guests-list');
+    list.innerHTML = '<p style="padding:14px;color:#888;font-size:0.85rem;">Loading...</p>';
+    try {
+      const snap = await window._getDocs(window._collection(window._db,'guests'));
+      let docs = snap.docs;
+      if (filter === 'pending')  docs = docs.filter(d => !d.data().approved);
+      if (filter === 'approved') docs = docs.filter(d => d.data().approved);
+      document.getElementById('list-count').textContent = `Showing ${docs.length} guest(s)`;
+      if (!docs.length) { list.innerHTML = '<p class="no-results">No guests found.</p>'; return; }
+      list.innerHTML = '';
+      docs.forEach(d => { list.innerHTML += buildGuestCard(d.id, d.data()); });
+    } catch(e) { console.error(e); list.innerHTML = '<p class="no-results">Error loading guests.</p>'; }
+  }
+
+  // ── Stats ──
+  async function loadStats() {
+    if (!window._firebaseReady) return;
+    try {
+      const snap = await window._getDocs(window._collection(window._db,'guests'));
+      let total=0, approved=0, pending=0, people=0;
+      snap.docs.forEach(d => {
+        const g = d.data(); total++;
+        if (g.approved) approved++; else pending++;
+        people += (g.familyCount||0) + 1;
+      });
+      document.getElementById('st-total').textContent = total;
+      document.getElementById('st-approved').textContent = approved;
+      document.getElementById('st-pending').textContent = pending;
+      document.getElementById('st-family').textContent = people;
+    } catch(e) { console.error(e); }
+  }
+
+  // ── Toggle Approve ──
+  async function toggleApprove(docId, currentState) {
+    if (!window._firebaseReady) return;
+    const newState = !currentState;
+    try {
+      await window._updateDoc(window._doc(window._db,'guests',docId), { approved: newState });
+      document.getElementById('badge-'+docId).className = `status-badge ${newState?'status-approved':'status-pending'}`;
+      document.getElementById('badge-'+docId).textContent = newState ? '✅ Approved' : '⏳ Pending';
+      document.getElementById('appbtn-'+docId).textContent = newState ? '❌ Unapprove' : '✅ Approve';
+      document.getElementById('appbtn-'+docId).onclick = () => toggleApprove(docId, newState);
+      const msg = document.getElementById('msg-'+docId);
+      msg.textContent = newState ? '✅ Guest Approved!' : '✅ Approval Removed!';
+      msg.style.display = 'block';
+      setTimeout(() => msg.style.display = 'none', 2500);
+    } catch(e) { console.error(e); alert('Error. Try again.'); }
+  }
+
+  // ── Save Guest ──
+  async function saveGuest(docId) {
+    if (!window._firebaseReady) return;
+    const name   = document.getElementById('edit-name-'+docId).value.trim();
+    const batch  = parseInt(document.getElementById('edit-batch-'+docId).value);
+    const family = parseInt(document.getElementById('edit-family-'+docId).value) || 0;
+    const amount = 10 + (family * 5);
+    const meals = {
+      day1: {
+        breakfast: parseInt(document.getElementById('d1b-'+docId).value)||0,
+        lunch:     parseInt(document.getElementById('d1l-'+docId).value)||0,
+        dinner:    parseInt(document.getElementById('d1d-'+docId).value)||0
+      },
+      day2: {
+        breakfast: parseInt(document.getElementById('d2b-'+docId).value)||0,
+        lunch:     parseInt(document.getElementById('d2l-'+docId).value)||0,
+        dinner:    parseInt(document.getElementById('d2d-'+docId).value)||0
+      }
+    };
+    try {
+      await window._updateDoc(window._doc(window._db,'guests',docId), { name, batch, familyCount: family, amount, meals });
+      const msg = document.getElementById('msg-'+docId);
+      msg.textContent = '✅ Saved successfully!';
+      msg.style.display = 'block';
+      setTimeout(() => msg.style.display = 'none', 2500);
+    } catch(e) { console.error(e); alert('Error saving. Try again.'); }
+  }
+
+  // ── Generate QR (show bank QR popup) ──
+  function generateQR(docId, name, amount, family) {
+    document.getElementById('qr-guest-name').textContent = name;
+    document.getElementById('qr-guest-detail').textContent = `Family: ${family} | Total People: ${family+1}`;
+    document.getElementById('qr-popup-amount').textContent = `Amount: Rs. ${amount}/-`;
+    document.getElementById('qr-overlay').classList.add('active');
+  }
+  function closeQR() {
+    document.getElementById('qr-overlay').classList.remove('active');
+  }
+
+  // Enter key on search
+  document.addEventListener('DOMContentLoaded', () => {
+    const sv = document.getElementById('search-val');
+    if (sv) sv.addEventListener('keydown', e => { if(e.key==='Enter') searchGuest(); });
+  });
+</script>
+
+</body>
+</html>
