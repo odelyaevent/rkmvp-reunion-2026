@@ -1,591 +1,346 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RKMVP Alumni Association – Reunion 2026</title>
-
-  <!-- Open Graph for link preview -->
-  <meta property="og:title" content="RKMVP Alumni Association – Reunion 2026" />
-  <meta property="og:description" content="Delegate Registration for Reunion 2026" />
-  <meta property="og:url" content="https://yourusername.github.io/rkmvp-reunion-2026" />
-
-  <!-- Google Fonts -->
+  <meta property="og:title" content="RKMVP Alumni Association – Reunion 2026"/>
+  <meta property="og:description" content="Delegate Registration – Reunion 2026"/>
+  <meta property="og:url" content="https://odelyaevent.github.io/rkmvp-reunion-2026/"/>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lato:wght@400;700&display=swap" rel="stylesheet"/>
 
-  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // -------------------------------------------------------
-    // PASTE YOUR FIREBASE CONFIG HERE
-    // -------------------------------------------------------
-  const firebaseConfig = {
-    apiKey: "AIzaSyAAW9zZmE1cEUUWLEwT1hWtY1fQoiGt_No",
-    authDomain: "rkmvp-reunion-2026.firebaseapp.com",
-    projectId: "rkmvp-reunion-2026",
-    storageBucket: "rkmvp-reunion-2026.firebasestorage.app",
-    messagingSenderId: "552260116936",
-    appId: "1:552260116936:web:5d731a1fa2746ad149e0fd"
-  };
-    // -------------------------------------------------------
+    // ── PASTE YOUR FIREBASE CONFIG HERE ──
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Expose db and helpers globally
-    window._db = db;
+    const db  = getFirestore(app);
+    window._db         = db;
     window._collection = collection;
-    window._addDoc = addDoc;
-    window._getDocs = getDocs;
-    window._query = query;
-    window._where = where;
+    window._query      = query;
+    window._where      = where;
+    window._getDocs    = getDocs;
+    window._addDoc     = addDoc;
+    window._onSnapshot = onSnapshot;
+    window._doc        = doc;
     window._firebaseReady = true;
   </script>
 
   <style>
     :root {
-      --saffron:   #E8560A;
-      --gold:      #FFD700;
-      --deep-blue: #0D2B5E;
-      --light-blue:#1A4A9E;
-      --cream:     #FDF6E3;
-      --white:     #FFFFFF;
-      --red-alert: #FF0000;
-      --success:   #1A7A3C;
-      --border:    #C9920A55;
+      --saffron:#E8560A; --gold:#FFD700; --deep-blue:#0D2B5E;
+      --light-blue:#1A4A9E; --cream:#FDF6E3; --white:#FFFFFF;
+      --red:#CC0000; --success:#1A7A3C; --border:#FFD70044;
     }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Lato', sans-serif;
-      background: var(--cream);
-      min-height: 100vh;
-      padding: 0 0 40px;
-    }
-
-    /* ── HEADER ── */
-    header {
-      background: linear-gradient(135deg, var(--deep-blue) 0%, var(--light-blue) 100%);
-      padding: 22px 18px 18px;
-      text-align: center;
-      border-bottom: 4px solid var(--gold);
-    }
-
-    header h1 {
-      font-family: 'Cinzel', serif;
-      color: var(--white);
-      font-size: clamp(1.5rem, 6.5vw, 2.2rem);
-      letter-spacing: 0.04em;
-      line-height: 1.25;
-      text-shadow: 0 2px 8px #00000055;
-    }
-
-    header p.address {
-      color: #B8CFFF;
-      font-size: clamp(0.72rem, 3.2vw, 0.88rem);
-      margin-top: 6px;
-      letter-spacing: 0.02em;
-    }
-
-    /* Reunion row with logo */
-    .reunion-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 14px;
-    }
-
-    .logo-placeholder {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: var(--cream);
-      border: 3px solid var(--gold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-
-    .logo-placeholder img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-
-    .logo-placeholder span {
-      font-size: 0.55rem;
-      color: var(--deep-blue);
-      font-weight: 700;
-      text-align: center;
-      line-height: 1.2;
-      padding: 2px;
-    }
-
-    .reunion-title {
-      font-family: 'Cinzel', serif;
-      color: var(--gold);
-      font-size: clamp(1.3rem, 6vw, 2rem);
-      font-weight: 900;
-      letter-spacing: 0.06em;
-      text-shadow: 0 2px 10px #00000066;
-    }
-
-    /* ── CARD ── */
-    .card {
-      background: var(--white);
-      margin: 22px 14px 0;
-      border-radius: 14px;
-      border: 1.5px solid var(--border);
-      box-shadow: 0 4px 24px #0D2B5E18;
-      overflow: hidden;
-    }
-
-    .card-header {
-      background: linear-gradient(90deg, var(--deep-blue), var(--light-blue));
-      padding: 12px 18px;
-    }
-
-    .card-header h2 {
-      font-family: 'Cinzel', serif;
-      color: var(--gold);
-      font-size: clamp(0.95rem, 4vw, 1.1rem);
-      letter-spacing: 0.05em;
-    }
-
-    .card-body {
-      padding: 20px 18px;
-    }
-
-    /* ── FORM FIELDS ── */
-    .field {
-      margin-bottom: 18px;
-    }
-
-    label {
-      display: block;
-      font-weight: 700;
-      color: var(--deep-blue);
-      font-size: 0.88rem;
-      margin-bottom: 6px;
-      letter-spacing: 0.02em;
-    }
-
-    label span.req {
-      color: var(--red-alert);
-      margin-left: 3px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1.8px solid #C5D3E8;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-family: 'Lato', sans-serif;
-      color: #1a1a1a;
-      background: #F7FAFF;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      -webkit-appearance: none;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: var(--light-blue);
-      box-shadow: 0 0 0 3px #1A4A9E22;
-      background: var(--white);
-    }
-
-    input.error {
-      border-color: var(--red-alert);
-      box-shadow: 0 0 0 3px #CC000018;
-    }
-
-    .field-note {
-      font-size: 0.76rem;
-      color: #7A8CA8;
-      margin-top: 4px;
-    }
-
-    .field-error {
-      font-size: 0.78rem;
-      color: var(--red-alert);
-      margin-top: 4px;
-      display: none;
-    }
-
-    /* ── AMOUNT BOX ── */
-    .amount-box {
-      background: #FFF5F5;
-      border: 2px solid var(--red-alert);
-      border-radius: 10px;
-      padding: 14px 18px;
-      margin: 6px 0 20px;
-      text-align: center;
-    }
-
-    .amount-label {
-      font-size: 0.82rem;
-      color: #555;
-      margin-bottom: 4px;
-    }
-
-    .amount-value {
-      font-size: clamp(1.4rem, 6vw, 1.8rem);
-      font-weight: 900;
-      color: var(--red-alert);
-      font-family: 'Cinzel', serif;
-      letter-spacing: 0.03em;
-    }
-
-    .amount-breakdown {
-      font-size: 0.76rem;
-      color: #888;
-      margin-top: 4px;
-    }
-
-    /* ── DIVIDER ── */
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin: 20px 0;
-    }
-
-    /* ── FINISH BUTTON ── */
-    .btn-finish {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, var(--saffron), #C9400A);
-      color: var(--white);
-      font-family: 'Cinzel', serif;
-      font-size: 1.05rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 4px 16px #E8560A44;
-      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
-    }
-
-    .btn-finish:active {
-      transform: scale(0.97);
-      box-shadow: 0 2px 8px #E8560A33;
-    }
-
-    .btn-finish:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    /* ── SUCCESS MESSAGE ── */
-    #success-screen {
-      display: none;
-      margin: 30px 14px 0;
-      background: var(--white);
-      border-radius: 14px;
-      border: 2px solid var(--success);
-      box-shadow: 0 4px 24px #1A7A3C18;
-      padding: 30px 20px;
-      text-align: center;
-    }
-
-    .success-icon {
-      font-size: 3rem;
-      margin-bottom: 12px;
-    }
-
-    .success-title {
-      font-family: 'Cinzel', serif;
-      color: var(--success);
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .success-msg {
-      color: #444;
-      font-size: 0.9rem;
-      line-height: 1.6;
-    }
-
-    .success-detail {
-      margin-top: 18px;
-      background: #F0FFF5;
-      border-radius: 8px;
-      padding: 14px;
-      text-align: left;
-      font-size: 0.86rem;
-      color: #333;
-      line-height: 1.8;
-    }
-
-    .success-detail strong {
-      color: var(--deep-blue);
-    }
-
-    .pending-badge {
-      display: inline-block;
-      background: #FFF3CD;
-      color: #856404;
-      border: 1px solid #FFCA28;
-      border-radius: 20px;
-      padding: 4px 14px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      margin-top: 14px;
-      letter-spacing: 0.04em;
-    }
-
-    /* ── SPINNER ── */
-    .spinner {
-      display: inline-block;
-      width: 18px; height: 18px;
-      border: 3px solid #ffffff55;
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      vertical-align: middle;
-      margin-right: 8px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-</style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Lato',sans-serif;background:var(--cream);min-height:100vh;padding-bottom:40px;}
+    header{background:linear-gradient(135deg,var(--deep-blue),var(--light-blue));padding:22px 18px 18px;text-align:center;border-bottom:4px solid var(--gold);}
+    header h1{font-family:'Cinzel',serif;color:var(--white);font-size:clamp(1.5rem,6.5vw,2.2rem);letter-spacing:0.04em;text-shadow:0 2px 8px #00000055;}
+    header p.address{color:#B8CFFF;font-size:clamp(0.72rem,3.2vw,0.88rem);margin-top:6px;}
+    .reunion-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px;}
+    .logo-wrap{width:52px;height:52px;border-radius:50%;background:var(--cream);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+    .logo-wrap img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+    .logo-wrap span{font-size:0.55rem;color:var(--deep-blue);font-weight:700;text-align:center;line-height:1.2;padding:2px;}
+    .reunion-title{font-family:'Cinzel',serif;color:var(--gold);font-size:clamp(1.3rem,6vw,2rem);font-weight:900;letter-spacing:0.06em;text-shadow:0 2px 10px #00000066;}
+    .card{background:var(--white);margin:22px 14px 0;border-radius:14px;border:1.5px solid var(--border);box-shadow:0 4px 24px #0D2B5E18;overflow:hidden;}
+    .card-header{background:linear-gradient(90deg,var(--deep-blue),var(--light-blue));padding:12px 18px;}
+    .card-header h2{font-family:'Cinzel',serif;color:var(--gold);font-size:clamp(0.95rem,4vw,1.1rem);letter-spacing:0.05em;}
+    .card-body{padding:22px 18px;}
+    .field{margin-bottom:16px;}
+    label{display:block;font-weight:700;color:var(--deep-blue);font-size:0.87rem;margin-bottom:5px;}
+    label .req{color:var(--red);margin-left:3px;}
+    input{width:100%;padding:12px 14px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:1rem;font-family:'Lato',sans-serif;color:#1a1a1a;background:#F7FAFF;transition:border-color 0.2s;-webkit-appearance:none;}
+    input:focus{outline:none;border-color:var(--light-blue);box-shadow:0 0 0 3px #1A4A9E22;background:var(--white);}
+    input.error{border-color:var(--red);box-shadow:0 0 0 3px #CC000018;}
+    .field-note{font-size:0.75rem;color:#7A8CA8;margin-top:4px;}
+    .field-error{font-size:0.78rem;color:var(--red);margin-top:4px;display:none;font-weight:700;}
+    .amount-box{background:#FFF5F5;border:2px solid var(--red);border-radius:10px;padding:14px;margin:4px 0 18px;text-align:center;}
+    .amount-label{font-size:0.82rem;color:#555;margin-bottom:4px;}
+    .amount-value{font-size:clamp(1.4rem,6vw,1.8rem);font-weight:900;color:var(--red);font-family:'Cinzel',serif;}
+    .amount-breakdown{font-size:0.75rem;color:#888;margin-top:4px;}
+    .divider{height:1px;background:var(--border);margin:18px 0;}
+    .btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--saffron),#C9400A);color:var(--white);font-family:'Cinzel',serif;font-size:1.05rem;font-weight:700;letter-spacing:0.08em;border:none;border-radius:10px;cursor:pointer;box-shadow:0 4px 16px #E8560A44;transition:transform 0.15s,opacity 0.15s;}
+    .btn:active{transform:scale(0.97);}
+    .btn:disabled{opacity:0.6;cursor:not-allowed;}
+    .spinner{display:inline-block;width:18px;height:18px;border:3px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    #pending-screen{display:none;margin:22px 14px 0;background:var(--white);border-radius:14px;border:2px solid #FFCA28;padding:28px 18px;text-align:center;}
+    #pending-screen .icon{font-size:3rem;margin-bottom:12px;}
+    #pending-screen h3{font-family:'Cinzel',serif;color:#856404;font-size:1.1rem;margin-bottom:8px;}
+    #pending-screen p{color:#555;font-size:0.88rem;line-height:1.7;}
+    .pending-badge{display:inline-block;background:#FFF3CD;color:#856404;border:1px solid #FFCA28;border-radius:20px;padding:5px 16px;font-size:0.82rem;font-weight:700;margin-top:14px;}
+    #bankqr-screen{display:none;margin:22px 14px 0;background:var(--white);border-radius:14px;border:2px solid var(--success);padding:24px 18px;text-align:center;}
+    #bankqr-screen h3{font-family:'Cinzel',serif;color:var(--success);font-size:1.1rem;margin-bottom:6px;}
+    #bankqr-screen p{color:#555;font-size:0.85rem;margin-bottom:16px;}
+    #bankqr-screen img{width:230px;height:230px;border:3px solid var(--gold);border-radius:12px;object-fit:contain;}
+    .amount-due{font-size:1.4rem;font-weight:900;color:var(--red);font-family:'Cinzel',serif;margin-top:14px;}
+    .guest-info-box{margin-top:14px;background:#F7FAFF;border-radius:8px;padding:12px 14px;text-align:left;font-size:0.86rem;color:#333;line-height:1.9;}
+    .guest-info-box strong{color:var(--deep-blue);}
+    #pin-screen{display:none;}
+    #pin-screen .card-body{text-align:center;}
+    #pin-screen p{color:#555;font-size:0.88rem;margin-bottom:20px;line-height:1.6;}
+    #return-pin{font-size:1.6rem;letter-spacing:0.4em;text-align:center;}
+  </style>
 </head>
 <body>
 
-  <!-- HEADER -->
   <header>
     <h1>RKMVP Alumni Association</h1>
     <p class="address">Vivekananda Nagar, Purulia, West Bengal, India</p>
     <div class="reunion-row">
-      <div class="logo-placeholder">
-        <!-- Replace src with your logo file e.g. logo.png -->
-        <img src="logo.png" alt="Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
+      <div class="logo-wrap">
+        <img src="logo.png" alt="Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
         <span style="display:none">RKMVP<br>LOGO</span>
       </div>
       <div class="reunion-title">Reunion 2026</div>
     </div>
   </header>
 
-  <!-- REGISTRATION FORM -->
-  <div class="card" id="form-card">
-    <div class="card-header">
-      <h2>Delegate Details</h2>
-    </div>
+  <!-- SCREEN 1: REGISTRATION -->
+  <div class="card" id="reg-card">
+    <div class="card-header"><h2>Delegate Details</h2></div>
     <div class="card-body">
-
-      <!-- Batch No -->
       <div class="field">
         <label for="batch">Batch No (Year)<span class="req">*</span></label>
         <input type="number" id="batch" placeholder="e.g. 1995" min="1950" max="2025"/>
-        <div class="field-error" id="err-batch">Please enter a valid batch year.</div>
+        <div class="field-error" id="err-batch">Please enter a valid batch year (1950–2025).</div>
       </div>
-
-      <!-- Name -->
       <div class="field">
         <label for="name">Full Name<span class="req">*</span></label>
         <input type="text" id="name" placeholder="Enter your full name"/>
         <div class="field-error" id="err-name">Please enter your name.</div>
       </div>
-
-      <!-- Family Members -->
       <div class="field">
         <label for="family">No. of Family Members</label>
         <input type="number" id="family" placeholder="0" min="0" max="20" value="0"/>
         <div class="field-note">Leave as 0 if attending alone. Each family member: Rs. 5/-</div>
       </div>
-
       <div class="divider"></div>
-
-      <!-- Security PIN -->
       <div class="field">
         <label for="pin">Create Security PIN<span class="req">*</span></label>
-        <input type="password" id="pin" placeholder="4-digit PIN" maxlength="4" inputmode="numeric" pattern="[0-9]{4}"/>
-        <div class="field-note">Must be 4 digits. Cannot be serial (1234) or repeated (1111). Must be unique.</div>
-        <div class="field-error" id="err-pin">Invalid PIN. Avoid serial or repeated digits.</div>
+        <input type="password" id="pin" placeholder="4-digit PIN" maxlength="4" inputmode="numeric"/>
+        <div class="field-note">4 digits. No serial (1234) or repeated (1111). Must be unique.</div>
+        <div class="field-error" id="err-pin">Invalid or already taken PIN.</div>
       </div>
-
-      <!-- Confirm PIN -->
       <div class="field">
         <label for="pin2">Confirm Security PIN<span class="req">*</span></label>
-        <input type="password" id="pin2" placeholder="Re-enter 4-digit PIN" maxlength="4" inputmode="numeric" pattern="[0-9]{4}"/>
+        <input type="password" id="pin2" placeholder="Re-enter PIN" maxlength="4" inputmode="numeric"/>
         <div class="field-error" id="err-pin2">PINs do not match.</div>
       </div>
-
       <div class="divider"></div>
-
-      <!-- Payable Amount -->
       <div class="amount-box">
         <div class="amount-label">Total Payable Amount</div>
         <div class="amount-value" id="amount-display">Rs. 10/-</div>
         <div class="amount-breakdown" id="amount-breakdown">Guest: Rs. 10/-</div>
       </div>
-
-      <!-- Finish Button -->
-      <button class="btn-finish" id="btn-finish" onclick="submitForm()">
-        FINISH &amp; REGISTER
-      </button>
-
+      <button class="btn" id="btn-finish" onclick="submitReg()">FINISH &amp; REGISTER</button>
     </div>
   </div>
 
-  <!-- SUCCESS SCREEN -->
-  <div id="success-screen">
-    <div class="success-icon">✅</div>
-    <div class="success-title">Registration Submitted!</div>
-    <div class="success-msg">Your details have been received.<br>Please wait for approval at the front desk.</div>
-    <div class="success-detail" id="success-detail"></div>
-    <div class="pending-badge">⏳ Pending for Approval</div>
+  <!-- SCREEN 2: PIN ENTRY (returning guest) -->
+  <div id="pin-screen">
+    <div class="card">
+      <div class="card-header"><h2>Welcome Back!</h2></div>
+      <div class="card-body">
+        <p>You are already registered.<br>Enter your <strong>Security PIN</strong> to continue.</p>
+        <input type="password" id="return-pin" placeholder="••••" maxlength="4" inputmode="numeric" autocomplete="off"/>
+        <div class="field-error" id="err-return-pin" style="text-align:center;margin-bottom:10px;">❌ PIN not found. Please try again.</div>
+        <button class="btn" id="btn-pin-enter" onclick="enterWithPin()" style="margin-top:14px;">ENTER</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: PENDING -->
+  <div id="pending-screen">
+    <div class="icon">⏳</div>
+    <h3>Pending for Approval</h3>
+    <p>Your registration is received!<br>Please go to the <strong>front desk</strong> and tell your Security PIN.<br>The attendant will process your payment.</p>
+    <div class="pending-badge">⏳ Waiting for Approval</div>
+  </div>
+
+  <!-- SCREEN 4: BANK QR (shown when admin clicks Generate) -->
+  <div id="bankqr-screen">
+    <h3>Scan to Pay</h3>
+    <p>Please scan the QR code below using GPay / PhonePe / any UPI app.</p>
+    <img src="bank-qr.png" alt="Bank QR Code"/>
+    <div class="amount-due" id="bankqr-amount"></div>
+    <div class="guest-info-box" id="bankqr-info"></div>
   </div>
 
   <script>
-    // ── Amount Calculator ──
-    const familyInput = document.getElementById('family');
-    const amountDisplay = document.getElementById('amount-display');
-    const amountBreakdown = document.getElementById('amount-breakdown');
-
+    // Amount calculator
+    document.getElementById('family').addEventListener('input', calcAmount);
     function calcAmount() {
-      const fam = parseInt(familyInput.value) || 0;
-      const total = 10 + (fam * 5);
-      amountDisplay.textContent = `Rs. ${total}/-`;
-      if (fam === 0) {
-        amountBreakdown.textContent = `Guest: Rs. 10/-`;
-      } else {
-        amountBreakdown.textContent = `Guest: Rs. 10/-  +  ${fam} family × Rs. 5/- = Rs. ${total}/-`;
-      }
+      const fam = parseInt(document.getElementById('family').value) || 0;
+      const total = 10 + fam * 5;
+      document.getElementById('amount-display').textContent = `Rs. ${total}/-`;
+      document.getElementById('amount-breakdown').textContent = fam === 0
+        ? 'Guest: Rs. 10/-'
+        : `Guest: Rs. 10/-  +  ${fam} × Rs. 5/- = Rs. ${total}/-`;
     }
 
-    familyInput.addEventListener('input', calcAmount);
-
-    // ── PIN Validation ──
-    function isValidPin(pin) {
-      if (!/^\d{4}$/.test(pin)) return false;
-      // No repeated digits like 1111, 2222
-      if (/^(\d)\1{3}$/.test(pin)) return false;
-      // No serial ascending like 1234, 2345
-      const d = pin.split('').map(Number);
+    function isValidPin(p) {
+      if (!/^\d{4}$/.test(p)) return false;
+      if (/^(\d)\1{3}$/.test(p)) return false;
+      const d = p.split('').map(Number);
       if (d[1]===d[0]+1 && d[2]===d[1]+1 && d[3]===d[2]+1) return false;
-      // No serial descending like 4321, 9876
       if (d[1]===d[0]-1 && d[2]===d[1]-1 && d[3]===d[2]-1) return false;
       return true;
     }
 
-    function showError(id, show) {
-      const el = document.getElementById(id);
+    function markErr(inputId, errId, show, msg) {
+      document.getElementById(inputId).classList.toggle('error', show);
+      const el = document.getElementById(errId);
+      if (msg) el.textContent = msg;
       el.style.display = show ? 'block' : 'none';
     }
 
-    function markError(inputId, errId, hasError) {
-      document.getElementById(inputId).classList.toggle('error', hasError);
-      showError(errId, hasError);
+    function hideAll() {
+      ['reg-card','pin-screen','pending-screen','bankqr-screen'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
+      });
     }
 
-    // ── Submit Form ──
-    async function submitForm() {
-      // Gather values
+    // On load — check localStorage
+    window.addEventListener('load', () => {
+      const savedPin = localStorage.getItem('rkmvp_pin');
+      if (savedPin) {
+        hideAll();
+        document.getElementById('pin-screen').style.display = 'block';
+      }
+    });
+
+    // Submit registration
+    async function submitReg() {
       const batch  = document.getElementById('batch').value.trim();
       const name   = document.getElementById('name').value.trim();
       const family = parseInt(document.getElementById('family').value) || 0;
       const pin    = document.getElementById('pin').value.trim();
       const pin2   = document.getElementById('pin2').value.trim();
-
       let valid = true;
 
-      // Validate batch
       const batchNum = parseInt(batch);
-      if (!batch || batchNum < 1950 || batchNum > 2025) {
-        markError('batch', 'err-batch', true); valid = false;
-      } else { markError('batch', 'err-batch', false); }
-
-      // Validate name
-      if (!name || name.length < 2) {
-        markError('name', 'err-name', true); valid = false;
-      } else { markError('name', 'err-name', false); }
-
-      // Validate PIN
-      if (!isValidPin(pin)) {
-        markError('pin', 'err-pin', true); valid = false;
-      } else { markError('pin', 'err-pin', false); }
-
-      // Validate confirm PIN
-      if (pin !== pin2) {
-        markError('pin2', 'err-pin2', true); valid = false;
-      } else { markError('pin2', 'err-pin2', false); }
-
+      if (!batch || batchNum < 1950 || batchNum > 2025) { markErr('batch','err-batch',true); valid=false; } else markErr('batch','err-batch',false);
+      if (!name || name.length < 2) { markErr('name','err-name',true); valid=false; } else markErr('name','err-name',false);
+      if (!isValidPin(pin)) { markErr('pin','err-pin',true,'Invalid PIN. Avoid serial or repeated digits.'); valid=false; } else markErr('pin','err-pin',false);
+      if (pin !== pin2) { markErr('pin2','err-pin2',true); valid=false; } else markErr('pin2','err-pin2',false);
       if (!valid) return;
-
-      // Wait for Firebase
-      if (!window._firebaseReady) {
-        alert('System loading. Please try again in a moment.');
-        return;
-      }
+      if (!window._firebaseReady) { alert('Loading... please try again.'); return; }
 
       const btn = document.getElementById('btn-finish');
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span> Saving...';
 
       try {
-        // Check PIN uniqueness
-        const q = window._query(
-          window._collection(window._db, 'guests'),
-          window._where('pin', '==', pin)
-        );
+        const q = window._query(window._collection(window._db,'guests'), window._where('pin','==',pin));
         const snap = await window._getDocs(q);
         if (!snap.empty) {
-          markError('pin', 'err-pin', true);
-          document.getElementById('err-pin').textContent = '❌ This PIN is already taken. Please choose another!';
-          btn.disabled = false;
-          btn.innerHTML = 'FINISH &amp; REGISTER';
-          return;
+          markErr('pin','err-pin',true,'❌ This PIN is already taken. Please choose another!');
+          btn.disabled=false; btn.innerHTML='FINISH &amp; REGISTER'; return;
         }
 
-        // Calculate amount
-        const amount = 10 + (family * 5);
-
-        // Save to Firestore
-        await window._addDoc(window._collection(window._db, 'guests'), {
-          name:         name,
-          batch:        batchNum,
-          familyCount:  family,
-          pin:          pin,
-          amount:       amount,
-          status:       'pending',
-          approved:     false,
-          meals: {
-            day1: { breakfast: 0, lunch: 0, dinner: 0 },
-            day2: { breakfast: 0, lunch: 0, dinner: 0 }
-          },
+        const amount = 10 + family * 5;
+        const docRef = await window._addDoc(window._collection(window._db,'guests'), {
+          name, batch: batchNum, familyCount: family, pin, amount,
+          approved: false, bankQrVisible: false,
+          meals: { day1:{breakfast:0,lunch:0,dinner:0}, day2:{breakfast:0,lunch:0,dinner:0} },
           registeredAt: new Date().toISOString()
         });
 
-        // Show success
-        document.getElementById('form-card').style.display = 'none';
-        const sd = document.getElementById('success-detail');
-        sd.innerHTML = `
-          <strong>Name:</strong> ${name}<br>
-          <strong>Batch:</strong> ${batchNum}<br>
-          <strong>Family Members:</strong> ${family}<br>
-          <strong>Amount Payable:</strong> <span style="color:var(--red-alert);font-weight:700">Rs. ${amount}/-</span><br>
-          <strong>Security PIN:</strong> ****
-        `;
-        document.getElementById('success-screen').style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        localStorage.setItem('rkmvp_pin', pin);
+        hideAll();
+        document.getElementById('pending-screen').style.display = 'block';
+        startRealtimeListener(docRef.id, name, amount, family);
 
-      } catch (err) {
-        console.error(err);
+      } catch(e) {
+        console.error(e);
         alert('Something went wrong. Please try again.');
-        btn.disabled = false;
-        btn.innerHTML = 'FINISH &amp; REGISTER';
+        btn.disabled=false; btn.innerHTML='FINISH &amp; REGISTER';
       }
     }
-  </script>
 
+    // Returning guest PIN entry
+    async function enterWithPin() {
+      const pin = document.getElementById('return-pin').value.trim();
+      const err = document.getElementById('err-return-pin');
+      const btn = document.getElementById('btn-pin-enter');
+      err.style.display = 'none';
+      if (!/^\d{4}$/.test(pin)) { err.style.display='block'; return; }
+      if (!window._firebaseReady) { alert('Loading...'); return; }
+
+      btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
+
+      try {
+        const q = window._query(window._collection(window._db,'guests'), window._where('pin','==',pin));
+        const snap = await window._getDocs(q);
+        if (snap.empty) { err.style.display='block'; btn.disabled=false; btn.innerHTML='ENTER'; return; }
+
+        const docId = snap.docs[0].id;
+        const g = snap.docs[0].data();
+        localStorage.setItem('rkmvp_pin', pin);
+        hideAll();
+
+        if (g.approved) {
+          window.location.href = `guest.html?pin=${encodeURIComponent(pin)}`;
+          return;
+        } else if (g.bankQrVisible) {
+          showBankQR(g.name, g.amount, g.familyCount || 0);
+        } else {
+          document.getElementById('pending-screen').style.display = 'block';
+        }
+
+        startRealtimeListener(docId, g.name, g.amount, g.familyCount || 0);
+        btn.disabled=false; btn.innerHTML='ENTER';
+
+      } catch(e) {
+        console.error(e);
+        alert('Error. Please try again.');
+        btn.disabled=false; btn.innerHTML='ENTER';
+      }
+    }
+
+    // Realtime listener — watches for admin actions
+    function startRealtimeListener(docId, name, amount, family) {
+      if (!window._firebaseReady) return;
+      const ref = window._doc(window._db, 'guests', docId);
+      window._onSnapshot(ref, snap => {
+        if (!snap.exists()) return;
+        const data = snap.data();
+        if (data.approved) {
+          const pin = localStorage.getItem('rkmvp_pin') || '';
+          window.location.href = `guest.html?pin=${encodeURIComponent(pin)}`;
+        } else if (data.bankQrVisible) {
+          showBankQR(data.name, data.amount, data.familyCount || 0);
+        }
+      });
+    }
+
+    function showBankQR(name, amount, family) {
+      hideAll();
+      document.getElementById('bankqr-amount').textContent = `Amount Payable: Rs. ${amount}/-`;
+      document.getElementById('bankqr-info').innerHTML = `
+        <strong>Name:</strong> ${name}<br>
+        <strong>Family Members:</strong> ${family}<br>
+        <strong>Total People:</strong> ${family + 1}<br>
+        <strong>Amount:</strong> <span style="color:var(--red);font-weight:700">Rs. ${amount}/-</span>
+      `;
+      document.getElementById('bankqr-screen').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById('return-pin').addEventListener('keydown', e => {
+      if (e.key === 'Enter') enterWithPin();
+    });
+  </script>
 </body>
 </html>

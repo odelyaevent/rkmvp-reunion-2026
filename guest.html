@@ -5,33 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Guest Portal – RKMVP Reunion 2026</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lato:wght@400;700&display=swap" rel="stylesheet"/>
-  <!-- QR Code generator library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyAAW9zZmE1cEUUWLEwT1hWtY1fQoiGt_No",
-    authDomain: "rkmvp-reunion-2026.firebaseapp.com",
-    projectId: "rkmvp-reunion-2026",
-    storageBucket: "rkmvp-reunion-2026.firebasestorage.app",
-    messagingSenderId: "552260116936",
-    appId: "1:552260116936:web:5d731a1fa2746ad149e0fd"
-  };
+    import { getFirestore, collection, query, where, getDocs, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // ── PASTE YOUR FIREBASE CONFIG HERE ──
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    window._db = db;
+    const db  = getFirestore(app);
+    window._db         = db;
     window._collection = collection;
-    window._query = query;
-    window._where = where;
-    window._getDocs = getDocs;
+    window._query      = query;
+    window._where      = where;
+    window._getDocs    = getDocs;
+    window._doc        = doc;
+    window._onSnapshot = onSnapshot;
     window._firebaseReady = true;
   </script>
+
   <style>
     :root {
       --saffron:#E8560A; --gold:#FFD700; --deep-blue:#0D2B5E;
       --light-blue:#1A4A9E; --cream:#FDF6E3; --white:#FFFFFF;
-      --red-alert:#CC0000; --success:#1A7A3C; --border:#FFD70055;
+      --red:#CC0000; --success:#1A7A3C; --border:#FFD70044;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Lato',sans-serif;background:var(--cream);min-height:100vh;padding-bottom:40px;}
@@ -39,51 +44,47 @@
     header h1{font-family:'Cinzel',serif;color:var(--white);font-size:clamp(1.5rem,6.5vw,2.2rem);letter-spacing:0.04em;text-shadow:0 2px 8px #00000055;}
     header p.address{color:#B8CFFF;font-size:clamp(0.72rem,3.2vw,0.88rem);margin-top:6px;}
     .reunion-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px;}
-    .logo-placeholder{width:52px;height:52px;border-radius:50%;background:var(--cream);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
-    .logo-placeholder img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
-    .logo-placeholder span{font-size:0.55rem;color:var(--deep-blue);font-weight:700;text-align:center;line-height:1.2;padding:2px;}
+    .logo-wrap{width:52px;height:52px;border-radius:50%;background:var(--cream);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+    .logo-wrap img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+    .logo-wrap span{font-size:0.55rem;color:var(--deep-blue);font-weight:700;text-align:center;line-height:1.2;padding:2px;}
     .reunion-title{font-family:'Cinzel',serif;color:var(--gold);font-size:clamp(1.3rem,6vw,2rem);font-weight:900;letter-spacing:0.06em;text-shadow:0 2px 10px #00000066;}
     .card{background:var(--white);margin:22px 14px 0;border-radius:14px;border:1.5px solid var(--border);box-shadow:0 4px 24px #0D2B5E18;overflow:hidden;}
     .card-header{background:linear-gradient(90deg,var(--deep-blue),var(--light-blue));padding:12px 18px;}
     .card-header h2{font-family:'Cinzel',serif;color:var(--gold);font-size:clamp(0.95rem,4vw,1.1rem);letter-spacing:0.05em;}
-    .card-body{padding:24px 18px;}
-
-    /* PIN entry */
-    .instruction{text-align:center;color:#555;font-size:0.9rem;line-height:1.6;margin-bottom:24px;}
-    label{display:block;font-weight:700;color:var(--deep-blue);font-size:0.88rem;margin-bottom:6px;}
-    input{width:100%;padding:14px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:1.4rem;font-family:'Lato',sans-serif;color:#1a1a1a;background:#F7FAFF;text-align:center;letter-spacing:0.3em;-webkit-appearance:none;}
+    .card-body{padding:22px 18px;}
+    label{display:block;font-weight:700;color:var(--deep-blue);font-size:0.87rem;margin-bottom:5px;}
+    input{width:100%;padding:13px 14px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:1.5rem;font-family:'Lato',sans-serif;color:#1a1a1a;background:#F7FAFF;text-align:center;letter-spacing:0.4em;-webkit-appearance:none;}
     input:focus{outline:none;border-color:var(--light-blue);box-shadow:0 0 0 3px #1A4A9E22;}
-    input.error{border-color:var(--red-alert);}
-    .field-error{font-size:0.82rem;color:var(--red-alert);margin-top:6px;display:none;text-align:center;font-weight:700;}
-    .btn-main{width:100%;padding:15px;background:linear-gradient(135deg,var(--saffron),#C9400A);color:var(--white);font-family:'Cinzel',serif;font-size:1.05rem;font-weight:700;letter-spacing:0.08em;border:none;border-radius:10px;cursor:pointer;box-shadow:0 4px 16px #E8560A44;transition:transform 0.15s,opacity 0.15s;margin-top:8px;}
-    .btn-main:active{transform:scale(0.97);}
-    .btn-main:disabled{opacity:0.6;cursor:not-allowed;}
+    input.error{border-color:var(--red);}
+    .field-error{font-size:0.78rem;color:var(--red);margin-top:6px;display:none;font-weight:700;text-align:center;}
+    .btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--saffron),#C9400A);color:var(--white);font-family:'Cinzel',serif;font-size:1.05rem;font-weight:700;letter-spacing:0.08em;border:none;border-radius:10px;cursor:pointer;box-shadow:0 4px 16px #E8560A44;transition:transform 0.15s,opacity 0.15s;margin-top:14px;}
+    .btn:active{transform:scale(0.97);}
+    .btn:disabled{opacity:0.6;cursor:not-allowed;}
     .spinner{display:inline-block;width:18px;height:18px;border:3px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px;}
     @keyframes spin{to{transform:rotate(360deg);}}
 
-    /* Meal display */
+    /* MEAL SCREEN */
     #meal-screen{display:none;}
-    .meal-badge{text-align:center;padding:18px 10px 10px;}
-    .meal-type{font-family:'Cinzel',serif;font-size:clamp(2rem,10vw,3rem);font-weight:900;letter-spacing:0.08em;text-shadow:0 2px 12px #00000033;}
-    .meal-type.breakfast{color:#E8A020;}
-    .meal-type.lunch{color:#1A7A3C;}
-    .meal-type.dinner{color:#1A4A9E;}
-    .meal-day{font-size:0.9rem;color:#888;margin-top:4px;font-weight:700;letter-spacing:0.05em;}
-    .outside-hours{font-family:'Cinzel',serif;font-size:1.1rem;color:#888;text-align:center;padding:20px;font-weight:700;}
-
-    /* QR display */
+    .meal-hero{text-align:center;padding:20px 14px 10px;}
+    .meal-label{font-family:'Cinzel',serif;font-size:clamp(2.2rem,11vw,3.2rem);font-weight:900;letter-spacing:0.08em;text-shadow:0 2px 12px #00000022;}
+    .meal-label.breakfast{color:#D4780A;}
+    .meal-label.lunch{color:var(--success);}
+    .meal-label.dinner{color:var(--deep-blue);}
+    .meal-day-tag{display:inline-block;background:var(--deep-blue);color:var(--gold);font-family:'Cinzel',serif;font-size:0.82rem;padding:4px 14px;border-radius:20px;margin-top:8px;letter-spacing:0.06em;}
+    .outside-hours{text-align:center;padding:30px 18px;color:#888;font-size:0.95rem;line-height:1.8;}
+    .outside-hours span{font-size:2rem;display:block;margin-bottom:10px;}
     .qr-section{text-align:center;padding:10px 18px 24px;}
-    .qr-instruction{font-size:0.85rem;color:#555;margin-bottom:16px;}
+    .qr-note{font-size:0.83rem;color:#555;margin-bottom:14px;}
     #qr-canvas{display:inline-block;padding:12px;background:white;border:3px solid var(--gold);border-radius:12px;box-shadow:0 4px 16px #00000018;}
-    .guest-summary{margin:16px 14px 0;background:var(--white);border-radius:10px;border:1.5px solid var(--border);padding:14px 16px;font-size:0.86rem;color:#333;line-height:1.9;}
-    .guest-summary strong{color:var(--deep-blue);}
-    .meal-count{display:inline-block;background:#EEF4FF;color:var(--deep-blue);border-radius:6px;padding:2px 10px;font-weight:700;font-size:0.82rem;margin-left:6px;}
+    .group-info{margin:6px 14px 0;background:var(--white);border-radius:10px;border:1.5px solid var(--border);padding:14px 16px;font-size:0.86rem;color:#333;line-height:1.9;}
+    .group-info strong{color:var(--deep-blue);}
+    .meal-count-badge{display:inline-block;background:#EEF4FF;color:var(--deep-blue);border-radius:6px;padding:2px 10px;font-weight:700;font-size:0.8rem;margin-left:4px;}
 
-    /* Not approved */
-    .pending-box{display:none;margin:22px 14px 0;background:var(--white);border-radius:14px;border:2px solid #FFCA28;padding:30px 20px;text-align:center;}
-    .pending-box .icon{font-size:3rem;margin-bottom:12px;}
-    .pending-box h3{font-family:'Cinzel',serif;color:#856404;font-size:1.1rem;margin-bottom:8px;}
-    .pending-box p{color:#666;font-size:0.88rem;line-height:1.6;}
+    /* NOT EVENT DAY */
+    .info-box{margin:22px 14px 0;background:var(--white);border-radius:14px;border:2px solid var(--gold);padding:28px 18px;text-align:center;}
+    .info-box .icon{font-size:2.5rem;margin-bottom:10px;}
+    .info-box h3{font-family:'Cinzel',serif;color:var(--deep-blue);font-size:1rem;margin-bottom:8px;}
+    .info-box p{color:#555;font-size:0.87rem;line-height:1.7;}
   </style>
 </head>
 <body>
@@ -92,8 +93,8 @@
     <h1>RKMVP Alumni Association</h1>
     <p class="address">Vivekananda Nagar, Purulia, West Bengal, India</p>
     <div class="reunion-row">
-      <div class="logo-placeholder">
-        <img src="logo.png" alt="Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+      <div class="logo-wrap">
+        <img src="logo.png" alt="Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
         <span style="display:none">RKMVP<br>LOGO</span>
       </div>
       <div class="reunion-title">Reunion 2026</div>
@@ -102,194 +103,243 @@
 
   <!-- PIN ENTRY -->
   <div class="card" id="pin-card">
-    <div class="card-header"><h2>Guest Portal</h2></div>
-    <div class="card-body">
-      <p class="instruction">Enter your <strong>Security PIN</strong> to view your meal QR code.</p>
+    <div class="card-header"><h2>Guest Meal Portal</h2></div>
+    <div class="card-body" style="text-align:center;">
+      <p style="color:#555;font-size:0.88rem;margin-bottom:18px;line-height:1.6;">Enter your <strong>Security PIN</strong> to view your meal pass.</p>
       <label>Security PIN</label>
       <input type="password" id="pin-input" maxlength="4" inputmode="numeric" placeholder="••••" autocomplete="off"/>
       <div class="field-error" id="pin-error">❌ PIN not found. Please try again.</div>
-      <button class="btn-main" id="btn-enter" onclick="enterPortal()" style="margin-top:16px;">ENTER</button>
+      <button class="btn" id="btn-enter" onclick="enterPortal()">ENTER</button>
     </div>
   </div>
 
   <!-- NOT APPROVED -->
-  <div class="pending-box" id="pending-box">
+  <div class="info-box" id="not-approved-box" style="display:none;">
     <div class="icon">⏳</div>
-    <h3>Approval Pending</h3>
-    <p>Your registration is under review.<br>Please contact the <strong>front desk</strong>.</p>
+    <h3>Not Yet Approved</h3>
+    <p>Your registration is pending approval.<br>Please visit the <strong>front desk</strong> to complete payment.</p>
+  </div>
+
+  <!-- NOT EVENT DAY -->
+  <div class="info-box" id="not-event-day-box" style="display:none;">
+    <div class="icon">📅</div>
+    <h3 id="not-event-day-msg">Event Not Started Yet</h3>
+    <p id="not-event-day-sub">Please come back on the event day.</p>
   </div>
 
   <!-- MEAL SCREEN -->
   <div id="meal-screen">
     <div class="card">
-      <div class="card-header"><h2 id="meal-card-title">Your Meal Pass</h2></div>
+      <div class="card-header"><h2>Your Meal Pass</h2></div>
       <div class="card-body" style="padding:0 0 10px;">
-        <div class="meal-badge">
-          <div class="meal-type" id="meal-type-display"></div>
-          <div class="meal-day" id="meal-day-display"></div>
+        <div class="meal-hero">
+          <div class="meal-label" id="meal-label-display"></div>
+          <div class="meal-day-tag" id="meal-day-tag"></div>
         </div>
         <div class="outside-hours" id="outside-hours" style="display:none;">
-          🕐 Meal service is not active right now.<br>Please come back during meal hours.
+          <span>🕐</span>
+          Meal service is not active right now.<br>Please come back during meal hours.
         </div>
         <div class="qr-section" id="qr-section">
-          <p class="qr-instruction">Show this QR to the gate attendant</p>
+          <p class="qr-note">Show this QR to the gate attendant</p>
           <div id="qr-canvas"></div>
         </div>
       </div>
     </div>
-
-    <!-- Guest Summary -->
-    <div class="guest-summary" id="guest-summary"></div>
+    <div class="group-info" id="group-info"></div>
   </div>
 
   <script>
-    // ── Meal timing config ──
-    // Format: { start: hour (24h), end: hour (24h) }
-    const MEAL_TIMES = {
-      breakfast: { start: 7,  end: 10,  label: 'BREAKFAST' },
-      lunch:     { start: 12, end: 15,  label: 'LUNCH'     },
-      dinner:    { start: 19, end: 22,  label: 'DINNER'    }
-    };
+    // ============================================================
+    // ⚙️  EVENT CONFIGURATION — CHANGE THESE FOR YOUR EVENT
+    // ============================================================
+    const EVENT_CONFIG = {
+      // Event start and end dates (YYYY-MM-DD format)
+      // Change these to your actual event dates before the event!
+      DAY1_DATE: '2026-12-20',   // ← CHANGE THIS: First day of event
+      DAY2_DATE: '2026-12-21',   // ← CHANGE THIS: Second day of event
 
-    // Event days — set your actual event dates here
-    const EVENT_DAYS = {
-      1: '2026-12-20',  // Day 1 date (YYYY-MM-DD)
-      2: '2026-12-21'   // Day 2 date
+      // Meal timings (24-hour format)
+      // Change start and end hours to match your event schedule
+      MEALS: {
+        breakfast: { start: 7,  end: 10, label: 'BREAKFAST', class: 'breakfast' },
+        lunch:     { start: 12, end: 15, label: 'LUNCH',     class: 'lunch'     },
+        dinner:    { start: 19, end: 22, label: 'DINNER',    class: 'dinner'    }
+      }
     };
+    // ============================================================
+
+    function getTodayStr() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    function getEventDay() {
+      const today = getTodayStr();
+      if (today === EVENT_CONFIG.DAY1_DATE) return 1;
+      if (today === EVENT_CONFIG.DAY2_DATE) return 2;
+      return null;
+    }
 
     function getCurrentMeal() {
-      const now = new Date();
-      const hour = now.getHours();
-      const todayStr = now.toISOString().split('T')[0];
-
-      let day = null;
-      for (const [d, date] of Object.entries(EVENT_DAYS)) {
-        if (date === todayStr) { day = d; break; }
+      const hour = new Date().getHours();
+      for (const [key, m] of Object.entries(EVENT_CONFIG.MEALS)) {
+        if (hour >= m.start && hour < m.end) return { key, ...m };
       }
-
-      for (const [meal, t] of Object.entries(MEAL_TIMES)) {
-        if (hour >= t.start && hour < t.end) {
-          return { meal, label: t.label, day };
-        }
-      }
-      return { meal: null, label: null, day };
+      return null;
     }
 
     async function enterPortal() {
-      const pin = document.getElementById('pin-input').value.trim();
-      const errEl = document.getElementById('pin-error');
-      const btn = document.getElementById('btn-enter');
-      const pinInput = document.getElementById('pin-input');
-
+      const pin    = document.getElementById('pin-input').value.trim();
+      const errEl  = document.getElementById('pin-error');
+      const btn    = document.getElementById('btn-enter');
+      const pinInp = document.getElementById('pin-input');
       errEl.style.display = 'none';
-      pinInput.classList.remove('error');
+      pinInp.classList.remove('error');
 
       if (!/^\d{4}$/.test(pin)) {
-        pinInput.classList.add('error');
+        pinInp.classList.add('error');
         errEl.textContent = '❌ Please enter a valid 4-digit PIN.';
-        errEl.style.display = 'block';
-        return;
+        errEl.style.display = 'block'; return;
       }
-
-      if (!window._firebaseReady) { alert('Loading... try again.'); return; }
+      if (!window._firebaseReady) { alert('Loading...'); return; }
 
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span> Loading...';
 
       try {
-        const q = window._query(
-          window._collection(window._db, 'guests'),
-          window._where('pin', '==', pin)
-        );
+        const q    = window._query(window._collection(window._db,'guests'), window._where('pin','==',pin));
         const snap = await window._getDocs(q);
 
         if (snap.empty) {
-          pinInput.classList.add('error');
+          pinInp.classList.add('error');
           errEl.style.display = 'block';
-          btn.disabled = false;
-          btn.innerHTML = 'ENTER';
-          return;
+          btn.disabled = false; btn.innerHTML = 'ENTER'; return;
         }
 
-        const docData = snap.docs[0].data();
         const docId = snap.docs[0].id;
+        const g     = snap.docs[0].data();
 
         document.getElementById('pin-card').style.display = 'none';
 
-        if (!docData.approved) {
-          document.getElementById('pending-box').style.display = 'block';
-          return;
+        if (!g.approved) {
+          document.getElementById('not-approved-box').style.display = 'block';
+          btn.disabled = false; btn.innerHTML = 'ENTER'; return;
         }
 
-        // Approved — show meal screen
-        const { meal, label, day } = getCurrentMeal();
-        const total = docData.familyCount ? docData.familyCount + 1 : 1;
+        // Check event day
+        const eventDay = getEventDay();
+        const today    = getTodayStr();
+
+        if (!eventDay) {
+          const d1 = new Date(EVENT_CONFIG.DAY1_DATE);
+          const now = new Date();
+          const msgEl  = document.getElementById('not-event-day-msg');
+          const subEl  = document.getElementById('not-event-day-sub');
+          if (now < d1) {
+            msgEl.textContent = 'Event Has Not Started Yet';
+            subEl.textContent = `Event begins on ${EVENT_CONFIG.DAY1_DATE}. Please come back then!`;
+          } else {
+            msgEl.textContent = 'Event Has Ended';
+            subEl.textContent = 'Thank you for attending RKMVP Reunion 2026!';
+          }
+          document.getElementById('not-event-day-box').style.display = 'block';
+          btn.disabled = false; btn.innerHTML = 'ENTER'; return;
+        }
+
+        // Show meal screen
+        const total   = (g.familyCount || 0) + 1;
+        const meals   = g.meals || { day1:{breakfast:0,lunch:0,dinner:0}, day2:{breakfast:0,lunch:0,dinner:0} };
+        const dayKey  = `day${eventDay}`;
+        const currentMeal = getCurrentMeal();
 
         document.getElementById('meal-screen').style.display = 'block';
 
-        if (!meal) {
+        if (!currentMeal) {
           document.getElementById('outside-hours').style.display = 'block';
           document.getElementById('qr-section').style.display = 'none';
-          document.getElementById('meal-type-display').textContent = '';
-          document.getElementById('meal-day-display').textContent = '';
+          document.getElementById('meal-label-display').textContent = '';
+          document.getElementById('meal-day-tag').textContent = `Day ${eventDay}`;
         } else {
-          const mealEl = document.getElementById('meal-type-display');
-          mealEl.textContent = label;
-          mealEl.className = 'meal-type ' + meal;
-          document.getElementById('meal-day-display').textContent = day ? `Day ${day}` : 'Event Day';
+          const usedCount = (meals[dayKey] && meals[dayKey][currentMeal.key]) || 0;
+          const remaining = total - usedCount;
+
+          const labelEl = document.getElementById('meal-label-display');
+          labelEl.textContent = currentMeal.label;
+          labelEl.className   = `meal-label ${currentMeal.class}`;
+          document.getElementById('meal-day-tag').textContent = `Day ${eventDay}`;
 
           // Generate QR
           const qrData = JSON.stringify({
             guestId: docId,
-            pin: pin,
-            meal: meal,
-            day: day || '1',
-            total: total,
-            name: docData.name
+            pin:     pin,
+            meal:    currentMeal.key,
+            day:     String(eventDay),
+            total:   total,
+            name:    g.name
           });
 
           document.getElementById('qr-canvas').innerHTML = '';
           new QRCode(document.getElementById('qr-canvas'), {
-            text: qrData,
-            width: 220,
-            height: 220,
-            colorDark: '#0D2B5E',
+            text:       qrData,
+            width:      230,
+            height:     230,
+            colorDark:  '#0D2B5E',
             colorLight: '#ffffff'
           });
         }
 
-        // Guest summary
-        const meals = docData.meals || {};
-        const d1 = meals.day1 || {};
-        const d2 = meals.day2 || {};
-        document.getElementById('guest-summary').innerHTML = `
-          <strong>Name:</strong> ${docData.name}<br>
-          <strong>Batch:</strong> ${docData.batch}<br>
-          <strong>Family Members:</strong> ${docData.familyCount || 0}<br>
-          <strong>Total in Group:</strong> ${total}<br>
-          <hr style="margin:10px 0;border-color:#eee"/>
-          <strong>Day 1:</strong>
-          Breakfast <span class="meal-count">${d1.breakfast||0}/${total}</span>
-          Lunch <span class="meal-count">${d1.lunch||0}/${total}</span>
-          Dinner <span class="meal-count">${d1.dinner||0}/${total}</span><br>
-          <strong>Day 2:</strong>
-          Breakfast <span class="meal-count">${d2.breakfast||0}/${total}</span>
-          Lunch <span class="meal-count">${d2.lunch||0}/${total}</span>
-          Dinner <span class="meal-count">${d2.dinner||0}/${total}</span>
-        `;
+        // Group info + meal summary (realtime)
+        listenMealUpdates(docId, total, eventDay);
 
-      } catch(err) {
-        console.error(err);
+        btn.disabled = false; btn.innerHTML = 'ENTER';
+
+      } catch(e) {
+        console.error(e);
         alert('Something went wrong. Please try again.');
-        btn.disabled = false;
-        btn.innerHTML = 'ENTER';
+        btn.disabled = false; btn.innerHTML = 'ENTER';
       }
     }
+
+    // Realtime listener to keep meal counts updated
+    function listenMealUpdates(docId, total, eventDay) {
+      const ref = window._doc(window._db, 'guests', docId);
+      window._onSnapshot(ref, snap => {
+        if (!snap.exists()) return;
+        const g    = snap.data();
+        const meals = g.meals || { day1:{breakfast:0,lunch:0,dinner:0}, day2:{breakfast:0,lunch:0,dinner:0} };
+        const d1   = meals.day1 || {};
+        const d2   = meals.day2 || {};
+        document.getElementById('group-info').innerHTML = `
+          <strong>Name:</strong> ${g.name}<br>
+          <strong>Batch:</strong> ${g.batch}<br>
+          <strong>Family Members:</strong> ${g.familyCount || 0}<br>
+          <strong>Total in Group:</strong> ${total}
+          <hr style="margin:10px 0;border-color:#eee;border-top:1px solid #eee;"/>
+          <strong>Day 1 &nbsp;</strong>
+          Breakfast <span class="meal-count-badge">${d1.breakfast||0}/${total}</span>
+          &nbsp;Lunch <span class="meal-count-badge">${d1.lunch||0}/${total}</span>
+          &nbsp;Dinner <span class="meal-count-badge">${d1.dinner||0}/${total}</span><br>
+          <strong>Day 2 &nbsp;</strong>
+          Breakfast <span class="meal-count-badge">${d2.breakfast||0}/${total}</span>
+          &nbsp;Lunch <span class="meal-count-badge">${d2.lunch||0}/${total}</span>
+          &nbsp;Dinner <span class="meal-count-badge">${d2.dinner||0}/${total}</span>
+        `;
+      });
+    }
+
+    // Auto-load from URL param or localStorage
+    window.addEventListener('load', () => {
+      const params = new URLSearchParams(window.location.search);
+      const pin    = params.get('pin') || localStorage.getItem('rkmvp_pin') || '';
+      if (pin) {
+        document.getElementById('pin-input').value = pin;
+        enterPortal();
+      }
+    });
 
     document.getElementById('pin-input').addEventListener('keydown', e => {
       if (e.key === 'Enter') enterPortal();
     });
   </script>
-
 </body>
 </html>

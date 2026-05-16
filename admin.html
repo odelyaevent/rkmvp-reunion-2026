@@ -7,52 +7,54 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lato:wght@400;700&display=swap" rel="stylesheet"/>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs, doc, updateDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyAAW9zZmE1cEUUWLEwT1hWtY1fQoiGt_No",
-    authDomain: "rkmvp-reunion-2026.firebaseapp.com",
-    projectId: "rkmvp-reunion-2026",
-    storageBucket: "rkmvp-reunion-2026.firebasestorage.app",
-    messagingSenderId: "552260116936",
-    appId: "1:552260116936:web:5d731a1fa2746ad149e0fd"
-  };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+
+    // ── PASTE YOUR FIREBASE CONFIG HERE ──
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const db   = getFirestore(app);
     const auth = getAuth(app);
-    window._db = db; window._auth = auth;
-    window._collection = collection; window._query = query;
-    window._where = where; window._getDocs = getDocs;
-    window._doc = doc; window._updateDoc = updateDoc;
-    window._orderBy = orderBy;
-    window._signIn = signInWithEmailAndPassword;
-    window._signOut = signOut;
-    window._onAuth = onAuthStateChanged;
-    window._firebaseReady = true;
+    window._db=db; window._auth=auth;
+    window._collection=collection; window._query=query;
+    window._where=where; window._getDocs=getDocs;
+    window._doc=doc; window._updateDoc=updateDoc; window._getDoc=getDoc;
+    window._signIn=signInWithEmailAndPassword;
+    window._signOut=signOut;
+    window._firebaseReady=true;
 
     onAuthStateChanged(auth, user => {
-      if (user) { showDashboard(); }
-      else { showLogin(); }
+      if (user) showDashboard(user.email);
+      else showLogin();
     });
   </script>
+
   <style>
-    :root{--saffron:#E8560A;--gold:#FFD700;--deep-blue:#0D2B5E;--light-blue:#1A4A9E;--cream:#FDF6E3;--white:#FFFFFF;--red:#CC0000;--success:#1A7A3C;--border:#FFD70055;}
+    :root{--saffron:#E8560A;--gold:#FFD700;--deep-blue:#0D2B5E;--light-blue:#1A4A9E;--cream:#FDF6E3;--white:#FFFFFF;--red:#CC0000;--success:#1A7A3C;--border:#FFD70044;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Lato',sans-serif;background:var(--cream);min-height:100vh;padding-bottom:40px;}
     header{background:linear-gradient(135deg,var(--deep-blue),var(--light-blue));padding:16px 18px;text-align:center;border-bottom:4px solid var(--gold);}
-    header h1{font-family:'Cinzel',serif;color:var(--white);font-size:clamp(1.5rem, 6.5vw, 2.2rem);letter-spacing:0.04em;}
-    header .subtitle{color:var(--gold);font-family:'Cinzel',serif;font-size:0.85rem;margin-top:4px;letter-spacing:0.06em;}
-    .top-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#E8F0FE;border-bottom:1px solid #C5D3E8;}
-    .top-bar span{font-size:0.8rem;color:var(--deep-blue);font-weight:700;}
-    .btn-sm{padding:6px 14px;border:none;border-radius:6px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;}
+    header h1{font-family:'Cinzel',serif;color:var(--white);font-size:clamp(1.1rem,5vw,1.6rem);letter-spacing:0.04em;}
+    header .subtitle{color:var(--gold);font-family:'Cinzel',serif;font-size:0.82rem;margin-top:4px;letter-spacing:0.06em;}
+    .top-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#E8F0FE;border-bottom:1px solid #C5D3E8;}
+    .top-bar span{font-size:0.78rem;color:var(--deep-blue);font-weight:700;}
+    .btn-sm{padding:6px 14px;border:none;border-radius:6px;font-size:0.78rem;font-weight:700;cursor:pointer;}
     .btn-logout{background:var(--red);color:white;}
-    .section{display:none;}
-    /* Login */
+
+    /* LOGIN */
     #login-section{display:block;}
     .login-card{background:var(--white);margin:30px 14px;border-radius:14px;border:1.5px solid var(--border);box-shadow:0 4px 24px #0D2B5E18;overflow:hidden;}
     .card-header{background:linear-gradient(90deg,var(--deep-blue),var(--light-blue));padding:12px 18px;}
     .card-header h2{font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;letter-spacing:0.05em;}
-    .card-body{padding:24px 18px;}
+    .card-body{padding:22px 18px;}
     label{display:block;font-weight:700;color:var(--deep-blue);font-size:0.85rem;margin-bottom:5px;}
     input[type=email],input[type=password],input[type=text],input[type=number]{width:100%;padding:11px 13px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.95rem;font-family:'Lato',sans-serif;background:#F7FAFF;margin-bottom:14px;-webkit-appearance:none;}
     input:focus{outline:none;border-color:var(--light-blue);box-shadow:0 0 0 3px #1A4A9E22;}
@@ -61,64 +63,71 @@
     .err-msg{color:var(--red);font-size:0.82rem;margin-bottom:10px;display:none;font-weight:700;}
     .spinner{display:inline-block;width:16px;height:16px;border:3px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
     @keyframes spin{to{transform:rotate(360deg);}}
-    /* Dashboard */
+
+    /* DASHBOARD */
     #dashboard-section{display:none;}
-    .tabs{display:flex;background:var(--deep-blue);overflow:hidden;}
-    .tab{flex:1;padding:11px 4px;text-align:center;font-family:'Cinzel',serif;font-size:0.72rem;color:#B8CFFF;cursor:pointer;border-bottom:3px solid transparent;letter-spacing:0.03em;transition:all 0.2s;}
+    .tabs{display:flex;background:var(--deep-blue);}
+    .tab{flex:1;padding:11px 4px;text-align:center;font-family:'Cinzel',serif;font-size:0.7rem;color:#B8CFFF;cursor:pointer;border-bottom:3px solid transparent;letter-spacing:0.03em;transition:all 0.2s;}
     .tab.active{color:var(--gold);border-bottom-color:var(--gold);background:#1A4A9E;}
     .tab-content{display:none;}
     .tab-content.active{display:block;}
-    /* Search */
-    .search-box{padding:16px 14px 0;}
+
+    /* SEARCH */
+    .search-box{padding:14px 14px 0;}
     .search-row{display:flex;gap:8px;margin-bottom:10px;}
-    .search-row select{flex:1;padding:10px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.9rem;background:#F7FAFF;font-family:'Lato',sans-serif;}
-    .search-row input{flex:2;padding:10px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.9rem;background:#F7FAFF;font-family:'Lato',sans-serif;}
-    .btn-search{padding:10px 18px;background:var(--light-blue);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.85rem;cursor:pointer;white-space:nowrap;}
-    /* Guest card */
+    .search-row select{flex:1;padding:10px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.88rem;background:#F7FAFF;font-family:'Lato',sans-serif;}
+    .search-row input{flex:2;padding:10px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.88rem;background:#F7FAFF;font-family:'Lato',sans-serif;margin:0;}
+    .btn-search{padding:10px 16px;background:var(--light-blue);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;white-space:nowrap;}
+
+    /* GUEST CARD */
     .guest-card{background:var(--white);margin:10px 14px;border-radius:10px;border:1.5px solid var(--border);box-shadow:0 2px 10px #0D2B5E10;overflow:hidden;}
-    .guest-card-header{background:#F0F4FF;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E0E8F8;}
-    .guest-name{font-weight:700;color:var(--deep-blue);font-size:0.95rem;}
-    .guest-batch{font-size:0.78rem;color:#777;}
-    .status-badge{padding:3px 10px;border-radius:12px;font-size:0.72rem;font-weight:700;}
-    .status-pending{background:#FFF3CD;color:#856404;}
-    .status-approved{background:#D4EDDA;color:#155724;}
-    .guest-card-body{padding:12px 14px;}
-    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;}
-    .info-item{font-size:0.82rem;color:#444;}
-    .info-item strong{color:var(--deep-blue);display:block;font-size:0.76rem;}
-    /* Meal grid */
-    .meal-grid{margin-bottom:12px;}
-    .meal-grid-title{font-size:0.78rem;font-weight:700;color:var(--deep-blue);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;}
-    .meal-row{display:flex;gap:6px;margin-bottom:5px;align-items:center;}
-    .meal-row label{font-size:0.75rem;color:#555;margin:0;min-width:70px;font-weight:700;}
-    .meal-row input{width:55px;padding:5px 8px;border:1.5px solid #C5D3E8;border-radius:6px;font-size:0.85rem;text-align:center;margin:0;}
-    .meal-row span{font-size:0.72rem;color:#999;}
-    /* Action buttons */
-    .action-row{display:flex;gap:8px;flex-wrap:wrap;}
-    .btn-approve{flex:1;padding:9px;background:var(--success);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;min-width:100px;}
-    .btn-generate{flex:1;padding:9px;background:var(--light-blue);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;min-width:100px;}
-    .btn-save{flex:1;padding:9px;background:var(--saffron);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;min-width:100px;}
-    .btn-unapprove{flex:1;padding:9px;background:#999;color:white;border:none;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;min-width:100px;}
-    .action-msg{font-size:0.78rem;color:var(--success);font-weight:700;margin-top:6px;display:none;}
-    /* Stats */
+    .gc-header{background:#F0F4FF;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E0E8F8;}
+    .gc-name{font-weight:700;color:var(--deep-blue);font-size:0.95rem;}
+    .gc-sub{font-size:0.76rem;color:#777;margin-top:2px;}
+    .badge{padding:3px 10px;border-radius:12px;font-size:0.7rem;font-weight:700;white-space:nowrap;}
+    .badge-pending{background:#FFF3CD;color:#856404;}
+    .badge-approved{background:#D4EDDA;color:#155724;}
+    .gc-body{padding:12px 14px;}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;font-size:0.82rem;}
+    .info-item strong{color:var(--deep-blue);display:block;font-size:0.74rem;text-transform:uppercase;letter-spacing:0.03em;}
+    .edit-section{margin-bottom:12px;}
+    .edit-section label{font-size:0.78rem;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.03em;}
+    .edit-section input{margin-bottom:8px;padding:9px 12px;font-size:0.9rem;}
+
+    /* MEAL GRID */
+    .meal-title{font-size:0.76rem;font-weight:700;color:var(--deep-blue);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;}
+    .meal-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+    .meal-row label{font-size:0.78rem;color:#555;margin:0;min-width:74px;font-weight:700;}
+    .meal-row input{width:52px;padding:5px 8px;border:1.5px solid #C5D3E8;border-radius:6px;font-size:0.88rem;text-align:center;margin:0;}
+    .meal-row .of{font-size:0.72rem;color:#999;}
+
+    /* ACTION BUTTONS */
+    .action-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:6px;}
+    .abtn{flex:1;padding:9px 6px;border:none;border-radius:8px;font-weight:700;font-size:0.78rem;cursor:pointer;min-width:90px;font-family:'Lato',sans-serif;}
+    .abtn-generate{background:var(--light-blue);color:white;}
+    .abtn-approve{background:var(--success);color:white;}
+    .abtn-unapprove{background:#888;color:white;}
+    .abtn-save{background:var(--saffron);color:white;}
+    .abtn-hide{background:#555;color:white;}
+    .action-msg{font-size:0.78rem;font-weight:700;margin-top:6px;display:none;padding:6px 10px;border-radius:6px;}
+    .action-msg.ok{background:#D4EDDA;color:#155724;}
+    .action-msg.err{background:#F8D7DA;color:#721C24;}
+
+    /* STATS */
     .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;}
-    .stat-card{background:var(--white);border-radius:10px;border:1.5px solid var(--border);padding:14px;text-align:center;}
-    .stat-num{font-family:'Cinzel',serif;font-size:1.8rem;font-weight:900;color:var(--deep-blue);}
-    .stat-label{font-size:0.75rem;color:#777;margin-top:4px;}
-    /* All guests list */
+    .stat-card{background:var(--white);border-radius:10px;border:1.5px solid var(--border);padding:16px;text-align:center;}
+    .stat-num{font-family:'Cinzel',serif;font-size:2rem;font-weight:900;color:var(--deep-blue);}
+    .stat-label{font-size:0.74rem;color:#777;margin-top:4px;}
+
+    /* ALL GUESTS */
     .filter-row{padding:10px 14px 0;display:flex;gap:8px;}
     .filter-row select{flex:1;padding:9px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.85rem;background:#F7FAFF;font-family:'Lato',sans-serif;}
-    .list-count{padding:6px 14px;font-size:0.8rem;color:#777;}
-    /* Generate QR overlay */
-    .qr-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#000000CC;z-index:100;align-items:center;justify-content:center;}
-    .qr-overlay.active{display:flex;}
-    .qr-popup{background:white;border-radius:14px;padding:24px 20px;text-align:center;max-width:300px;width:90%;border:3px solid var(--gold);}
-    .qr-popup h3{font-family:'Cinzel',serif;color:var(--deep-blue);font-size:1rem;margin-bottom:8px;}
-    .qr-popup p{font-size:0.82rem;color:#555;margin-bottom:16px;}
-    #admin-qr-canvas{display:inline-block;}
-    .amount-red{font-size:1.2rem;font-weight:900;color:var(--red);font-family:'Cinzel',serif;margin:10px 0;}
-    .btn-close-qr{margin-top:14px;padding:9px 24px;background:var(--red);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;}
-    .no-results{text-align:center;padding:30px 14px;color:#888;font-size:0.9rem;}
+    .list-count{padding:6px 14px;font-size:0.78rem;color:#777;}
+    .no-results{text-align:center;padding:30px 14px;color:#888;font-size:0.88rem;}
+
+    /* EVENT CONFIG INFO */
+    .config-box{margin:14px 14px 0;background:var(--white);border-radius:10px;border:1.5px solid var(--border);padding:14px 16px;font-size:0.82rem;color:#444;line-height:1.8;}
+    .config-box strong{color:var(--deep-blue);}
   </style>
 </head>
 <body>
@@ -129,11 +138,11 @@
 </header>
 
 <!-- LOGIN -->
-<div id="login-section" class="section" style="display:block;">
+<div id="login-section">
   <div class="login-card">
     <div class="card-header"><h2>Admin Login</h2></div>
     <div class="card-body">
-      <div class="err-msg" id="login-err">Invalid email or password.</div>
+      <div class="err-msg" id="login-err">❌ Invalid email or password.</div>
       <label>Email</label>
       <input type="email" id="admin-email" placeholder="admin@email.com"/>
       <label>Password</label>
@@ -144,7 +153,7 @@
 </div>
 
 <!-- DASHBOARD -->
-<div id="dashboard-section" class="section">
+<div id="dashboard-section">
   <div class="top-bar">
     <span id="admin-email-display">Admin</span>
     <button class="btn-sm btn-logout" onclick="adminLogout()">LOGOUT</button>
@@ -152,7 +161,7 @@
 
   <div class="tabs">
     <div class="tab active" onclick="switchTab('search')">🔍 Search</div>
-    <div class="tab" onclick="switchTab('all')">👥 All Guests</div>
+    <div class="tab" onclick="switchTab('all')">👥 Guests</div>
     <div class="tab" onclick="switchTab('stats')">📊 Stats</div>
   </div>
 
@@ -165,7 +174,7 @@
           <option value="name">Name</option>
           <option value="batch">Batch</option>
         </select>
-        <input type="text" id="search-val" placeholder="Search..."/>
+        <input type="text" id="search-val" placeholder="Search value..."/>
         <button class="btn-search" onclick="searchGuest()">GO</button>
       </div>
     </div>
@@ -187,28 +196,34 @@
 
   <!-- STATS TAB -->
   <div id="tab-stats" class="tab-content">
-    <div class="stats-grid" id="stats-grid">
+    <div class="config-box" id="event-config-display"></div>
+    <div class="stats-grid">
       <div class="stat-card"><div class="stat-num" id="st-total">—</div><div class="stat-label">Total Registered</div></div>
       <div class="stat-card"><div class="stat-num" id="st-approved">—</div><div class="stat-label">Approved</div></div>
       <div class="stat-card"><div class="stat-num" id="st-pending">—</div><div class="stat-label">Pending</div></div>
-      <div class="stat-card"><div class="stat-num" id="st-family">—</div><div class="stat-label">Total People</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-people">—</div><div class="stat-label">Total People</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-amount">—</div><div class="stat-label">Total Amount (Rs.)</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-family">—</div><div class="stat-label">With Family</div></div>
     </div>
   </div>
 </div>
 
-<!-- BANK QR POPUP -->
-<div class="qr-overlay" id="qr-overlay" onclick="closeQR()">
-  <div class="qr-popup" onclick="event.stopPropagation()">
-    <h3 id="qr-guest-name"></h3>
-    <p id="qr-guest-detail"></p>
-    <img src="bank-qr.png" style="width:200px;height:200px;border:3px solid var(--gold);border-radius:8px;" alt="Bank QR"/>
-    <div class="amount-red" id="qr-popup-amount"></div>
-    <button class="btn-close-qr" onclick="closeQR()">CLOSE</button>
-  </div>
-</div>
-
 <script>
-  // ── Auth ──
+  // ============================================================
+  // ⚙️  EVENT CONFIGURATION — CHANGE THESE FOR YOUR EVENT
+  // ============================================================
+  const EVENT_CONFIG = {
+    DAY1_DATE: '2026-12-20',   // ← CHANGE THIS: First day of event
+    DAY2_DATE: '2026-12-21',   // ← CHANGE THIS: Second day of event
+    MEALS: {
+      breakfast: { start: 7,  end: 10 },
+      lunch:     { start: 12, end: 15 },
+      dinner:    { start: 19, end: 22 }
+    }
+  };
+  // ============================================================
+
+  // ── AUTH ──
   function adminLogin() {
     const email = document.getElementById('admin-email').value.trim();
     const pass  = document.getElementById('admin-pass').value.trim();
@@ -217,179 +232,152 @@
     err.style.display = 'none';
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Logging in...';
-    window._signIn(window._auth, email, pass)
-      .then(() => {})
-      .catch(() => {
-        err.style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = 'LOGIN';
-      });
+    window._signIn(window._auth, email, pass).catch(() => {
+      err.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'LOGIN';
+    });
   }
-  function adminLogout() {
-    window._signOut(window._auth);
-  }
+
+  function adminLogout() { window._signOut(window._auth); }
+
   function showLogin() {
     document.getElementById('login-section').style.display = 'block';
     document.getElementById('dashboard-section').style.display = 'none';
   }
-  function showDashboard() {
+
+  function showDashboard(email) {
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('dashboard-section').style.display = 'block';
-    const u = window._auth.currentUser;
-    if (u) document.getElementById('admin-email-display').textContent = u.email;
+    document.getElementById('admin-email-display').textContent = email;
     loadStats();
   }
 
-  // ── Tabs ──
+  // ── TABS ──
   function switchTab(name) {
-    document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     const tabs = ['search','all','stats'];
-    const idx = tabs.indexOf(name);
-    document.querySelectorAll('.tab')[idx].classList.add('active');
+    document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
     document.getElementById('tab-'+name).classList.add('active');
-    if (name === 'all') loadAllGuests();
+    if (name === 'all')   loadAllGuests();
     if (name === 'stats') loadStats();
   }
 
-  // ── Build Guest Card HTML ──
-  function buildGuestCard(docId, g) {
-    const total = (g.familyCount || 0) + 1;
-    const m = g.meals || { day1:{breakfast:0,lunch:0,dinner:0}, day2:{breakfast:0,lunch:0,dinner:0} };
+  // ── BUILD GUEST CARD ──
+  function buildCard(docId, g) {
+    const total   = (g.familyCount || 0) + 1;
+    const m       = g.meals || { day1:{breakfast:0,lunch:0,dinner:0}, day2:{breakfast:0,lunch:0,dinner:0} };
     const d1 = m.day1 || {}; const d2 = m.day2 || {};
+    const approved    = g.approved || false;
+    const qrVisible   = g.bankQrVisible || false;
     return `
     <div class="guest-card" id="gc-${docId}">
-      <div class="guest-card-header">
+      <div class="gc-header">
         <div>
-          <div class="guest-name">${g.name}</div>
-          <div class="guest-batch">Batch: ${g.batch} &nbsp;|&nbsp; PIN: ${g.pin} &nbsp;|&nbsp; Family: ${g.familyCount||0}</div>
+          <div class="gc-name">${g.name}</div>
+          <div class="gc-sub">Batch: ${g.batch} &nbsp;|&nbsp; PIN: <strong>${g.pin}</strong> &nbsp;|&nbsp; Family: ${g.familyCount||0}</div>
         </div>
-        <div class="status-badge ${g.approved ? 'status-approved':'status-pending'}" id="badge-${docId}">
-          ${g.approved ? '✅ Approved':'⏳ Pending'}
-        </div>
+        <span class="badge ${approved?'badge-approved':'badge-pending'}" id="badge-${docId}">
+          ${approved?'✅ Approved':'⏳ Pending'}
+        </span>
       </div>
-      <div class="guest-card-body">
+      <div class="gc-body">
         <div class="info-grid">
-          <div class="info-item"><strong>Amount</strong>Rs. ${g.amount || (10+(g.familyCount||0)*5)}/-</div>
+          <div class="info-item"><strong>Amount</strong>Rs. ${g.amount||(10+(g.familyCount||0)*5)}/-</div>
           <div class="info-item"><strong>Total People</strong>${total}</div>
-          <div class="info-item"><strong>Registered</strong>${g.registeredAt ? g.registeredAt.split('T')[0] : '—'}</div>
-          <div class="info-item"><strong>Status</strong>${g.approved ? 'Approved':'Pending'}</div>
+          <div class="info-item"><strong>Bank QR</strong>${qrVisible?'🟢 Visible':'⚫ Hidden'}</div>
+          <div class="info-item"><strong>Registered</strong>${(g.registeredAt||'').split('T')[0]||'—'}</div>
         </div>
+
         <!-- Edit fields -->
-        <div style="margin-bottom:10px;">
-          <label>Name</label>
-          <input type="text" id="edit-name-${docId}" value="${g.name}" style="margin-bottom:6px;"/>
+        <div class="edit-section">
+          <label>Full Name</label>
+          <input type="text" id="e-name-${docId}" value="${g.name}"/>
           <label>Batch Year</label>
-          <input type="number" id="edit-batch-${docId}" value="${g.batch}" style="margin-bottom:6px;"/>
+          <input type="number" id="e-batch-${docId}" value="${g.batch}"/>
           <label>Family Members</label>
-          <input type="number" id="edit-family-${docId}" value="${g.familyCount||0}" min="0" style="margin-bottom:0;"/>
+          <input type="number" id="e-family-${docId}" value="${g.familyCount||0}" min="0"/>
         </div>
+
         <!-- Meal attendance -->
-        <div class="meal-grid">
-          <div class="meal-grid-title">Day 1 Attendance (out of ${total})</div>
-          <div class="meal-row"><label>Breakfast</label><input type="number" id="d1b-${docId}" value="${d1.breakfast||0}" min="0" max="${total}"/><span>/ ${total}</span></div>
-          <div class="meal-row"><label>Lunch</label><input type="number" id="d1l-${docId}" value="${d1.lunch||0}" min="0" max="${total}"/><span>/ ${total}</span></div>
-          <div class="meal-row"><label>Dinner</label><input type="number" id="d1d-${docId}" value="${d1.dinner||0}" min="0" max="${total}"/><span>/ ${total}</span></div>
-        </div>
-        <div class="meal-grid">
-          <div class="meal-grid-title">Day 2 Attendance (out of ${total})</div>
-          <div class="meal-row"><label>Breakfast</label><input type="number" id="d2b-${docId}" value="${d2.breakfast||0}" min="0" max="${total}"/><span>/ ${total}</span></div>
-          <div class="meal-row"><label>Lunch</label><input type="number" id="d2l-${docId}" value="${d2.lunch||0}" min="0" max="${total}"/><span>/ ${total}</span></div>
-          <div class="meal-row"><label>Dinner</label><input type="number" id="d2d-${docId}" value="${d2.dinner||0}" min="0" max="${total}"/><span>/ ${total}</span></div>
+        <div class="meal-title">Day 1 Attendance</div>
+        <div class="meal-row"><label>Breakfast</label><input type="number" id="d1b-${docId}" value="${d1.breakfast||0}" min="0" max="${total}"/><span class="of">/ ${total}</span></div>
+        <div class="meal-row"><label>Lunch</label><input type="number" id="d1l-${docId}" value="${d1.lunch||0}" min="0" max="${total}"/><span class="of">/ ${total}</span></div>
+        <div class="meal-row" style="margin-bottom:12px;"><label>Dinner</label><input type="number" id="d1d-${docId}" value="${d1.dinner||0}" min="0" max="${total}"/><span class="of">/ ${total}</span></div>
+
+        <div class="meal-title">Day 2 Attendance</div>
+        <div class="meal-row"><label>Breakfast</label><input type="number" id="d2b-${docId}" value="${d2.breakfast||0}" min="0" max="${total}"/><span class="of">/ ${total}</span></div>
+        <div class="meal-row"><label>Lunch</label><input type="number" id="d2l-${docId}" value="${d2.lunch||0}" min="0" max="${total}"/><span class="of">/ ${total}</span></div>
+        <div class="meal-row" style="margin-bottom:12px;"><label>Dinner</label><input type="number" id="d2d-${docId}" value="${d2.dinner||0}" min="0" max="${total}"/><span class="of">/ ${total}</span></div>
+
+        <!-- Action buttons -->
+        <div class="action-row">
+          <button class="abtn abtn-generate" onclick="generateBankQR('${docId}')">💳 Generate QR</button>
+          <button class="abtn abtn-hide" onclick="hideBankQR('${docId}')" ${!qrVisible?'style="opacity:0.4"':''}>🙈 Hide QR</button>
         </div>
         <div class="action-row">
-          <button class="btn-generate" onclick="generateQR('${docId}','${g.name}',${g.amount||(10+(g.familyCount||0)*5)},${g.familyCount||0})">💳 Generate QR</button>
-          <button class="btn-approve" id="appbtn-${docId}" onclick="toggleApprove('${docId}',${g.approved})">${g.approved?'❌ Unapprove':'✅ Approve'}</button>
+          <button class="abtn ${approved?'abtn-unapprove':'abtn-approve'}" id="appbtn-${docId}" onclick="toggleApprove('${docId}',${approved})">
+            ${approved?'❌ Unapprove':'✅ Approve'}
+          </button>
+          <button class="abtn abtn-save" onclick="saveGuest('${docId}')">💾 Save Changes</button>
         </div>
-        <div class="action-row" style="margin-top:8px;">
-          <button class="btn-save" onclick="saveGuest('${docId}')">💾 Save Changes</button>
-        </div>
-        <div class="action-msg" id="msg-${docId}">✅ Saved successfully!</div>
+        <div class="action-msg" id="msg-${docId}"></div>
       </div>
     </div>`;
   }
 
-  // ── Search ──
-  async function searchGuest() {
-    if (!window._firebaseReady) return;
-    const type = document.getElementById('search-type').value;
-    const val  = document.getElementById('search-val').value.trim();
-    const res  = document.getElementById('search-results');
-    if (!val) return;
-    res.innerHTML = '<p style="padding:14px;color:#888;font-size:0.85rem;">Searching...</p>';
-    try {
-      let q;
-      if (type === 'pin')   q = window._query(window._collection(window._db,'guests'), window._where('pin','==',val));
-      else if (type === 'batch') q = window._query(window._collection(window._db,'guests'), window._where('batch','==',parseInt(val)));
-      else q = window._query(window._collection(window._db,'guests'), window._where('name','>=',val), window._where('name','<=',val+'\uf8ff'));
-      const snap = await window._getDocs(q);
-      if (snap.empty) { res.innerHTML = '<p class="no-results">No guest found.</p>'; return; }
-      res.innerHTML = '';
-      snap.docs.forEach(d => { res.innerHTML += buildGuestCard(d.id, d.data()); });
-    } catch(e) { console.error(e); res.innerHTML = '<p class="no-results">Error. Try again.</p>'; }
+  function showMsg(docId, text, type) {
+    const el = document.getElementById('msg-'+docId);
+    el.textContent = text;
+    el.className = `action-msg ${type}`;
+    el.style.display = 'block';
+    setTimeout(() => el.style.display='none', 3000);
   }
 
-  // ── All Guests ──
-  async function loadAllGuests() {
-    if (!window._firebaseReady) return;
-    const filter = document.getElementById('filter-status').value;
-    const list   = document.getElementById('all-guests-list');
-    list.innerHTML = '<p style="padding:14px;color:#888;font-size:0.85rem;">Loading...</p>';
+  // ── GENERATE BANK QR (pushes to guest screen instantly) ──
+  async function generateBankQR(docId) {
     try {
-      const snap = await window._getDocs(window._collection(window._db,'guests'));
-      let docs = snap.docs;
-      if (filter === 'pending')  docs = docs.filter(d => !d.data().approved);
-      if (filter === 'approved') docs = docs.filter(d => d.data().approved);
-      document.getElementById('list-count').textContent = `Showing ${docs.length} guest(s)`;
-      if (!docs.length) { list.innerHTML = '<p class="no-results">No guests found.</p>'; return; }
-      list.innerHTML = '';
-      docs.forEach(d => { list.innerHTML += buildGuestCard(d.id, d.data()); });
-    } catch(e) { console.error(e); list.innerHTML = '<p class="no-results">Error loading guests.</p>'; }
+      await window._updateDoc(window._doc(window._db,'guests',docId), { bankQrVisible: true });
+      showMsg(docId, '✅ Bank QR is now visible on guest screen!', 'ok');
+      // Refresh card
+      const snap = await window._getDoc(window._doc(window._db,'guests',docId));
+      if (snap.exists()) refreshCard(docId, snap.data());
+    } catch(e) { showMsg(docId, '❌ Error. Try again.', 'err'); }
   }
 
-  // ── Stats ──
-  async function loadStats() {
-    if (!window._firebaseReady) return;
+  // ── HIDE BANK QR ──
+  async function hideBankQR(docId) {
     try {
-      const snap = await window._getDocs(window._collection(window._db,'guests'));
-      let total=0, approved=0, pending=0, people=0;
-      snap.docs.forEach(d => {
-        const g = d.data(); total++;
-        if (g.approved) approved++; else pending++;
-        people += (g.familyCount||0) + 1;
-      });
-      document.getElementById('st-total').textContent = total;
-      document.getElementById('st-approved').textContent = approved;
-      document.getElementById('st-pending').textContent = pending;
-      document.getElementById('st-family').textContent = people;
-    } catch(e) { console.error(e); }
+      await window._updateDoc(window._doc(window._db,'guests',docId), { bankQrVisible: false });
+      showMsg(docId, '✅ Bank QR hidden from guest screen.', 'ok');
+    } catch(e) { showMsg(docId, '❌ Error. Try again.', 'err'); }
   }
 
-  // ── Toggle Approve ──
-  async function toggleApprove(docId, currentState) {
-    if (!window._firebaseReady) return;
-    const newState = !currentState;
+  // ── TOGGLE APPROVE ──
+  async function toggleApprove(docId, current) {
+    const newVal = !current;
     try {
-      await window._updateDoc(window._doc(window._db,'guests',docId), { approved: newState });
-      document.getElementById('badge-'+docId).className = `status-badge ${newState?'status-approved':'status-pending'}`;
-      document.getElementById('badge-'+docId).textContent = newState ? '✅ Approved' : '⏳ Pending';
-      document.getElementById('appbtn-'+docId).textContent = newState ? '❌ Unapprove' : '✅ Approve';
-      document.getElementById('appbtn-'+docId).onclick = () => toggleApprove(docId, newState);
-      const msg = document.getElementById('msg-'+docId);
-      msg.textContent = newState ? '✅ Guest Approved!' : '✅ Approval Removed!';
-      msg.style.display = 'block';
-      setTimeout(() => msg.style.display = 'none', 2500);
-    } catch(e) { console.error(e); alert('Error. Try again.'); }
+      // When approving — also hide bank QR (payment done)
+      const update = { approved: newVal };
+      if (newVal) update.bankQrVisible = false;
+      await window._updateDoc(window._doc(window._db,'guests',docId), update);
+      document.getElementById('badge-'+docId).className = `badge ${newVal?'badge-approved':'badge-pending'}`;
+      document.getElementById('badge-'+docId).textContent = newVal?'✅ Approved':'⏳ Pending';
+      const btn = document.getElementById('appbtn-'+docId);
+      btn.textContent = newVal?'❌ Unapprove':'✅ Approve';
+      btn.className   = `abtn ${newVal?'abtn-unapprove':'abtn-approve'}`;
+      btn.onclick     = () => toggleApprove(docId, newVal);
+      showMsg(docId, newVal?'✅ Guest approved! Redirecting to meal portal...':'✅ Approval removed.', 'ok');
+    } catch(e) { showMsg(docId, '❌ Error. Try again.', 'err'); }
   }
 
-  // ── Save Guest ──
+  // ── SAVE GUEST DETAILS ──
   async function saveGuest(docId) {
-    if (!window._firebaseReady) return;
-    const name   = document.getElementById('edit-name-'+docId).value.trim();
-    const batch  = parseInt(document.getElementById('edit-batch-'+docId).value);
-    const family = parseInt(document.getElementById('edit-family-'+docId).value) || 0;
-    const amount = 10 + (family * 5);
-    const meals = {
+    const name   = document.getElementById('e-name-'+docId).value.trim();
+    const batch  = parseInt(document.getElementById('e-batch-'+docId).value);
+    const family = parseInt(document.getElementById('e-family-'+docId).value) || 0;
+    const amount = 10 + family * 5;
+    const meals  = {
       day1: {
         breakfast: parseInt(document.getElementById('d1b-'+docId).value)||0,
         lunch:     parseInt(document.getElementById('d1l-'+docId).value)||0,
@@ -402,31 +390,89 @@
       }
     };
     try {
-      await window._updateDoc(window._doc(window._db,'guests',docId), { name, batch, familyCount: family, amount, meals });
-      const msg = document.getElementById('msg-'+docId);
-      msg.textContent = '✅ Saved successfully!';
-      msg.style.display = 'block';
-      setTimeout(() => msg.style.display = 'none', 2500);
-    } catch(e) { console.error(e); alert('Error saving. Try again.'); }
+      await window._updateDoc(window._doc(window._db,'guests',docId), { name, batch, familyCount:family, amount, meals });
+      showMsg(docId, '✅ Changes saved successfully!', 'ok');
+    } catch(e) { showMsg(docId, '❌ Error saving. Try again.', 'err'); }
   }
 
-  // ── Generate QR (show bank QR popup) ──
-  function generateQR(docId, name, amount, family) {
-    document.getElementById('qr-guest-name').textContent = name;
-    document.getElementById('qr-guest-detail').textContent = `Family: ${family} | Total People: ${family+1}`;
-    document.getElementById('qr-popup-amount').textContent = `Amount: Rs. ${amount}/-`;
-    document.getElementById('qr-overlay').classList.add('active');
-  }
-  function closeQR() {
-    document.getElementById('qr-overlay').classList.remove('active');
+  function refreshCard(docId, g) {
+    const el = document.getElementById('gc-'+docId);
+    if (el) el.outerHTML = buildCard(docId, g);
   }
 
-  // Enter key on search
+  // ── SEARCH ──
+  async function searchGuest() {
+    if (!window._firebaseReady) return;
+    const type = document.getElementById('search-type').value;
+    const val  = document.getElementById('search-val').value.trim();
+    const res  = document.getElementById('search-results');
+    if (!val) return;
+    res.innerHTML = '<p style="padding:14px;color:#888;font-size:0.85rem;">Searching...</p>';
+    try {
+      let q;
+      if      (type === 'pin')   q = window._query(window._collection(window._db,'guests'), window._where('pin','==',val));
+      else if (type === 'batch') q = window._query(window._collection(window._db,'guests'), window._where('batch','==',parseInt(val)));
+      else                       q = window._query(window._collection(window._db,'guests'), window._where('name','>=',val), window._where('name','<=',val+'\uf8ff'));
+      const snap = await window._getDocs(q);
+      if (snap.empty) { res.innerHTML = '<p class="no-results">No guest found.</p>'; return; }
+      res.innerHTML = '';
+      snap.docs.forEach(d => res.innerHTML += buildCard(d.id, d.data()));
+    } catch(e) { console.error(e); res.innerHTML = '<p class="no-results">Error. Try again.</p>'; }
+  }
+
+  // ── ALL GUESTS ──
+  async function loadAllGuests() {
+    if (!window._firebaseReady) return;
+    const filter = document.getElementById('filter-status').value;
+    const list   = document.getElementById('all-guests-list');
+    list.innerHTML = '<p style="padding:14px;color:#888;font-size:0.85rem;">Loading...</p>';
+    try {
+      const snap = await window._getDocs(window._collection(window._db,'guests'));
+      let docs = snap.docs;
+      if (filter === 'pending')  docs = docs.filter(d => !d.data().approved);
+      if (filter === 'approved') docs = docs.filter(d =>  d.data().approved);
+      document.getElementById('list-count').textContent = `Showing ${docs.length} guest(s)`;
+      if (!docs.length) { list.innerHTML = '<p class="no-results">No guests found.</p>'; return; }
+      list.innerHTML = '';
+      docs.forEach(d => list.innerHTML += buildCard(d.id, d.data()));
+    } catch(e) { list.innerHTML = '<p class="no-results">Error loading.</p>'; }
+  }
+
+  // ── STATS ──
+  async function loadStats() {
+    if (!window._firebaseReady) return;
+    // Show event config
+    document.getElementById('event-config-display').innerHTML = `
+      <strong>📅 Event Day 1:</strong> ${EVENT_CONFIG.DAY1_DATE}<br>
+      <strong>📅 Event Day 2:</strong> ${EVENT_CONFIG.DAY2_DATE}<br>
+      <strong>🍳 Breakfast:</strong> ${EVENT_CONFIG.MEALS.breakfast.start}:00 – ${EVENT_CONFIG.MEALS.breakfast.end}:00 &nbsp;
+      <strong>🍽 Lunch:</strong> ${EVENT_CONFIG.MEALS.lunch.start}:00 – ${EVENT_CONFIG.MEALS.lunch.end}:00 &nbsp;
+      <strong>🌙 Dinner:</strong> ${EVENT_CONFIG.MEALS.dinner.start}:00 – ${EVENT_CONFIG.MEALS.dinner.end}:00
+    `;
+    try {
+      const snap = await window._getDocs(window._collection(window._db,'guests'));
+      let total=0,approved=0,pending=0,people=0,amount=0,withFamily=0;
+      snap.docs.forEach(d => {
+        const g = d.data(); total++;
+        if (g.approved) approved++; else pending++;
+        people += (g.familyCount||0)+1;
+        amount += g.amount||(10+(g.familyCount||0)*5);
+        if ((g.familyCount||0) > 0) withFamily++;
+      });
+      document.getElementById('st-total').textContent    = total;
+      document.getElementById('st-approved').textContent = approved;
+      document.getElementById('st-pending').textContent  = pending;
+      document.getElementById('st-people').textContent   = people;
+      document.getElementById('st-amount').textContent   = amount;
+      document.getElementById('st-family').textContent   = withFamily;
+    } catch(e) { console.error(e); }
+  }
+
+  // Enter key
   document.addEventListener('DOMContentLoaded', () => {
-    const sv = document.getElementById('search-val');
-    if (sv) sv.addEventListener('keydown', e => { if(e.key==='Enter') searchGuest(); });
+    document.getElementById('search-val')?.addEventListener('keydown', e => { if(e.key==='Enter') searchGuest(); });
+    document.getElementById('admin-pass')?.addEventListener('keydown', e => { if(e.key==='Enter') adminLogin(); });
   });
 </script>
-
 </body>
 </html>
