@@ -203,10 +203,18 @@ const firebaseConfig = {
     window._signOut(window._auth);
   }
 
-  function showLogin() {
-    document.getElementById('login-section').style.display = 'block';
-    document.getElementById('scanner-section').style.display = 'none';
-  }
+function showLogin() {
+  document.getElementById('login-section').style.display = 'block';
+  document.getElementById('dashboard-section').style.display = 'none';
+  // Reset login button
+  const btn = document.getElementById('btn-login');
+  btn.disabled = false;
+  btn.textContent = 'LOGIN';
+  // Clear fields
+  document.getElementById('admin-email').value = '';
+  document.getElementById('admin-pass').value = '';
+  document.getElementById('login-err').style.display = 'none';
+}
 
   function showScanner(email) {
     document.getElementById('login-section').style.display = 'none';
