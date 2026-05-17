@@ -342,6 +342,10 @@ const firebaseConfig = {
     document.getElementById('return-pin').addEventListener('keydown', e => {
       if (e.key === 'Enter') enterWithPin();
     });
+    function resetRegistration() {
+      localStorage.removeItem('rkmvp_pin');
+      location.reload();
+    }
   </script>
 </body>
 </html>
