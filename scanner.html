@@ -174,14 +174,16 @@ const firebaseConfig = {
   let pendingEntry = null;
   let entryCount   = 1;
   let maxCount     = 1;
-  let scanOk       = 0;
-  let scanFail     = 0;
+  let scanOk   = parseInt(localStorage.getItem('scanOk'))  || 0;
+  let scanFail = parseInt(localStorage.getItem('scanFail')) || 0;
 
-  function updateScanStats() {
-    document.getElementById('scan-count-ok').textContent    = scanOk;
-    document.getElementById('scan-count-fail').textContent  = scanFail;
-    document.getElementById('scan-count-total').textContent = scanOk + scanFail;
-  }
+function updateScanStats() {
+  localStorage.setItem('scanOk',   scanOk);
+  localStorage.setItem('scanFail', scanFail);
+  document.getElementById('scan-count-ok').textContent    = scanOk;
+  document.getElementById('scan-count-fail').textContent  = scanFail;
+  document.getElementById('scan-count-total').textContent = scanOk + scanFail;
+}
 
   // ── AUTH ──
   function attLogin() {
@@ -225,12 +227,13 @@ function showLogin() {
   document.getElementById('login-err').style.display = 'none';
 }
 
-  function showScanner(email) {
-    document.getElementById('login-section').style.display = 'none';
-    document.getElementById('scanner-section').style.display = 'block';
-    document.getElementById('att-email-display').textContent = email;
-    startScanner();
-  }
+function showScanner(email) {
+  document.getElementById('login-section').style.display = 'none';
+  document.getElementById('scanner-section').style.display = 'block';
+  document.getElementById('att-email-display').textContent = email;
+  updateScanStats();
+  startScanner();
+}
 
   function startScanner() {
     if (scanner) return;
