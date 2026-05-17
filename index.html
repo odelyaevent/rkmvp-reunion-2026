@@ -112,29 +112,29 @@ const firebaseConfig = {
     <div class="card-body">
       <div class="field">
         <label for="batch">Batch No (Year)<span class="req">*</span></label>
-        <input type="number" id="batch" placeholder="e.g. 1995" min="1950" max="2025"/>
+        <input type="number" id="batch" placeholder="e.g. 1995" min="1950" max="2025" autocomplete="off"/>
         <div class="field-error" id="err-batch">Please enter a valid batch year (1950–2025).</div>
       </div>
       <div class="field">
         <label for="name">Full Name<span class="req">*</span></label>
-        <input type="text" id="name" placeholder="Enter your full name"/>
+        <input type="text" id="name" placeholder="Enter your full name" autocomplete="off"/>
         <div class="field-error" id="err-name">Please enter your name.</div>
       </div>
       <div class="field">
         <label for="family">No. of Family Members</label>
-        <input type="number" id="family" placeholder="0" min="0" max="20" value="0"/>
+        <input type="number" id="family" placeholder="0" min="0" max="20" value="0" autocomplete="off"/>
         <div class="field-note">Leave as 0 if attending alone. Each family member: Rs. 5/-</div>
       </div>
       <div class="divider"></div>
       <div class="field">
         <label for="pin">Create Security PIN<span class="req">*</span></label>
-        <input type="password" id="pin" placeholder="4-digit PIN" maxlength="4" inputmode="numeric"/>
+        <input type="password" id="pin" placeholder="4-digit PIN" maxlength="4" inputmode="numeric" autocomplete="off"/>
         <div class="field-note">4 digits. No serial (1234) or repeated (1111). Must be unique.</div>
         <div class="field-error" id="err-pin">Invalid or already taken PIN.</div>
       </div>
       <div class="field">
         <label for="pin2">Confirm Security PIN<span class="req">*</span></label>
-        <input type="password" id="pin2" placeholder="Re-enter PIN" maxlength="4" inputmode="numeric"/>
+        <input type="password" id="pin2" placeholder="Re-enter PIN" maxlength="4" inputmode="numeric" autocomplete="off"/>
         <div class="field-error" id="err-pin2">PINs do not match.</div>
       </div>
       <div class="divider"></div>
