@@ -305,31 +305,66 @@ QRCode.toCanvas(canvas, qrData, {
     }
 
     // Realtime listener to keep meal counts updated
-    function listenMealUpdates(docId, total, eventDay) {
-      const ref = window._doc(window._db, 'guests', docId);
-      window._onSnapshot(ref, snap => {
-        if (!snap.exists()) return;
-        const g    = snap.data();
-        const meals = g.meals || { day1:{breakfast:0,lunch:0,dinner:0}, day2:{breakfast:0,lunch:0,dinner:0} };
-        const d1   = meals.day1 || {};
-        const d2   = meals.day2 || {};
-        document.getElementById('group-info').innerHTML = `
-          <strong>Name:</strong> ${g.name}<br>
-          <strong>Batch:</strong> ${g.batch}<br>
-          <strong>Family Members:</strong> ${g.familyCount || 0}<br>
-          <strong>Total in Group:</strong> ${total}
-          <hr style="margin:10px 0;border-color:#eee;border-top:1px solid #eee;"/>
-          <strong>Day 1 &nbsp;</strong>
-          Breakfast <span class="meal-count-badge">${d1.breakfast||0}/${total}</span>
-          &nbsp;Lunch <span class="meal-count-badge">${d1.lunch||0}/${total}</span>
-          &nbsp;Dinner <span class="meal-count-badge">${d1.dinner||0}/${total}</span><br>
-          <strong>Day 2 &nbsp;</strong>
-          Breakfast <span class="meal-count-badge">${d2.breakfast||0}/${total}</span>
-          &nbsp;Lunch <span class="meal-count-badge">${d2.lunch||0}/${total}</span>
-          &nbsp;Dinner <span class="meal-count-badge">${d2.dinner||0}/${total}</span>
-        `;
-      });
+function listenMealUpdates(docId, total, eventDay) {
+  const ref = window._doc(window._db, 'guests', docId);
+  window._onSnapshot(ref, snap => {
+    if (!snap.exists()) return;
+    const g     = snap.data();
+    const meals = g.meals || { day1:{breakfast:0,lunch:0,dinner:0}, day2:{breakfast:0,lunch:0,dinner:0} };
+    const d1    = meals.day1 || {};
+    const d2    = meals.day2 || {};
+    const dayKey      = `day${eventDay}`;
+    const currentMeal = getCurrentMeal();
+
+    // Check if current meal is fully used
+    if (currentMeal) {
+      const used = (meals[dayKey] && meals[dayKey][currentMeal.key]) || 0;
+      if (used >= total) {
+        // Hide QR — show completion message
+        document.getElementById('qr-section').style.display    = 'none';
+        document.getElementById('outside-hours').style.display = 'none';
+        document.getElementById('meal-label-display').textContent = '✅';
+        document.getElementById('meal-day-tag').textContent = `${currentMeal.label} Complete!`;
+        // Show completion box
+        let compBox = document.getElementById('completion-box');
+        if (!compBox) {
+          compBox = document.createElement('div');
+          compBox.id = 'completion-box';
+          compBox.style.cssText = 'text-align:center;padding:20px 18px;';
+          compBox.innerHTML = `
+            <div style="font-size:3rem;margin-bottom:10px;">🎉</div>
+            <div style="font-family:Cinzel,serif;font-size:1.2rem;font-weight:900;color:var(--success);margin-bottom:8px;">
+              All Members Served!
+            </div>
+            <div style="font-size:0.88rem;color:#555;line-height:1.7;">
+              All ${total} member(s) have been served<br>
+              <strong>${currentMeal.label}</strong> for Day ${eventDay}.<br>
+              Enjoy your meal! 🙏
+            </div>
+          `;
+          document.querySelector('.card .card-body').appendChild(compBox);
+        }
+      }
     }
+
+    // Update group info
+    document.getElementById('group-info').innerHTML = `
+      <strong>Name:</strong> ${g.name}<br>
+      <strong>Batch:</strong> ${g.batch}<br>
+      <strong>Family Members:</strong> ${g.familyCount || 0}<br>
+      <strong>Total in Group:</strong> ${total}
+      <hr style="margin:10px 0;border-color:#eee;border-top:1px solid #eee;"/>
+      <strong>Day 1 &nbsp;</strong>
+      Breakfast <span class="meal-count-badge">${d1.breakfast||0}/${total}</span>
+      &nbsp;Lunch <span class="meal-count-badge">${d1.lunch||0}/${total}</span>
+      &nbsp;Dinner <span class="meal-count-badge">${d1.dinner||0}/${total}</span><br>
+      <strong>Day 2 &nbsp;</strong>
+      Breakfast <span class="meal-count-badge">${d2.breakfast||0}/${total}</span>
+      &nbsp;Lunch <span class="meal-count-badge">${d2.lunch||0}/${total}</span>
+      &nbsp;Dinner <span class="meal-count-badge">${d2.dinner||0}/${total}</span>
+    `;
+  });
+}
 
     // Auto-load from URL param or localStorage
     window.addEventListener('load', () => {
