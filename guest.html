@@ -307,7 +307,8 @@ QRCode.toCanvas(canvas, qrData, {
     // Realtime listener to keep meal counts updated
 function listenMealUpdates(docId, total, eventDay) {
   const ref = window._doc(window._db, 'guests', docId);
-  window._onSnapshot(ref, snap => {
+  setTimeout(() => {
+	window._onSnapshot(ref, snap => {
     if (!snap.exists()) return;
     const g     = snap.data();
     const meals = g.meals || { day1:{breakfast:0,lunch:0,dinner:0}, day2:{breakfast:0,lunch:0,dinner:0} };
@@ -364,7 +365,8 @@ compBox.innerHTML = `
       &nbsp;Lunch <span class="meal-count-badge">${d2.lunch||0}/${total}</span>
       &nbsp;Dinner <span class="meal-count-badge">${d2.dinner||0}/${total}</span>
     `;
-  });
+});
+  }, 800);
 }
 
     // Auto-load from URL param or localStorage
