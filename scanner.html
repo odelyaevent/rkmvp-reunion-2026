@@ -115,9 +115,9 @@ const firebaseConfig = {
     <div class="card-body">
       <div class="err-msg" id="login-err">❌ Invalid email or password.</div>
       <label>Email</label>
-      <input type="email" id="att-email" placeholder="attendant@email.com"/>
+      <input type="email" id="att-email" placeholder="attendant@email.com" autocomplete="off"/>
       <label>Password</label>
-      <input type="password" id="att-pass" placeholder="Password"/>
+      <input type="password" id="att-pass" placeholder="Password" autocomplete="new-password"/>
       <button class="btn-main" id="btn-login" onclick="attLogin()">LOGIN</button>
     </div>
   </div>
