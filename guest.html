@@ -279,14 +279,17 @@ const firebaseConfig = {
             name:    g.name
           });
 
-          document.getElementById('qr-canvas').innerHTML = '';
-          new QRCode(document.getElementById('qr-canvas'), {
-            text:       qrData,
-            width:      230,
-            height:     230,
-            colorDark:  '#0D2B5E',
-            colorLight: '#ffffff'
-          });
+document.getElementById('qr-canvas').innerHTML = '';
+const canvas = document.createElement('canvas');
+document.getElementById('qr-canvas').appendChild(canvas);
+QRCode.toCanvas(canvas, qrData, {
+  width: 250,
+  margin: 2,
+  color: {
+    dark: '#000000',
+    light: '#ffffff'
+  }
+});
         }
 
         // Group info + meal summary (realtime)
