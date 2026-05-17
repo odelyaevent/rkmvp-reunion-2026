@@ -198,21 +198,30 @@ const firebaseConfig = {
     });
   }
 
-  function attLogout() {
-    if (scanner) { scanner.stop().catch(()=>{}); scanner = null; }
+function attLogout() {
+  if (scanner) {
+    scanner.stop().then(() => {
+      scanner = null;
+      window._signOut(window._auth);
+    }).catch(() => {
+      scanner = null;
+      window._signOut(window._auth);
+    });
+  } else {
     window._signOut(window._auth);
   }
+}
 
 function showLogin() {
   document.getElementById('login-section').style.display = 'block';
-  document.getElementById('scanner-section').style.display = 'none';
+  document.getElementById('dashboard-section').style.display = 'none';
   // Reset login button
   const btn = document.getElementById('btn-login');
   btn.disabled = false;
   btn.textContent = 'LOGIN';
   // Clear fields
-  document.getElementById('att-email').value = '';
-  document.getElementById('att-pass').value = '';
+  document.getElementById('admin-email').value = '';
+  document.getElementById('admin-pass').value = '';
   document.getElementById('login-err').style.display = 'none';
 }
 
