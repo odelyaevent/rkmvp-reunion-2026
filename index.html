@@ -391,7 +391,9 @@ function getMealSelections() {
     // ── On load ──
 window.addEventListener('load', () => {
   generateMealCheckboxes();
-  updateMealPreviews();
+  setTimeout(() => {
+    updateMealPreviews();
+  }, 100);
       const savedPin = localStorage.getItem('rkmvp_pin');
       if (savedPin) {
         hideAll();
