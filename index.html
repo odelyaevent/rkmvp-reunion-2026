@@ -315,12 +315,13 @@ function generateMealCheckboxes() {
     });
 
     // ── Toggle checkbox ──
-    function toggleCheck(id) {
-      const cb = document.getElementById(id);
-      cb.checked = !cb.checked;
-      updateMealPreviews();
-      updateAmount();
-    }
+function toggleCheck(id) {
+  const cb = document.getElementById(id);
+  if (!cb) return;
+  cb.checked = !cb.checked;
+  updateMealPreviews();
+  updateAmount();
+}
 
     // ── Update meal previews ──
 function getMealSelections() {
