@@ -14,14 +14,14 @@
     import { getFirestore, collection, query, where, getDocs, addDoc, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     // ── PASTE YOUR FIREBASE CONFIG HERE ──
-const firebaseConfig = {
-    apiKey: "AIzaSyAAW9zZmE1cEUUWLEwT1hWtY1fQoiGt_No",
-    authDomain: "rkmvp-reunion-2026.firebaseapp.com",
-    projectId: "rkmvp-reunion-2026",
-    storageBucket: "rkmvp-reunion-2026.firebasestorage.app",
-    messagingSenderId: "552260116936",
-    appId: "1:552260116936:web:5d731a1fa2746ad149e0fd"
-  };
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db  = getFirestore(app);
@@ -43,53 +43,90 @@ const firebaseConfig = {
       --red:#CC0000; --success:#1A7A3C; --border:#FFD70044;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Lato',sans-serif;background:var(--cream);min-height:100vh;padding-bottom:40px;}
+    body{font-family:'Lato',sans-serif;background:var(--cream);min-height:100vh;padding-bottom:40px;font-size:18px;}
+
+    /* HEADER */
     header{background:linear-gradient(135deg,var(--deep-blue),var(--light-blue));padding:22px 18px 18px;text-align:center;border-bottom:4px solid var(--gold);}
     header h1{font-family:'Cinzel',serif;color:var(--white);font-size:clamp(1.5rem,6.5vw,2.2rem);letter-spacing:0.04em;text-shadow:0 2px 8px #00000055;}
-    header p.address{color:#B8CFFF;font-size:clamp(0.72rem,3.2vw,0.88rem);margin-top:6px;}
+    header p.address{color:#B8CFFF;font-size:clamp(0.85rem,3.5vw,1rem);margin-top:6px;}
     .reunion-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px;}
-    .logo-wrap{width:52px;height:52px;border-radius:50%;background:var(--cream);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+    .logo-wrap{width:56px;height:56px;border-radius:50%;background:var(--cream);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
     .logo-wrap img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
     .logo-wrap span{font-size:0.55rem;color:var(--deep-blue);font-weight:700;text-align:center;line-height:1.2;padding:2px;}
-    .reunion-title{font-family:'Cinzel',serif;color:var(--gold);font-size:clamp(1.3rem,6vw,2rem);font-weight:900;letter-spacing:0.06em;text-shadow:0 2px 10px #00000066;}
+    .reunion-title{font-family:'Cinzel',serif;color:var(--gold);font-size:clamp(1.4rem,6.5vw,2.2rem);font-weight:900;letter-spacing:0.06em;text-shadow:0 2px 10px #00000066;}
+
+    /* CARD */
     .card{background:var(--white);margin:22px 14px 0;border-radius:14px;border:1.5px solid var(--border);box-shadow:0 4px 24px #0D2B5E18;overflow:hidden;}
-    .card-header{background:linear-gradient(90deg,var(--deep-blue),var(--light-blue));padding:12px 18px;}
-    .card-header h2{font-family:'Cinzel',serif;color:var(--gold);font-size:clamp(0.95rem,4vw,1.1rem);letter-spacing:0.05em;}
+    .card-header{background:linear-gradient(90deg,var(--deep-blue),var(--light-blue));padding:14px 18px;}
+    .card-header h2{font-family:'Cinzel',serif;color:var(--gold);font-size:clamp(1.1rem,4.5vw,1.3rem);letter-spacing:0.05em;}
     .card-body{padding:22px 18px;}
-    .field{margin-bottom:16px;}
-    label{display:block;font-weight:700;color:var(--deep-blue);font-size:0.87rem;margin-bottom:5px;}
-    label .req{color:var(--red);margin-left:3px;}
-    input{width:100%;padding:12px 14px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:1rem;font-family:'Lato',sans-serif;color:#1a1a1a;background:#F7FAFF;transition:border-color 0.2s;-webkit-appearance:none;}
-    input:focus{outline:none;border-color:var(--light-blue);box-shadow:0 0 0 3px #1A4A9E22;background:var(--white);}
-    input.error{border-color:var(--red);box-shadow:0 0 0 3px #CC000018;}
-    .field-note{font-size:0.75rem;color:#7A8CA8;margin-top:4px;}
-    .field-error{font-size:0.78rem;color:var(--red);margin-top:4px;display:none;font-weight:700;}
-    .amount-box{background:#FFF5F5;border:2px solid var(--red);border-radius:10px;padding:14px;margin:4px 0 18px;text-align:center;}
-    .amount-label{font-size:0.82rem;color:#555;margin-bottom:4px;}
-    .amount-value{font-size:clamp(1.4rem,6vw,1.8rem);font-weight:900;color:var(--red);font-family:'Cinzel',serif;}
-    .amount-breakdown{font-size:0.75rem;color:#888;margin-top:4px;}
-    .divider{height:1px;background:var(--border);margin:18px 0;}
-    .btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--saffron),#C9400A);color:var(--white);font-family:'Cinzel',serif;font-size:1.05rem;font-weight:700;letter-spacing:0.08em;border:none;border-radius:10px;cursor:pointer;box-shadow:0 4px 16px #E8560A44;transition:transform 0.15s,opacity 0.15s;}
+
+    /* INLINE FIELD — label + input on same line */
+    .inline-field{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+    .inline-field label{font-weight:700;color:var(--deep-blue);font-size:1rem;white-space:nowrap;min-width:120px;flex-shrink:0;}
+    .inline-field label .req{color:var(--red);margin-left:3px;}
+    .inline-field input{flex:1;padding:12px 14px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:1.1rem;font-family:'Lato',sans-serif;color:#1a1a1a;background:#F7FAFF;-webkit-appearance:none;transition:border-color 0.2s;}
+    .inline-field input:focus{outline:none;border-color:var(--light-blue);box-shadow:0 0 0 3px #1A4A9E22;background:var(--white);}
+    .inline-field input.error{border-color:var(--red);box-shadow:0 0 0 3px #CC000018;}
+
+    /* FULL WIDTH FIELD — name field */
+    .full-field{margin-bottom:18px;}
+    .full-field label{display:block;font-weight:700;color:var(--deep-blue);font-size:1rem;margin-bottom:8px;}
+    .full-field label .req{color:var(--red);margin-left:3px;}
+    .full-field input{width:100%;padding:14px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:1.1rem;font-family:'Lato',sans-serif;color:#1a1a1a;background:#F7FAFF;-webkit-appearance:none;transition:border-color 0.2s;}
+    .full-field input:focus{outline:none;border-color:var(--light-blue);box-shadow:0 0 0 3px #1A4A9E22;background:var(--white);}
+    .full-field input.error{border-color:var(--red);box-shadow:0 0 0 3px #CC000018;}
+
+    .field-error{font-size:0.9rem;color:var(--red);margin-top:5px;display:none;font-weight:700;}
+    .field-note{font-size:0.82rem;color:#7A8CA8;margin-top:4px;}
+
+    /* AMOUNT */
+    .amount-box{background:#FFF5F5;border:2px solid var(--red);border-radius:10px;padding:16px;margin:4px 0 20px;text-align:center;}
+    .amount-label{font-size:0.95rem;color:#555;margin-bottom:6px;}
+    .amount-value{font-size:clamp(1.6rem,7vw,2.2rem);font-weight:900;color:var(--red);font-family:'Cinzel',serif;}
+    .amount-breakdown{font-size:0.85rem;color:#888;margin-top:6px;}
+
+    .divider{height:1px;background:var(--border);margin:20px 0;}
+
+    /* MEAL CHECKBOXES */
+    .meal-section-title{font-family:'Cinzel',serif;font-size:1rem;color:var(--deep-blue);font-weight:700;margin-bottom:14px;letter-spacing:0.04em;}
+    .meal-day-title{font-size:0.95rem;font-weight:700;color:var(--light-blue);margin-bottom:10px;margin-top:14px;text-transform:uppercase;letter-spacing:0.04em;}
+    .meal-checks{display:flex;flex-direction:column;gap:12px;}
+    .meal-check-item{display:flex;align-items:center;gap:14px;padding:12px 14px;background:#F7FAFF;border-radius:10px;border:1.5px solid #E0E8F8;cursor:pointer;}
+    .meal-check-item:active{background:#EEF4FF;}
+    .meal-check-item input[type=checkbox]{width:24px;height:24px;cursor:pointer;accent-color:var(--deep-blue);flex-shrink:0;}
+    .meal-check-item label{font-size:1rem;font-weight:700;color:#333;cursor:pointer;flex:1;}
+    .meal-check-item .meal-icon{font-size:1.4rem;}
+    .meal-check-item .meal-count-preview{font-size:0.8rem;color:#888;margin-left:auto;}
+
+    /* BUTTON */
+    .btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--saffron),#C9400A);color:var(--white);font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;letter-spacing:0.08em;border:none;border-radius:10px;cursor:pointer;box-shadow:0 4px 16px #E8560A44;transition:transform 0.15s,opacity 0.15s;}
     .btn:active{transform:scale(0.97);}
     .btn:disabled{opacity:0.6;cursor:not-allowed;}
-    .spinner{display:inline-block;width:18px;height:18px;border:3px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px;}
+    .spinner{display:inline-block;width:20px;height:20px;border:3px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px;}
     @keyframes spin{to{transform:rotate(360deg);}}
+
+    /* PENDING SCREEN */
     #pending-screen{display:none;margin:22px 14px 0;background:var(--white);border-radius:14px;border:2px solid #FFCA28;padding:28px 18px;text-align:center;}
-    #pending-screen .icon{font-size:3rem;margin-bottom:12px;}
-    #pending-screen h3{font-family:'Cinzel',serif;color:#856404;font-size:1.1rem;margin-bottom:8px;}
-    #pending-screen p{color:#555;font-size:0.88rem;line-height:1.7;}
-    .pending-badge{display:inline-block;background:#FFF3CD;color:#856404;border:1px solid #FFCA28;border-radius:20px;padding:5px 16px;font-size:0.82rem;font-weight:700;margin-top:14px;}
+    #pending-screen .icon{font-size:3.5rem;margin-bottom:14px;}
+    #pending-screen h3{font-family:'Cinzel',serif;color:#856404;font-size:1.2rem;margin-bottom:10px;}
+    #pending-screen p{color:#555;font-size:1rem;line-height:1.8;}
+    .pending-badge{display:inline-block;background:#FFF3CD;color:#856404;border:1px solid #FFCA28;border-radius:20px;padding:6px 18px;font-size:0.9rem;font-weight:700;margin-top:16px;}
+
+    /* BANK QR SCREEN */
     #bankqr-screen{display:none;margin:22px 14px 0;background:var(--white);border-radius:14px;border:2px solid var(--success);padding:24px 18px;text-align:center;}
-    #bankqr-screen h3{font-family:'Cinzel',serif;color:var(--success);font-size:1.1rem;margin-bottom:6px;}
-    #bankqr-screen p{color:#555;font-size:0.85rem;margin-bottom:16px;}
-    #bankqr-screen img{width:230px;height:230px;border:3px solid var(--gold);border-radius:12px;object-fit:contain;}
-    .amount-due{font-size:1.4rem;font-weight:900;color:var(--red);font-family:'Cinzel',serif;margin-top:14px;}
-    .guest-info-box{margin-top:14px;background:#F7FAFF;border-radius:8px;padding:12px 14px;text-align:left;font-size:0.86rem;color:#333;line-height:1.9;}
+    #bankqr-screen h3{font-family:'Cinzel',serif;color:var(--success);font-size:1.2rem;margin-bottom:8px;}
+    #bankqr-screen p{color:#555;font-size:0.95rem;margin-bottom:16px;}
+    #bankqr-screen img{width:240px;height:240px;border:3px solid var(--gold);border-radius:12px;object-fit:contain;}
+    .amount-due{font-size:1.5rem;font-weight:900;color:var(--red);font-family:'Cinzel',serif;margin-top:14px;}
+    .guest-info-box{margin-top:14px;background:#F7FAFF;border-radius:8px;padding:14px;text-align:left;font-size:0.95rem;color:#333;line-height:2;}
     .guest-info-box strong{color:var(--deep-blue);}
+
+    /* PIN SCREEN */
     #pin-screen{display:none;}
     #pin-screen .card-body{text-align:center;}
-    #pin-screen p{color:#555;font-size:0.88rem;margin-bottom:20px;line-height:1.6;}
-    #return-pin{font-size:1.6rem;letter-spacing:0.4em;text-align:center;}
+    #pin-screen p{color:#555;font-size:1rem;margin-bottom:20px;line-height:1.7;}
+    #return-pin{font-size:1.8rem;letter-spacing:0.4em;text-align:center;padding:14px;}
   </style>
 </head>
 <body>
@@ -110,39 +147,104 @@ const firebaseConfig = {
   <div class="card" id="reg-card">
     <div class="card-header"><h2>Delegate Details</h2></div>
     <div class="card-body">
-      <div class="field">
-        <label for="batch">Batch No (Year)<span class="req">*</span></label>
+
+      <!-- Batch No — inline -->
+      <div class="inline-field">
+        <label for="batch">Batch Year<span class="req">*</span></label>
         <input type="number" id="batch" placeholder="e.g. 1995" min="1950" max="2025" autocomplete="off"/>
-        <div class="field-error" id="err-batch">Please enter a valid batch year (1950–2025).</div>
       </div>
-      <div class="field">
+      <div class="field-error" id="err-batch">Please enter a valid batch year (1950–2025).</div>
+
+      <!-- Full Name — full width -->
+      <div class="full-field">
         <label for="name">Full Name<span class="req">*</span></label>
-        <input type="text" id="name" placeholder="Enter your full name" autocomplete="off"/>
-        <div class="field-error" id="err-name">Please enter your name.</div>
+        <input type="text" id="name" placeholder="Enter First and Last Name" autocomplete="off"/>
+        <div class="field-error" id="err-name">Please Type Your Full Name</div>
       </div>
-      <div class="field">
-        <label for="family">No. of Family Members</label>
+
+      <!-- Family Members — inline -->
+      <div class="inline-field">
+        <label for="family">Family Members</label>
         <input type="number" id="family" placeholder="0" min="0" max="20" value="0" autocomplete="off"/>
-        <div class="field-note">Leave as 0 if attending alone. Each family member: Rs. 5/-</div>
       </div>
+      <div class="field-note" style="margin-bottom:18px;font-size:0.88rem;">Leave as 0 if attending alone. Each family member: Rs. 5/-</div>
+
       <div class="divider"></div>
-      <div class="field">
-        <label for="pin">Create Security PIN<span class="req">*</span></label>
-        <input type="password" id="pin" placeholder="4-digit PIN" maxlength="4" inputmode="numeric" autocomplete="off"/>
-        <div class="field-note">4 digits. No serial (1234) or repeated (1111). Must be unique.</div>
-        <div class="field-error" id="err-pin">Invalid or already taken PIN.</div>
+
+      <!-- Security PIN — inline -->
+      <div class="inline-field">
+        <label for="pin">Security PIN<span class="req">*</span></label>
+        <input type="password" id="pin" placeholder="4-digit" maxlength="4" inputmode="numeric" autocomplete="new-password"/>
       </div>
-      <div class="field">
-        <label for="pin2">Confirm Security PIN<span class="req">*</span></label>
-        <input type="password" id="pin2" placeholder="Re-enter PIN" maxlength="4" inputmode="numeric" autocomplete="off"/>
-        <div class="field-error" id="err-pin2">PINs do not match.</div>
+      <div class="field-note" style="margin-bottom:14px;font-size:0.88rem;">4 digits only. No serial (1234) or repeated (1111). Must be unique.</div>
+      <div class="field-error" id="err-pin">Invalid or already taken PIN. Please try another.</div>
+
+      <!-- Confirm PIN — inline -->
+      <div class="inline-field">
+        <label for="pin2">Confirm PIN<span class="req">*</span></label>
+        <input type="password" id="pin2" placeholder="Re-enter" maxlength="4" inputmode="numeric" autocomplete="new-password"/>
       </div>
+      <div class="field-error" id="err-pin2" style="margin-bottom:10px;">PINs do not match.</div>
+
       <div class="divider"></div>
+
+      <!-- MEAL SELECTION -->
+      <div class="meal-section-title">🍽 Select Your Meals</div>
+      <div class="field-note" style="margin-bottom:14px;font-size:0.88rem;">Please select meals you will attend. Count includes all family members.</div>
+
+      <div class="meal-day-title">📅 Day 1</div>
+      <div class="meal-checks">
+        <div class="meal-check-item" onclick="toggleCheck('d1-breakfast')">
+          <span class="meal-icon">🍳</span>
+          <label for="d1-breakfast">Breakfast</label>
+          <span class="meal-count-preview" id="prev-d1-breakfast">0 person(s)</span>
+          <input type="checkbox" id="d1-breakfast" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
+        </div>
+        <div class="meal-check-item" onclick="toggleCheck('d1-lunch')">
+          <span class="meal-icon">🍽</span>
+          <label for="d1-lunch">Lunch</label>
+          <span class="meal-count-preview" id="prev-d1-lunch">0 person(s)</span>
+          <input type="checkbox" id="d1-lunch" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
+        </div>
+        <div class="meal-check-item" onclick="toggleCheck('d1-dinner')">
+          <span class="meal-icon">🌙</span>
+          <label for="d1-dinner">Dinner</label>
+          <span class="meal-count-preview" id="prev-d1-dinner">0 person(s)</span>
+          <input type="checkbox" id="d1-dinner" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
+        </div>
+      </div>
+
+      <div class="meal-day-title">📅 Day 2</div>
+      <div class="meal-checks">
+        <div class="meal-check-item" onclick="toggleCheck('d2-breakfast')">
+          <span class="meal-icon">🍳</span>
+          <label for="d2-breakfast">Breakfast</label>
+          <span class="meal-count-preview" id="prev-d2-breakfast">0 person(s)</span>
+          <input type="checkbox" id="d2-breakfast" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
+        </div>
+        <div class="meal-check-item" onclick="toggleCheck('d2-lunch')">
+          <span class="meal-icon">🍽</span>
+          <label for="d2-lunch">Lunch</label>
+          <span class="meal-count-preview" id="prev-d2-lunch">0 person(s)</span>
+          <input type="checkbox" id="d2-lunch" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
+        </div>
+        <div class="meal-check-item" onclick="toggleCheck('d2-dinner')">
+          <span class="meal-icon">🌙</span>
+          <label for="d2-dinner">Dinner</label>
+          <span class="meal-count-preview" id="prev-d2-dinner">0 person(s)</span>
+          <input type="checkbox" id="d2-dinner" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- AMOUNT -->
       <div class="amount-box">
         <div class="amount-label">Total Payable Amount</div>
         <div class="amount-value" id="amount-display">Rs. 10/-</div>
         <div class="amount-breakdown" id="amount-breakdown">Guest: Rs. 10/-</div>
       </div>
+
       <button class="btn" id="btn-finish" onclick="submitReg()">FINISH &amp; REGISTER</button>
     </div>
   </div>
@@ -153,10 +255,10 @@ const firebaseConfig = {
       <div class="card-header"><h2>Welcome Back!</h2></div>
       <div class="card-body">
         <p>You are already registered.<br>Enter your <strong>Security PIN</strong> to continue.</p>
-        <input type="password" id="return-pin" placeholder="••••" maxlength="4" inputmode="numeric" autocomplete="off"/>
+        <input type="password" id="return-pin" placeholder="••••" maxlength="4" inputmode="numeric" autocomplete="new-password"/>
         <div class="field-error" id="err-return-pin" style="text-align:center;margin-bottom:10px;">❌ PIN not found. Please try again.</div>
         <button class="btn" id="btn-pin-enter" onclick="enterWithPin()" style="margin-top:14px;">ENTER</button>
-        <button onclick="resetRegistration()" style="background:var(--cream);border:2px solid var(--light-blue);color:var(--light-blue);font-size:0.88rem;font-weight:700;margin-top:16px;cursor:pointer;width:100%;padding:10px;border-radius:8px;font-family:'Lato',sans-serif;letter-spacing:0.03em;">🆕 Not Registered Yet? Register Here</button>
+        <button onclick="resetRegistration()" style="background:var(--cream);border:2px solid var(--light-blue);color:var(--light-blue);font-size:0.95rem;font-weight:700;margin-top:16px;cursor:pointer;width:100%;padding:12px;border-radius:8px;font-family:'Lato',sans-serif;letter-spacing:0.03em;">🆕 Not Registered Yet? Register Here</button>
       </div>
     </div>
   </div>
@@ -165,31 +267,69 @@ const firebaseConfig = {
   <div id="pending-screen">
     <div class="icon">⏳</div>
     <h3>Pending for Approval</h3>
-    <p>Your registration is received!<br>Please go to the <strong>front desk</strong> and tell your Security PIN.<br>The attendant will process your payment.</p>
+    <p>Your registration is received!<br>Please go to the <strong>front desk</strong><br>and tell them your Security PIN.<br>The attendant will process your payment.</p>
     <div class="pending-badge">⏳ Waiting for Approval</div>
   </div>
 
-  <!-- SCREEN 4: BANK QR (shown when admin clicks Generate) -->
+  <!-- SCREEN 4: BANK QR -->
   <div id="bankqr-screen">
     <h3>Scan to Pay</h3>
-    <p>Please scan the QR code below using GPay / PhonePe / any UPI app.</p>
+    <p>Please scan the QR code below using<br>GPay / PhonePe / any UPI app.</p>
     <img src="bank-qr.png" alt="Bank QR Code"/>
     <div class="amount-due" id="bankqr-amount"></div>
     <div class="guest-info-box" id="bankqr-info"></div>
   </div>
 
   <script>
-    // Amount calculator
-    document.getElementById('family').addEventListener('input', calcAmount);
-    function calcAmount() {
-      const fam = parseInt(document.getElementById('family').value) || 0;
+    // ── Capitalize each word ──
+    function toTitleCase(str) {
+      return str.toLowerCase().split(' ')
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+    }
+
+    // Auto capitalize name as user types
+    document.getElementById('name').addEventListener('input', function() {
+      const pos = this.selectionStart;
+      this.value = toTitleCase(this.value);
+      this.setSelectionRange(pos, pos);
+    });
+
+    // ── Family members change ──
+    document.getElementById('family').addEventListener('input', () => {
+      updateMealPreviews();
+      updateAmount();
+    });
+
+    // ── Toggle checkbox ──
+    function toggleCheck(id) {
+      const cb = document.getElementById(id);
+      cb.checked = !cb.checked;
+      updateMealPreviews();
+      updateAmount();
+    }
+
+    // ── Update meal previews ──
+    function updateMealPreviews() {
+      const total = (parseInt(document.getElementById('family').value) || 0) + 1;
+      const meals = ['d1-breakfast','d1-lunch','d1-dinner','d2-breakfast','d2-lunch','d2-dinner'];
+      meals.forEach(id => {
+        const checked = document.getElementById(id).checked;
+        document.getElementById('prev-'+id).textContent = checked ? `${total} person(s)` : '0 person(s)';
+      });
+    }
+
+    // ── Amount calculator ──
+    function updateAmount() {
+      const fam   = parseInt(document.getElementById('family').value) || 0;
       const total = 10 + fam * 5;
-      document.getElementById('amount-display').textContent = `Rs. ${total}/-`;
+      document.getElementById('amount-display').textContent   = `Rs. ${total}/-`;
       document.getElementById('amount-breakdown').textContent = fam === 0
         ? 'Guest: Rs. 10/-'
         : `Guest: Rs. 10/-  +  ${fam} × Rs. 5/- = Rs. ${total}/-`;
     }
 
+    // ── PIN Validation ──
     function isValidPin(p) {
       if (!/^\d{4}$/.test(p)) return false;
       if (/^(\d)\1{3}$/.test(p)) return false;
@@ -212,8 +352,26 @@ const firebaseConfig = {
       });
     }
 
-    // On load — check localStorage
+    // ── Get meal selections ──
+    function getMealSelections() {
+      const total = (parseInt(document.getElementById('family').value) || 0) + 1;
+      return {
+        day1: {
+          breakfast: document.getElementById('d1-breakfast').checked ? total : 0,
+          lunch:     document.getElementById('d1-lunch').checked     ? total : 0,
+          dinner:    document.getElementById('d1-dinner').checked    ? total : 0
+        },
+        day2: {
+          breakfast: document.getElementById('d2-breakfast').checked ? total : 0,
+          lunch:     document.getElementById('d2-lunch').checked     ? total : 0,
+          dinner:    document.getElementById('d2-dinner').checked    ? total : 0
+        }
+      };
+    }
+
+    // ── On load ──
     window.addEventListener('load', () => {
+      updateMealPreviews();
       const savedPin = localStorage.getItem('rkmvp_pin');
       if (savedPin) {
         hideAll();
@@ -221,7 +379,7 @@ const firebaseConfig = {
       }
     });
 
-    // Submit registration
+    // ── SUBMIT REGISTRATION ──
     async function submitReg() {
       const batch  = document.getElementById('batch').value.trim();
       const name   = document.getElementById('name').value.trim();
@@ -232,7 +390,12 @@ const firebaseConfig = {
 
       const batchNum = parseInt(batch);
       if (!batch || batchNum < 1950 || batchNum > 2025) { markErr('batch','err-batch',true); valid=false; } else markErr('batch','err-batch',false);
-      if (!name || name.length < 2) { markErr('name','err-name',true); valid=false; } else markErr('name','err-name',false);
+
+      // Name — must have at least two words
+      const nameTrimmed = name.trim();
+      const nameWords   = nameTrimmed.split(/\s+/).filter(w => w.length > 0);
+      if (nameWords.length < 2) { markErr('name','err-name',true,'Please Type Your Full Name'); valid=false; } else markErr('name','err-name',false);
+
       if (!isValidPin(pin)) { markErr('pin','err-pin',true,'Invalid PIN. Avoid serial or repeated digits.'); valid=false; } else markErr('pin','err-pin',false);
       if (pin !== pin2) { markErr('pin2','err-pin2',true); valid=false; } else markErr('pin2','err-pin2',false);
       if (!valid) return;
@@ -243,25 +406,38 @@ const firebaseConfig = {
       btn.innerHTML = '<span class="spinner"></span> Saving...';
 
       try {
-        const q = window._query(window._collection(window._db,'guests'), window._where('pin','==',pin));
+        // Check PIN uniqueness
+        const q    = window._query(window._collection(window._db,'guests'), window._where('pin','==',pin));
         const snap = await window._getDocs(q);
         if (!snap.empty) {
           markErr('pin','err-pin',true,'❌ This PIN is already taken. Please choose another!');
           btn.disabled=false; btn.innerHTML='FINISH &amp; REGISTER'; return;
         }
 
-        const amount = 10 + family * 5;
+        const amount       = 10 + family * 5;
+        const mealRequired = getMealSelections();
+        const finalName    = toTitleCase(nameTrimmed);
+
         const docRef = await window._addDoc(window._collection(window._db,'guests'), {
-          name, batch: batchNum, familyCount: family, pin, amount,
-          approved: false, bankQrVisible: false,
-          meals: { day1:{breakfast:0,lunch:0,dinner:0}, day2:{breakfast:0,lunch:0,dinner:0} },
+          name:         finalName,
+          batch:        batchNum,
+          familyCount:  family,
+          pin:          pin,
+          amount:       amount,
+          approved:     false,
+          bankQrVisible:false,
+          mealsRequired: mealRequired,   // what guest selected
+          meals: {                        // actual attendance (updated by scanner)
+            day1: { breakfast:0, lunch:0, dinner:0 },
+            day2: { breakfast:0, lunch:0, dinner:0 }
+          },
           registeredAt: new Date().toISOString()
         });
 
         localStorage.setItem('rkmvp_pin', pin);
         hideAll();
         document.getElementById('pending-screen').style.display = 'block';
-        startRealtimeListener(docRef.id, name, amount, family);
+        startRealtimeListener(docRef.id, finalName, amount, family);
 
       } catch(e) {
         console.error(e);
@@ -270,7 +446,7 @@ const firebaseConfig = {
       }
     }
 
-    // Returning guest PIN entry
+    // ── RETURNING GUEST ──
     async function enterWithPin() {
       const pin = document.getElementById('return-pin').value.trim();
       const err = document.getElementById('err-return-pin');
@@ -282,12 +458,12 @@ const firebaseConfig = {
       btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
 
       try {
-        const q = window._query(window._collection(window._db,'guests'), window._where('pin','==',pin));
+        const q    = window._query(window._collection(window._db,'guests'), window._where('pin','==',pin));
         const snap = await window._getDocs(q);
         if (snap.empty) { err.style.display='block'; btn.disabled=false; btn.innerHTML='ENTER'; return; }
 
         const docId = snap.docs[0].id;
-        const g = snap.docs[0].data();
+        const g     = snap.docs[0].data();
         localStorage.setItem('rkmvp_pin', pin);
         hideAll();
 
@@ -295,12 +471,12 @@ const firebaseConfig = {
           window.location.href = `guest.html?pin=${encodeURIComponent(pin)}`;
           return;
         } else if (g.bankQrVisible) {
-          showBankQR(g.name, g.amount, g.familyCount || 0);
+          showBankQR(g.name, g.amount, g.familyCount||0);
         } else {
           document.getElementById('pending-screen').style.display = 'block';
         }
 
-        startRealtimeListener(docId, g.name, g.amount, g.familyCount || 0);
+        startRealtimeListener(docId, g.name, g.amount, g.familyCount||0);
         btn.disabled=false; btn.innerHTML='ENTER';
 
       } catch(e) {
@@ -310,10 +486,10 @@ const firebaseConfig = {
       }
     }
 
-    // Realtime listener — watches for admin actions
+    // ── REALTIME LISTENER ──
     function startRealtimeListener(docId, name, amount, family) {
       if (!window._firebaseReady) return;
-      const ref = window._doc(window._db, 'guests', docId);
+      const ref = window._doc(window._db,'guests',docId);
       window._onSnapshot(ref, snap => {
         if (!snap.exists()) return;
         const data = snap.data();
@@ -321,7 +497,7 @@ const firebaseConfig = {
           const pin = localStorage.getItem('rkmvp_pin') || '';
           window.location.href = `guest.html?pin=${encodeURIComponent(pin)}`;
         } else if (data.bankQrVisible) {
-          showBankQR(data.name, data.amount, data.familyCount || 0);
+          showBankQR(data.name, data.amount, data.familyCount||0);
         }
       });
     }
@@ -332,20 +508,21 @@ const firebaseConfig = {
       document.getElementById('bankqr-info').innerHTML = `
         <strong>Name:</strong> ${name}<br>
         <strong>Family Members:</strong> ${family}<br>
-        <strong>Total People:</strong> ${family + 1}<br>
+        <strong>Total People:</strong> ${family+1}<br>
         <strong>Amount:</strong> <span style="color:var(--red);font-weight:700">Rs. ${amount}/-</span>
       `;
       document.getElementById('bankqr-screen').style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top:0, behavior:'smooth' });
     }
 
-    document.getElementById('return-pin').addEventListener('keydown', e => {
-      if (e.key === 'Enter') enterWithPin();
-    });
     function resetRegistration() {
       localStorage.removeItem('rkmvp_pin');
       location.reload();
     }
+
+    document.getElementById('return-pin').addEventListener('keydown', e => {
+      if (e.key==='Enter') enterWithPin();
+    });
   </script>
 </body>
 </html>
