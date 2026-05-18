@@ -190,52 +190,11 @@
       <!-- MEAL SELECTION -->
       <div class="meal-section-title" style="text-align:center;color:#000000;font-size:1.2rem;">🍽 Select Your Meals</div>
 
-      <div class="meal-day-title">📅 Day 1</div>
-      <div class="meal-checks">
-        <div class="meal-check-item" onclick="toggleCheck('d1-breakfast')">
-          <span class="meal-icon">🍳</span>
-          <label for="d1-breakfast">Breakfast</label>
-          <span class="meal-count-preview" id="prev-d1-breakfast">0 person(s)</span>
-          <input type="checkbox" id="d1-breakfast" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
-        </div>
-        <div class="meal-check-item" onclick="toggleCheck('d1-lunch')">
-          <span class="meal-icon">🍽</span>
-          <label for="d1-lunch">Lunch</label>
-          <span class="meal-count-preview" id="prev-d1-lunch">0 person(s)</span>
-          <input type="checkbox" id="d1-lunch" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
-        </div>
-        <div class="meal-check-item" onclick="toggleCheck('d1-dinner')">
-          <span class="meal-icon">🌙</span>
-          <label for="d1-dinner">Dinner</label>
-          <span class="meal-count-preview" id="prev-d1-dinner">0 person(s)</span>
-          <input type="checkbox" id="d1-dinner" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
-        </div>
-      </div>
+<div id="meal-days-container"></div>
 
-      <div class="meal-day-title">📅 Day 2</div>
-      <div class="meal-checks">
-        <div class="meal-check-item" onclick="toggleCheck('d2-breakfast')">
-          <span class="meal-icon">🍳</span>
-          <label for="d2-breakfast">Breakfast</label>
-          <span class="meal-count-preview" id="prev-d2-breakfast">0 person(s)</span>
-          <input type="checkbox" id="d2-breakfast" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
-        </div>
-        <div class="meal-check-item" onclick="toggleCheck('d2-lunch')">
-          <span class="meal-icon">🍽</span>
-          <label for="d2-lunch">Lunch</label>
-          <span class="meal-count-preview" id="prev-d2-lunch">0 person(s)</span>
-          <input type="checkbox" id="d2-lunch" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
-        </div>
-        <div class="meal-check-item" onclick="toggleCheck('d2-dinner')">
-          <span class="meal-icon">🌙</span>
-          <label for="d2-dinner">Dinner</label>
-          <span class="meal-count-preview" id="prev-d2-dinner">0 person(s)</span>
-          <input type="checkbox" id="d2-dinner" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
-        </div>
-      </div>
+<div class="divider"></div>
 
-      <div class="divider"></div>
-
+      <!-- AMOUNT -->
       <!-- AMOUNT -->
       <div class="amount-box">
         <div class="amount-label">Total Payable Amount</div>
@@ -279,6 +238,31 @@
   </div>
 
   <script>
+
+// ============================================================
+// ⚙️ EVENT CONFIGURATION — CHANGE THESE FOR YOUR EVENT
+// ============================================================
+const EVENT_START_DATE = '2026-12-20'; // ← CHANGE THIS
+const EVENT_END_DATE   = '2026-12-22'; // ← CHANGE THIS
+// ============================================================
+
+function getEventDays() {
+  const days = [];
+  let current = new Date(EVENT_START_DATE);
+  const end   = new Date(EVENT_END_DATE);
+  let dayNum  = 1;
+  while (current <= end) {
+    days.push({
+      num:   dayNum,
+      date:  current.toISOString().split('T')[0],
+      label: `Day ${dayNum} — ${current.toLocaleDateString('en-IN', { day:'numeric', month:'long' })}`
+    });
+    current.setDate(current.getDate() + 1);
+    dayNum++;
+  }
+  return days;
+}
+
     // ── Capitalize each word ──
     function toTitleCase(str) {
       return str.toLowerCase().split(' ')
@@ -292,6 +276,37 @@
       this.value = toTitleCase(this.value);
       this.setSelectionRange(pos, pos);
     });
+
+// ── Generate meal checkboxes dynamically ──
+function generateMealCheckboxes() {
+  const days      = getEventDays();
+  const container = document.getElementById('meal-days-container');
+  container.innerHTML = '';
+  days.forEach(day => {
+    container.innerHTML += `
+      <div class="meal-day-title">📅 ${day.label}</div>
+      <div class="meal-checks">
+        <div class="meal-check-item" onclick="toggleCheck('d${day.num}-breakfast')">
+          <span class="meal-icon">🍳</span>
+          <label for="d${day.num}-breakfast">Breakfast</label>
+          <span class="meal-count-preview" id="prev-d${day.num}-breakfast">0 person(s)</span>
+          <input type="checkbox" id="d${day.num}-breakfast" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
+        </div>
+        <div class="meal-check-item" onclick="toggleCheck('d${day.num}-lunch')">
+          <span class="meal-icon">🍽</span>
+          <label for="d${day.num}-lunch">Lunch</label>
+          <span class="meal-count-preview" id="prev-d${day.num}-lunch">0 person(s)</span>
+          <input type="checkbox" id="d${day.num}-lunch" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
+        </div>
+        <div class="meal-check-item" onclick="toggleCheck('d${day.num}-dinner')">
+          <span class="meal-icon">🌙</span>
+          <label for="d${day.num}-dinner">Dinner</label>
+          <span class="meal-count-preview" id="prev-d${day.num}-dinner">0 person(s)</span>
+          <input type="checkbox" id="d${day.num}-dinner" onclick="event.stopPropagation();updateMealPreviews();updateAmount()"/>
+        </div>
+      </div>`;
+  });
+}
 
     // ── Family members change ──
     document.getElementById('family').addEventListener('input', () => {
@@ -308,14 +323,19 @@
     }
 
     // ── Update meal previews ──
-    function updateMealPreviews() {
-      const total = (parseInt(document.getElementById('family').value) || 0) + 1;
-      const meals = ['d1-breakfast','d1-lunch','d1-dinner','d2-breakfast','d2-lunch','d2-dinner'];
-      meals.forEach(id => {
-        const checked = document.getElementById(id).checked;
-        document.getElementById('prev-'+id).textContent = checked ? `${total} person(s)` : '0 person(s)';
-      });
-    }
+function getMealSelections() {
+  const total = (parseInt(document.getElementById('family').value) || 0) + 1;
+  const days  = getEventDays();
+  const result = {};
+  days.forEach(day => {
+    result[`day${day.num}`] = {
+      breakfast: document.getElementById(`d${day.num}-breakfast`)?.checked ? total : 0,
+      lunch:     document.getElementById(`d${day.num}-lunch`)?.checked     ? total : 0,
+      dinner:    document.getElementById(`d${day.num}-dinner`)?.checked    ? total : 0
+    };
+  });
+  return result;
+}
 
     // ── Amount calculator ──
     function updateAmount() {
@@ -368,8 +388,9 @@
     }
 
     // ── On load ──
-    window.addEventListener('load', () => {
-      updateMealPreviews();
+window.addEventListener('load', () => {
+  generateMealCheckboxes();
+  updateMealPreviews();
       const savedPin = localStorage.getItem('rkmvp_pin');
       if (savedPin) {
         hideAll();
@@ -430,10 +451,7 @@
           approved:     false,
           bankQrVisible:false,
           mealsRequired: mealRequired,   // what guest selected
-          meals: {                        // actual attendance (updated by scanner)
-            day1: { breakfast:0, lunch:0, dinner:0 },
-            day2: { breakfast:0, lunch:0, dinner:0 }
-          },
+		  meals: Object.fromEntries(getEventDays().map(d => [`day${d.num}`, {breakfast:0,lunch:0,dinner:0}])),
           registeredAt: new Date().toISOString()
         });
 
