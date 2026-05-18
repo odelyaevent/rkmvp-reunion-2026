@@ -394,7 +394,12 @@
       // Name — must have at least two words
       const nameTrimmed = name.trim();
       const nameWords   = nameTrimmed.split(/\s+/).filter(w => w.length > 0);
-      if (nameWords.length < 2) { markErr('name','err-name',true,'Please Type Your Full Name'); valid=false; } else markErr('name','err-name',false);
+  if (nameWords.length < 2) {
+  markErr('name','err-name',true,'Please Type Your Full Name');
+  document.getElementById('name').scrollIntoView({ behavior:'smooth', block:'center' });
+  document.getElementById('name').focus();
+  valid=false;
+} else markErr('name','err-name',false);
 
       if (!isValidPin(pin)) { markErr('pin','err-pin',true,'Invalid PIN. Avoid serial or repeated digits.'); valid=false; } else markErr('pin','err-pin',false);
       if (pin !== pin2) { markErr('pin2','err-pin2',true); valid=false; } else markErr('pin2','err-pin2',false);
