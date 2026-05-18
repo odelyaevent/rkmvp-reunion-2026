@@ -420,7 +420,16 @@ function showLogin() {
       let q;
       if      (type === 'pin')   q = window._query(window._collection(window._db,'guests'), window._where('pin','==',val));
       else if (type === 'batch') q = window._query(window._collection(window._db,'guests'), window._where('batch','==',parseInt(val)));
-      else                       q = window._query(window._collection(window._db,'guests'), window._where('name','>=',val), window._where('name','<=',val+'\uf8ff'));
+      else {
+  const snap = await window._getDocs(window._collection(window._db,'guests'));
+  const results = snap.docs.filter(d => 
+    d.data().name.toLowerCase().includes(val.toLowerCase())
+  );
+  if (results.length === 0) { res.innerHTML = '<p class="no-results">No guest found.</p>'; return; }
+  res.innerHTML = '';
+  results.forEach(d => res.innerHTML += buildCard(d.id, d.data()));
+  return;
+}
       const snap = await window._getDocs(q);
       if (snap.empty) { res.innerHTML = '<p class="no-results">No guest found.</p>'; return; }
       res.innerHTML = '';
