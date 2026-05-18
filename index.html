@@ -237,13 +237,11 @@
     <div class="guest-info-box" id="bankqr-info"></div>
   </div>
 
-  <script>
-
 // ============================================================
 // ⚙️ EVENT CONFIGURATION — CHANGE THESE FOR YOUR EVENT
 // ============================================================
-const EVENT_START_DATE = '2026-12-20'; // ← CHANGE THIS
-const EVENT_END_DATE   = '2026-12-22'; // ← CHANGE THIS
+const EVENT_START_DATE = '2026-12-20';
+const EVENT_END_DATE   = '2026-12-22';
 // ============================================================
 
 function getEventDays() {
@@ -263,21 +261,55 @@ function getEventDays() {
   return days;
 }
 
-    // ── Capitalize each word ──
-    function toTitleCase(str) {
-      return str.toLowerCase().split(' ')
-        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ');
-    }
+function toTitleCase(str) {
+  return str.toLowerCase().split(' ')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
 
-    // Auto capitalize name as user types
-    document.getElementById('name').addEventListener('input', function() {
-      const pos = this.selectionStart;
-      this.value = toTitleCase(this.value);
-      this.setSelectionRange(pos, pos);
+function updateMealPreviews() {
+  const total = (parseInt(document.getElementById('family').value) || 0) + 1;
+  const days  = getEventDays();
+  days.forEach(day => {
+    ['breakfast','lunch','dinner'].forEach(meal => {
+      const id = `d${day.num}-${meal}`;
+      const cb = document.getElementById(id);
+      if (cb) document.getElementById('prev-'+id).textContent = cb.checked ? `${total} person(s)` : '0 person(s)';
     });
+  });
+}
 
-// ── Generate meal checkboxes dynamically ──
+function toggleCheck(id) {
+  const cb = document.getElementById(id);
+  if (!cb) return;
+  cb.checked = !cb.checked;
+  updateMealPreviews();
+  updateAmount();
+}
+
+function updateAmount() {
+  const fam   = parseInt(document.getElementById('family').value) || 0;
+  const total = 10 + fam * 5;
+  document.getElementById('amount-display').textContent   = `Rs. ${total}/-`;
+  document.getElementById('amount-breakdown').textContent = fam === 0
+    ? 'Guest: Rs. 10/-'
+    : `Guest: Rs. 10/-  +  ${fam} × Rs. 5/- = Rs. ${total}/-`;
+}
+
+function getMealSelections() {
+  const total = (parseInt(document.getElementById('family').value) || 0) + 1;
+  const days  = getEventDays();
+  const result = {};
+  days.forEach(day => {
+    result[`day${day.num}`] = {
+      breakfast: document.getElementById(`d${day.num}-breakfast`)?.checked ? total : 0,
+      lunch:     document.getElementById(`d${day.num}-lunch`)?.checked     ? total : 0,
+      dinner:    document.getElementById(`d${day.num}-dinner`)?.checked    ? total : 0
+    };
+  });
+  return result;
+}
+
 function generateMealCheckboxes() {
   const days      = getEventDays();
   const container = document.getElementById('meal-days-container');
@@ -308,245 +340,190 @@ function generateMealCheckboxes() {
   });
 }
 
-    // ── Family members change ──
-    document.getElementById('family').addEventListener('input', () => {
-      updateMealPreviews();
-      updateAmount();
-    });
+function isValidPin(p) {
+  if (!/^\d{4}$/.test(p)) return false;
+  if (/^(\d)\1{3}$/.test(p)) return false;
+  const d = p.split('').map(Number);
+  if (d[1]===d[0]+1 && d[2]===d[1]+1 && d[3]===d[2]+1) return false;
+  if (d[1]===d[0]-1 && d[2]===d[1]-1 && d[3]===d[2]-1) return false;
+  return true;
+}
 
-    // ── Toggle checkbox ──
-function toggleCheck(id) {
-  const cb = document.getElementById(id);
-  if (!cb) return;
-  cb.checked = !cb.checked;
+function markErr(inputId, errId, show, msg) {
+  document.getElementById(inputId).classList.toggle('error', show);
+  const el = document.getElementById(errId);
+  if (msg) el.textContent = msg;
+  el.style.display = show ? 'block' : 'none';
+}
+
+function hideAll() {
+  ['reg-card','pin-screen','pending-screen','bankqr-screen'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+}
+
+document.getElementById('name').addEventListener('input', function() {
+  const pos = this.selectionStart;
+  this.value = toTitleCase(this.value);
+  this.setSelectionRange(pos, pos);
+});
+
+document.getElementById('family').addEventListener('input', () => {
   updateMealPreviews();
   updateAmount();
-}
+});
 
-    // ── Update meal previews ──
-function getMealSelections() {
-  const total = (parseInt(document.getElementById('family').value) || 0) + 1;
-  const days  = getEventDays();
-  const result = {};
-  days.forEach(day => {
-    result[`day${day.num}`] = {
-      breakfast: document.getElementById(`d${day.num}-breakfast`)?.checked ? total : 0,
-      lunch:     document.getElementById(`d${day.num}-lunch`)?.checked     ? total : 0,
-      dinner:    document.getElementById(`d${day.num}-dinner`)?.checked    ? total : 0
-    };
-  });
-  return result;
-}
-
-    // ── Amount calculator ──
-    function updateAmount() {
-      const fam   = parseInt(document.getElementById('family').value) || 0;
-      const total = 10 + fam * 5;
-      document.getElementById('amount-display').textContent   = `Rs. ${total}/-`;
-      document.getElementById('amount-breakdown').textContent = fam === 0
-        ? 'Guest: Rs. 10/-'
-        : `Guest: Rs. 10/-  +  ${fam} × Rs. 5/- = Rs. ${total}/-`;
-    }
-
-    // ── PIN Validation ──
-    function isValidPin(p) {
-      if (!/^\d{4}$/.test(p)) return false;
-      if (/^(\d)\1{3}$/.test(p)) return false;
-      const d = p.split('').map(Number);
-      if (d[1]===d[0]+1 && d[2]===d[1]+1 && d[3]===d[2]+1) return false;
-      if (d[1]===d[0]-1 && d[2]===d[1]-1 && d[3]===d[2]-1) return false;
-      return true;
-    }
-
-    function markErr(inputId, errId, show, msg) {
-      document.getElementById(inputId).classList.toggle('error', show);
-      const el = document.getElementById(errId);
-      if (msg) el.textContent = msg;
-      el.style.display = show ? 'block' : 'none';
-    }
-
-    function hideAll() {
-      ['reg-card','pin-screen','pending-screen','bankqr-screen'].forEach(id => {
-        document.getElementById(id).style.display = 'none';
-      });
-    }
-
-    // ── Get meal selections ──
-    function getMealSelections() {
-      const total = (parseInt(document.getElementById('family').value) || 0) + 1;
-      return {
-        day1: {
-          breakfast: document.getElementById('d1-breakfast').checked ? total : 0,
-          lunch:     document.getElementById('d1-lunch').checked     ? total : 0,
-          dinner:    document.getElementById('d1-dinner').checked    ? total : 0
-        },
-        day2: {
-          breakfast: document.getElementById('d2-breakfast').checked ? total : 0,
-          lunch:     document.getElementById('d2-lunch').checked     ? total : 0,
-          dinner:    document.getElementById('d2-dinner').checked    ? total : 0
-        }
-      };
-    }
-
-    // ── On load ──
 window.addEventListener('load', () => {
   generateMealCheckboxes();
-  setTimeout(() => {
-    updateMealPreviews();
-  }, 100);
-      const savedPin = localStorage.getItem('rkmvp_pin');
-      if (savedPin) {
-        hideAll();
-        document.getElementById('pin-screen').style.display = 'block';
-      }
-    });
+  setTimeout(() => { updateMealPreviews(); }, 100);
+  const savedPin = localStorage.getItem('rkmvp_pin');
+  if (savedPin) {
+    hideAll();
+    document.getElementById('pin-screen').style.display = 'block';
+  }
+});
 
-    // ── SUBMIT REGISTRATION ──
-    async function submitReg() {
-      const batch  = document.getElementById('batch').value.trim();
-      const name   = document.getElementById('name').value.trim();
-      const family = parseInt(document.getElementById('family').value) || 0;
-      const pin    = document.getElementById('pin').value.trim();
-      const pin2   = document.getElementById('pin2').value.trim();
-      let valid = true;
+async function submitReg() {
+  const batch  = document.getElementById('batch').value.trim();
+  const name   = document.getElementById('name').value.trim();
+  const family = parseInt(document.getElementById('family').value) || 0;
+  const pin    = document.getElementById('pin').value.trim();
+  const pin2   = document.getElementById('pin2').value.trim();
+  let valid = true;
 
-      const batchNum = parseInt(batch);
-      if (!batch || batchNum < 1950 || batchNum > 2025) { markErr('batch','err-batch',true); valid=false; } else markErr('batch','err-batch',false);
+  const batchNum  = parseInt(batch);
+  if (!batch || batchNum < 1950 || batchNum > 2025) { markErr('batch','err-batch',true); valid=false; } else markErr('batch','err-batch',false);
 
-      // Name — must have at least two words
-      const nameTrimmed = name.trim();
-      const nameWords   = nameTrimmed.split(/\s+/).filter(w => w.length > 0);
+  const nameTrimmed = name.trim();
+  const nameWords   = nameTrimmed.split(/\s+/).filter(w => w.length > 0);
   if (nameWords.length < 2) {
-  markErr('name','err-name',true,'Please Type Your Full Name');
-  document.getElementById('name').scrollIntoView({ behavior:'smooth', block:'center' });
-  document.getElementById('name').focus();
-  valid=false;
-} else markErr('name','err-name',false);
+    markErr('name','err-name',true,'Please Type Your Full Name');
+    document.getElementById('name').scrollIntoView({ behavior:'smooth', block:'center' });
+    document.getElementById('name').focus();
+    valid=false;
+  } else markErr('name','err-name',false);
 
-      if (!isValidPin(pin)) { markErr('pin','err-pin',true,'Avoid serial or repeated digits.'); valid=false; } else markErr('pin','err-pin',false);
-      if (pin !== pin2) { markErr('pin2','err-pin2',true); valid=false; } else markErr('pin2','err-pin2',false);
-      if (!valid) return;
-      if (!window._firebaseReady) { alert('Loading... please try again.'); return; }
+  if (!isValidPin(pin)) { markErr('pin','err-pin',true,'Avoid serial or repeated digits.'); valid=false; } else markErr('pin','err-pin',false);
+  if (pin !== pin2) { markErr('pin2','err-pin2',true); valid=false; } else markErr('pin2','err-pin2',false);
+  if (!valid) return;
+  if (!window._firebaseReady) { alert('Loading... please try again.'); return; }
 
-      const btn = document.getElementById('btn-finish');
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> Saving...';
+  const btn = document.getElementById('btn-finish');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Saving...';
 
-      try {
-        // Check PIN uniqueness
-        const q    = window._query(window._collection(window._db,'guests'), window._where('pin','==',pin));
-        const snap = await window._getDocs(q);
-        if (!snap.empty) {
-          markErr('pin','err-pin',true,'❌ This PIN is already taken. Please choose another!');
-          btn.disabled=false; btn.innerHTML='FINISH &amp; REGISTER'; return;
-        }
-
-        const amount       = 10 + family * 5;
-        const mealRequired = getMealSelections();
-        const finalName    = toTitleCase(nameTrimmed);
-
-        const docRef = await window._addDoc(window._collection(window._db,'guests'), {
-          name:         finalName,
-          batch:        batchNum,
-          familyCount:  family,
-          pin:          pin,
-          amount:       amount,
-          approved:     false,
-          bankQrVisible:false,
-          mealsRequired: mealRequired,   // what guest selected
-		  meals: Object.fromEntries(getEventDays().map(d => [`day${d.num}`, {breakfast:0,lunch:0,dinner:0}])),
-          registeredAt: new Date().toISOString()
-        });
-
-        localStorage.setItem('rkmvp_pin', pin);
-        hideAll();
-        document.getElementById('pending-screen').style.display = 'block';
-        startRealtimeListener(docRef.id, finalName, amount, family);
-
-      } catch(e) {
-        console.error(e);
-        alert('Something went wrong. Please try again.');
-        btn.disabled=false; btn.innerHTML='FINISH &amp; REGISTER';
-      }
+  try {
+    const q    = window._query(window._collection(window._db,'guests'), window._where('pin','==',pin));
+    const snap = await window._getDocs(q);
+    if (!snap.empty) {
+      markErr('pin','err-pin',true,'❌ This PIN is already taken. Please choose another!');
+      btn.disabled=false; btn.innerHTML='FINISH &amp; REGISTER'; return;
     }
 
-    // ── RETURNING GUEST ──
-    async function enterWithPin() {
-      const pin = document.getElementById('return-pin').value.trim();
-      const err = document.getElementById('err-return-pin');
-      const btn = document.getElementById('btn-pin-enter');
-      err.style.display = 'none';
-      if (!/^\d{4}$/.test(pin)) { err.style.display='block'; return; }
-      if (!window._firebaseReady) { alert('Loading...'); return; }
+    const amount       = 10 + family * 5;
+    const mealRequired = getMealSelections();
+    const finalName    = toTitleCase(nameTrimmed);
 
-      btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
-
-      try {
-        const q    = window._query(window._collection(window._db,'guests'), window._where('pin','==',pin));
-        const snap = await window._getDocs(q);
-        if (snap.empty) { err.style.display='block'; btn.disabled=false; btn.innerHTML='ENTER'; return; }
-
-        const docId = snap.docs[0].id;
-        const g     = snap.docs[0].data();
-        localStorage.setItem('rkmvp_pin', pin);
-        hideAll();
-
-        if (g.approved) {
-          window.location.href = `guest.html?pin=${encodeURIComponent(pin)}`;
-          return;
-        } else if (g.bankQrVisible) {
-          showBankQR(g.name, g.amount, g.familyCount||0);
-        } else {
-          document.getElementById('pending-screen').style.display = 'block';
-        }
-
-        startRealtimeListener(docId, g.name, g.amount, g.familyCount||0);
-        btn.disabled=false; btn.innerHTML='ENTER';
-
-      } catch(e) {
-        console.error(e);
-        alert('Error. Please try again.');
-        btn.disabled=false; btn.innerHTML='ENTER';
-      }
-    }
-
-    // ── REALTIME LISTENER ──
-    function startRealtimeListener(docId, name, amount, family) {
-      if (!window._firebaseReady) return;
-      const ref = window._doc(window._db,'guests',docId);
-      window._onSnapshot(ref, snap => {
-        if (!snap.exists()) return;
-        const data = snap.data();
-        if (data.approved) {
-          const pin = localStorage.getItem('rkmvp_pin') || '';
-          window.location.href = `guest.html?pin=${encodeURIComponent(pin)}`;
-        } else if (data.bankQrVisible) {
-          showBankQR(data.name, data.amount, data.familyCount||0);
-        }
-      });
-    }
-
-    function showBankQR(name, amount, family) {
-      hideAll();
-      document.getElementById('bankqr-amount').textContent = `Amount Payable: Rs. ${amount}/-`;
-      document.getElementById('bankqr-info').innerHTML = `
-        <strong>Name:</strong> ${name}<br>
-        <strong>Family Members:</strong> ${family}<br>
-        <strong>Total People:</strong> ${family+1}<br>
-        <strong>Amount:</strong> <span style="color:var(--red);font-weight:700">Rs. ${amount}/-</span>
-      `;
-      document.getElementById('bankqr-screen').style.display = 'block';
-      window.scrollTo({ top:0, behavior:'smooth' });
-    }
-
-    function resetRegistration() {
-      localStorage.removeItem('rkmvp_pin');
-      location.reload();
-    }
-
-    document.getElementById('return-pin').addEventListener('keydown', e => {
-      if (e.key==='Enter') enterWithPin();
+    const docRef = await window._addDoc(window._collection(window._db,'guests'), {
+      name:          finalName,
+      batch:         batchNum,
+      familyCount:   family,
+      pin:           pin,
+      amount:        amount,
+      approved:      false,
+      bankQrVisible: false,
+      mealsRequired: mealRequired,
+      meals:         Object.fromEntries(getEventDays().map(d => [`day${d.num}`, {breakfast:0,lunch:0,dinner:0}])),
+      registeredAt:  new Date().toISOString()
     });
-  </script>
+
+    localStorage.setItem('rkmvp_pin', pin);
+    hideAll();
+    document.getElementById('pending-screen').style.display = 'block';
+    startRealtimeListener(docRef.id, finalName, amount, family);
+
+  } catch(e) {
+    console.error(e);
+    alert('Something went wrong. Please try again.');
+    btn.disabled=false; btn.innerHTML='FINISH &amp; REGISTER';
+  }
+}
+
+async function enterWithPin() {
+  const pin = document.getElementById('return-pin').value.trim();
+  const err = document.getElementById('err-return-pin');
+  const btn = document.getElementById('btn-pin-enter');
+  err.style.display = 'none';
+  if (!/^\d{4}$/.test(pin)) { err.style.display='block'; return; }
+  if (!window._firebaseReady) { alert('Loading...'); return; }
+
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
+
+  try {
+    const q    = window._query(window._collection(window._db,'guests'), window._where('pin','==',pin));
+    const snap = await window._getDocs(q);
+    if (snap.empty) { err.style.display='block'; btn.disabled=false; btn.innerHTML='ENTER'; return; }
+
+    const docId = snap.docs[0].id;
+    const g     = snap.docs[0].data();
+    localStorage.setItem('rkmvp_pin', pin);
+    hideAll();
+
+    if (g.approved) {
+      window.location.href = `guest.html?pin=${encodeURIComponent(pin)}`;
+      return;
+    } else if (g.bankQrVisible) {
+      showBankQR(g.name, g.amount, g.familyCount||0);
+    } else {
+      document.getElementById('pending-screen').style.display = 'block';
+    }
+
+    startRealtimeListener(docId, g.name, g.amount, g.familyCount||0);
+    btn.disabled=false; btn.innerHTML='ENTER';
+
+  } catch(e) {
+    console.error(e);
+    alert('Error. Please try again.');
+    btn.disabled=false; btn.innerHTML='ENTER';
+  }
+}
+
+function startRealtimeListener(docId, name, amount, family) {
+  if (!window._firebaseReady) return;
+  const ref = window._doc(window._db,'guests',docId);
+  window._onSnapshot(ref, snap => {
+    if (!snap.exists()) return;
+    const data = snap.data();
+    if (data.approved) {
+      const pin = localStorage.getItem('rkmvp_pin') || '';
+      window.location.href = `guest.html?pin=${encodeURIComponent(pin)}`;
+    } else if (data.bankQrVisible) {
+      showBankQR(data.name, data.amount, data.familyCount||0);
+    }
+  });
+}
+
+function showBankQR(name, amount, family) {
+  hideAll();
+  document.getElementById('bankqr-amount').textContent = `Amount Payable: Rs. ${amount}/-`;
+  document.getElementById('bankqr-info').innerHTML = `
+    <strong>Name:</strong> ${name}<br>
+    <strong>Family Members:</strong> ${family}<br>
+    <strong>Total People:</strong> ${family+1}<br>
+    <strong>Amount:</strong> <span style="color:var(--red);font-weight:700">Rs. ${amount}/-</span>
+  `;
+  document.getElementById('bankqr-screen').style.display = 'block';
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function resetRegistration() {
+  localStorage.removeItem('rkmvp_pin');
+  location.reload();
+}
+
+document.getElementById('return-pin').addEventListener('keydown', e => {
+  if (e.key==='Enter') enterWithPin();
+});
+
 </body>
 </html>
