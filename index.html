@@ -176,7 +176,6 @@
         <label for="pin">Security PIN<span class="req">*</span></label>
         <input type="password" id="pin" placeholder="4-digit" maxlength="4" inputmode="numeric" autocomplete="new-password"/>
       </div>
-      <div class="field-note" style="margin-bottom:14px;font-size:0.88rem;">4 digits only. No serial (1234) or repeated (1111). Must be unique.</div>
       <div class="field-error" id="err-pin">Invalid or already taken PIN. Please try another.</div>
 
       <!-- Confirm PIN — inline -->
@@ -401,7 +400,7 @@
   valid=false;
 } else markErr('name','err-name',false);
 
-      if (!isValidPin(pin)) { markErr('pin','err-pin',true,'Invalid PIN. Avoid serial or repeated digits.'); valid=false; } else markErr('pin','err-pin',false);
+      if (!isValidPin(pin)) { markErr('pin','err-pin',true,'Avoid serial or repeated digits.'); valid=false; } else markErr('pin','err-pin',false);
       if (pin !== pin2) { markErr('pin2','err-pin2',true); valid=false; } else markErr('pin2','err-pin2',false);
       if (!valid) return;
       if (!window._firebaseReady) { alert('Loading... please try again.'); return; }
