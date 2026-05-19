@@ -76,9 +76,9 @@
     /* GUEST CARD */
     .guest-card{background:var(--white);margin:10px 14px;border-radius:10px;border:1.5px solid var(--border);box-shadow:0 2px 10px #0D2B5E10;overflow:hidden;}
     .gc-header{background:#F0F4FF;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E0E8F8;}
-    .gc-name{font-weight:700;color:var(--deep-blue);font-size:0.95rem;}
+    .gc-name{font-weight:700;color:var(--deep-blue);font-size:1.15rem;text-align:center;letter-spacing:0.03em;font-family:'Cinzel',serif;}
     .gc-sub{font-size:0.76rem;color:#777;margin-top:2px;}
-    .badge{padding:3px 10px;border-radius:12px;font-size:0.7rem;font-weight:700;white-space:nowrap;}
+    .badge{padding:5px 12px;border-radius:12px;font-size:0.88rem;font-weight:700;white-space:nowrap;}
     .badge-pending{background:#FFF3CD;color:#856404;}
     .badge-approved{background:#D4EDDA;color:#155724;}
     .gc-body{padding:12px 14px;}
@@ -89,10 +89,12 @@
 .field-row input:focus,.field-row select:focus{outline:none;border-color:var(--light-blue);}
 .meal-section{background:#EEF4FF;border-radius:8px;padding:10px 12px;margin-bottom:10px;border:1px solid #C5D3E8;}
 .meal-section-day{font-size:0.78rem;font-weight:700;color:var(--deep-blue);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:8px;}
-.meal-inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
-.meal-inline-item{display:flex;align-items:center;gap:5px;flex:1;min-width:80px;}
-.meal-inline-item label{font-size:0.75rem;font-weight:700;color:#555;white-space:nowrap;min-width:auto;}
-.meal-inline-item input{width:48px;padding:5px 6px;border:1.5px solid #C5D3E8;border-radius:6px;font-size:0.88rem;text-align:center;}
+
+.meal-inline{display:flex;flex-direction:column;gap:8px;}
+.meal-inline-item{display:flex;align-items:center;gap:10px;background:var(--white);border-radius:6px;padding:8px 10px;border:1px solid #C5D3E8;}
+.meal-inline-item label{font-size:0.92rem;font-weight:700;color:var(--deep-blue);min-width:90px;flex-shrink:0;}
+.meal-inline-item input{width:60px;padding:7px 8px;border:1.5px solid #C5D3E8;border-radius:6px;font-size:0.95rem;text-align:center;font-weight:700;}
+
 .meal-inline-item .req-badge{font-size:0.7rem;}
 .amount-row{display:flex;align-items:center;gap:10px;background:#FFF5F5;border-radius:8px;padding:9px 12px;border:1.5px solid #FFCCCC;margin-bottom:10px;}
 .amount-row label{font-size:0.78rem;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:0.03em;min-width:110px;flex-shrink:0;}
@@ -342,19 +344,16 @@ function buildCard(docId, g) {
           <div class="meal-section-day">📅 ${day.label}</div>
           <div class="meal-inline">
             <div class="meal-inline-item">
-              <span class="meal-icon">🍳</span>
               <label>Breakfast</label>
               <input type="number" id="d${day.num}b-${docId}" value="${dm.breakfast||0}" min="0" max="${total}"/>
               <span class="req-badge ${dmr.breakfast>0?'selected':''}">Req:${dmr.breakfast||0}</span>
             </div>
             <div class="meal-inline-item">
-              <span class="meal-icon">🍽</span>
               <label>Lunch</label>
               <input type="number" id="d${day.num}l-${docId}" value="${dm.lunch||0}" min="0" max="${total}"/>
               <span class="req-badge ${dmr.lunch>0?'selected':''}">Req:${dmr.lunch||0}</span>
             </div>
             <div class="meal-inline-item">
-              <span class="meal-icon">🌙</span>
               <label>Dinner</label>
               <input type="number" id="d${day.num}d-${docId}" value="${dm.dinner||0}" min="0" max="${total}"/>
               <span class="req-badge ${dmr.dinner>0?'selected':''}">Req:${dmr.dinner||0}</span>
@@ -485,7 +484,6 @@ const name   = document.getElementById('e-name-'+docId).value.trim();
       };
     });
     try {
-      await window._updateDoc(window._doc(window._db,'guests',docId), { name, batch, familyCount:family, amount, meals, tshirtSize:tshirt, pin });
       showMsg(docId, '✅ Changes saved successfully!', 'ok');
     } catch(e) { showMsg(docId, '❌ Error saving. Try again.', 'err'); }
   }
