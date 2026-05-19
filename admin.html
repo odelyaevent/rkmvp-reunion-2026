@@ -82,11 +82,22 @@
     .badge-pending{background:#FFF3CD;color:#856404;}
     .badge-approved{background:#D4EDDA;color:#155724;}
     .gc-body{padding:12px 14px;}
-	.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;font-size:0.95rem;}
-	.info-item{background:#F7FAFF;border-radius:8px;padding:8px 10px;border:1px solid #E0E8F8;}
-	.info-item strong{color:var(--deep-blue);display:block;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:3px;}
-    .edit-section label{font-size:0.78rem;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.03em;}
-    .edit-section input{margin-bottom:8px;padding:9px 12px;font-size:0.9rem;}
+	
+.field-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;background:#F7FAFF;border-radius:8px;padding:9px 12px;border:1px solid #E0E8F8;}
+.field-row label{font-size:0.78rem;font-weight:700;color:var(--deep-blue);text-transform:uppercase;letter-spacing:0.03em;min-width:110px;flex-shrink:0;}
+.field-row input,.field-row select{flex:1;padding:7px 10px;border:1.5px solid #C5D3E8;border-radius:6px;font-size:0.92rem;font-family:'Lato',sans-serif;background:var(--white);color:#1a1a1a;-webkit-appearance:none;}
+.field-row input:focus,.field-row select:focus{outline:none;border-color:var(--light-blue);}
+.meal-section{background:#EEF4FF;border-radius:8px;padding:10px 12px;margin-bottom:10px;border:1px solid #C5D3E8;}
+.meal-section-day{font-size:0.78rem;font-weight:700;color:var(--deep-blue);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:8px;}
+.meal-inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.meal-inline-item{display:flex;align-items:center;gap:5px;flex:1;min-width:80px;}
+.meal-inline-item label{font-size:0.75rem;font-weight:700;color:#555;white-space:nowrap;min-width:auto;}
+.meal-inline-item input{width:48px;padding:5px 6px;border:1.5px solid #C5D3E8;border-radius:6px;font-size:0.88rem;text-align:center;}
+.meal-inline-item .req-badge{font-size:0.7rem;}
+.amount-row{display:flex;align-items:center;gap:10px;background:#FFF5F5;border-radius:8px;padding:9px 12px;border:1.5px solid #FFCCCC;margin-bottom:10px;}
+.amount-row label{font-size:0.78rem;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:0.03em;min-width:110px;flex-shrink:0;}
+.amount-row span{font-size:1rem;font-weight:900;color:var(--red);font-family:'Cinzel',serif;}	
+	
     .meal-title{font-size:0.76rem;font-weight:700;color:var(--deep-blue);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;margin-top:10px;}
     .meal-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
     .meal-row label{font-size:0.78rem;color:#555;margin:0;min-width:74px;font-weight:700;}
@@ -313,69 +324,93 @@
   }
 
   // ── BUILD GUEST CARD ──
-  function buildCard(docId, g) {
-    const days    = getEventDays();
-    const total   = (g.familyCount||0)+1;
-    const m       = g.meals || {};
-    const mr      = g.mealsRequired || {};
-    const approved   = g.approved || false;
-    const qrVisible  = g.bankQrVisible || false;
+function buildCard(docId, g) {
+    const days   = getEventDays();
+    const total  = (g.familyCount||0)+1;
+    const m      = g.meals || {};
+    const mr     = g.mealsRequired || {};
+    const approved  = g.approved || false;
+    const qrVisible = g.bankQrVisible || false;
+    const sizes  = [26,28,30,32,34,36,38,40,42,44];
 
-    // Meal attendance rows
-    let mealRows = '';
+    let mealSections = '';
     days.forEach(day => {
       const dm  = m[`day${day.num}`]  || {};
       const dmr = mr[`day${day.num}`] || {};
-      mealRows += `
-        <div class="meal-title">${day.label}</div>
-        <div class="meal-row"><label>Breakfast</label>
-          <input type="number" id="d${day.num}b-${docId}" value="${dm.breakfast||0}" min="0" max="${total}"/>
-          <span class="of">/ ${total}</span>
-          <span class="req-badge ${dmr.breakfast>0?'selected':''}">Req: ${dmr.breakfast||0}</span>
-        </div>
-        <div class="meal-row"><label>Lunch</label>
-          <input type="number" id="d${day.num}l-${docId}" value="${dm.lunch||0}" min="0" max="${total}"/>
-          <span class="of">/ ${total}</span>
-          <span class="req-badge ${dmr.lunch>0?'selected':''}">Req: ${dmr.lunch||0}</span>
-        </div>
-        <div class="meal-row" style="margin-bottom:4px;"><label>Dinner</label>
-          <input type="number" id="d${day.num}d-${docId}" value="${dm.dinner||0}" min="0" max="${total}"/>
-          <span class="of">/ ${total}</span>
-          <span class="req-badge ${dmr.dinner>0?'selected':''}">Req: ${dmr.dinner||0}</span>
+      mealSections += `
+        <div class="meal-section">
+          <div class="meal-section-day">📅 ${day.label}</div>
+          <div class="meal-inline">
+            <div class="meal-inline-item">
+              <span class="meal-icon">🍳</span>
+              <label>Breakfast</label>
+              <input type="number" id="d${day.num}b-${docId}" value="${dm.breakfast||0}" min="0" max="${total}"/>
+              <span class="req-badge ${dmr.breakfast>0?'selected':''}">Req:${dmr.breakfast||0}</span>
+            </div>
+            <div class="meal-inline-item">
+              <span class="meal-icon">🍽</span>
+              <label>Lunch</label>
+              <input type="number" id="d${day.num}l-${docId}" value="${dm.lunch||0}" min="0" max="${total}"/>
+              <span class="req-badge ${dmr.lunch>0?'selected':''}">Req:${dmr.lunch||0}</span>
+            </div>
+            <div class="meal-inline-item">
+              <span class="meal-icon">🌙</span>
+              <label>Dinner</label>
+              <input type="number" id="d${day.num}d-${docId}" value="${dm.dinner||0}" min="0" max="${total}"/>
+              <span class="req-badge ${dmr.dinner>0?'selected':''}">Req:${dmr.dinner||0}</span>
+            </div>
+          </div>
         </div>`;
     });
+
+    const sizeOptions = sizes.map(s =>
+      `<option value="${s}" ${(g.tshirtSize||0)===s?'selected':''}>${s}</option>`
+    ).join('');
 
     return `
     <div class="guest-card" id="gc-${docId}">
       <div class="gc-header">
         <div>
           <div class="gc-name">${g.name}</div>
-          <div class="gc-sub">Batch: ${g.batch} &nbsp;|&nbsp; PIN: <strong>${g.pin}</strong> &nbsp;|&nbsp; Family: ${g.familyCount||0}</div>
+          <div class="gc-sub">Batch: ${g.batch} &nbsp;|&nbsp; PIN: <strong>${g.pin}</strong></div>
         </div>
         <span class="badge ${approved?'badge-approved':'badge-pending'}" id="badge-${docId}">
           ${approved?'✅ Approved':'⏳ Pending'}
         </span>
       </div>
       <div class="gc-body">
-        <div class="info-grid">
-          <div class="info-item"><strong>Amount</strong>Rs. ${g.amount||(10+(g.familyCount||0)*5)}/-</div>
-          <div class="info-item"><strong>Total People</strong>${total}</div>
-          <div class="info-item"><strong>Bank QR</strong>${qrVisible?'🟢 Visible':'⚫ Hidden'}</div>
-          <div class="info-item"><strong>Registered</strong>${(g.registeredAt||'').split('T')[0]||'—'}</div>
-		  <div class="info-item"><strong>T-Shirt Size</strong>${g.tshirtSize>0 ? g.tshirtSize+' cm' : 'None'}</div>
-        </div>
-        <div class="edit-section">
-          <label>Full Name</label>
-          <input type="text" id="e-name-${docId}" value="${g.name}"/>
+
+        <div class="field-row">
           <label>Batch Year</label>
           <input type="number" id="e-batch-${docId}" value="${g.batch}"/>
+        </div>
+        <div class="field-row">
+          <label>Full Name</label>
+          <input type="text" id="e-name-${docId}" value="${g.name}"/>
+        </div>
+        <div class="field-row">
           <label>Family Members</label>
           <input type="number" id="e-family-${docId}" value="${g.familyCount||0}" min="0"/>
-		  <label>T-Shirt Size (cm)</label>
-          <input type="number" id="e-tshirt-${docId}" value="${g.tshirtSize||0}" min="0" max="150"/>
-		  
         </div>
-        ${mealRows}
+        <div class="field-row">
+          <label>T-Shirt Size</label>
+          <select id="e-tshirt-${docId}">
+            <option value="0" ${(g.tshirtSize||0)===0?'selected':''}>Not Specified</option>
+            ${sizeOptions}
+          </select>
+        </div>
+        <div class="field-row">
+          <label>Security PIN</label>
+          <input type="text" id="e-pin-${docId}" value="${g.pin}" maxlength="4"/>
+        </div>
+
+        ${mealSections}
+
+        <div class="amount-row">
+          <label>Amount Paid</label>
+          <span>Rs. ${g.amount||(10+(g.familyCount||0)*5)}/-</span>
+        </div>
+
         <div class="action-row">
           <button class="abtn abtn-generate" onclick="generateBankQR('${docId}')">💳 Bank QR</button>
           <button class="abtn abtn-hide" onclick="hideBankQR('${docId}')">🙈 Hide QR</button>
@@ -387,6 +422,7 @@
           <button class="abtn abtn-save" onclick="saveGuest('${docId}')">💾 Save Changes</button>
         </div>
         <div class="action-msg" id="msg-${docId}"></div>
+
       </div>
     </div>`;
   }
@@ -434,10 +470,11 @@
   // ── SAVE GUEST ──
   async function saveGuest(docId) {
     const days   = getEventDays();
-    const name   = document.getElementById('e-name-'+docId).value.trim();
+const name   = document.getElementById('e-name-'+docId).value.trim();
     const batch  = parseInt(document.getElementById('e-batch-'+docId).value);
     const family = parseInt(document.getElementById('e-family-'+docId).value)||0;
-	const tshirt = parseInt(document.getElementById('e-tshirt-'+docId).value)||0;
+    const tshirt = parseInt(document.getElementById('e-tshirt-'+docId).value)||0;
+    const pin    = document.getElementById('e-pin-'+docId).value.trim();
     const amount = 10 + family * 5;
     const meals  = {};
     days.forEach(day => {
@@ -448,7 +485,7 @@
       };
     });
     try {
-      await window._updateDoc(window._doc(window._db,'guests',docId), { name, batch, familyCount:family, amount, meals, tshirtSize:tshirt });
+      await window._updateDoc(window._doc(window._db,'guests',docId), { name, batch, familyCount:family, amount, meals, tshirtSize:tshirt, pin });
       showMsg(docId, '✅ Changes saved successfully!', 'ok');
     } catch(e) { showMsg(docId, '❌ Error saving. Try again.', 'err'); }
   }
