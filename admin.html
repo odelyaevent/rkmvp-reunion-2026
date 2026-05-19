@@ -161,7 +161,7 @@
   <div class="tabs">
     <div class="tab active" onclick="switchTab('search')">🔍 Search</div>
     <div class="tab" onclick="switchTab('all')">👥 Guests</div>
-    <div class="tab" onclick="switchTab('food')">🍽 Food</div>
+    <div class="tab" onclick="switchTab('food')">👕 Estimate</div>
     <div class="tab" onclick="switchTab('stats')">📊 Stats</div>
   </div>
 
@@ -211,7 +211,14 @@
         <tbody id="food-actual-body"></tbody>
       </table>
     </div>
-    <button class="btn-excel" onclick="loadFoodSummary()" style="background:var(--light-blue);">🔄 Refresh Food Data</button>
+    <button class="btn-excel" onclick="loadFoodSummary()" style="background:var(--light-blue);">🔄 Refresh Data</button>
+    <div class="section-title">👕 T-Shirt Requirements</div>
+    <div style="padding:0 14px;">
+      <table class="food-table" id="tshirt-table">
+        <thead><tr><th>Size (cm)</th><th>Count</th></tr></thead>
+        <tbody id="tshirt-body"></tbody>
+      </table>
+    </div>
   </div>
 
   <!-- STATS TAB -->
@@ -536,6 +543,26 @@
       });
       actHtml += `<tr class="total-row"><td>TOTAL</td><td>${aTotB}</td><td>${aTotL}</td><td>${aTotD}</td></tr>`;
       document.getElementById('food-actual-body').innerHTML = actHtml;
+
+// T-shirt summary
+      const sizes = [26,28,30,32,34,36,38,40,42,44];
+      const tshirtCount = {};
+      sizes.forEach(s => tshirtCount[s] = 0);
+      let tshirtTotal = 0;
+      snap.docs.forEach(d => {
+        const g = d.data();
+        const s = g.tshirtSize || 0;
+        if (s > 0 && tshirtCount[s] !== undefined) {
+          tshirtCount[s]++;
+          tshirtTotal++;
+        }
+      });
+      let tshirtHtml = '';
+      sizes.forEach(s => {
+        tshirtHtml += `<tr><td>${s} cm</td><td>${tshirtCount[s]}</td></tr>`;
+      });
+      tshirtHtml += `<tr class="total-row"><td>TOTAL</td><td>${tshirtTotal}</td></tr>`;
+      document.getElementById('tshirt-body').innerHTML = tshirtHtml;
 
     } catch(e) { console.error(e); }
   }
