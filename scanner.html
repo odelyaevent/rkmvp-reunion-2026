@@ -10,17 +10,15 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
     // ── PASTE YOUR FIREBASE CONFIG HERE ──
-const firebaseConfig = {
-    apiKey: "AIzaSyAAW9zZmE1cEUUWLEwT1hWtY1fQoiGt_No",
-    authDomain: "rkmvp-reunion-2026.firebaseapp.com",
-    projectId: "rkmvp-reunion-2026",
-    storageBucket: "rkmvp-reunion-2026.firebasestorage.app",
-    messagingSenderId: "552260116936",
-    appId: "1:552260116936:web:5d731a1fa2746ad149e0fd"
-  };
-
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
     const app  = initializeApp(firebaseConfig);
     const db   = getFirestore(app);
     const auth = getAuth(app);
@@ -29,7 +27,6 @@ const firebaseConfig = {
     window._signIn=signInWithEmailAndPassword;
     window._signOut=signOut;
     window._firebaseReady=true;
-
     onAuthStateChanged(auth, user => {
       if (user) showScanner(user.email);
       else showLogin();
@@ -47,32 +44,29 @@ const firebaseConfig = {
     .top-bar span{font-size:0.78rem;color:var(--deep-blue);font-weight:700;}
     .btn-sm{padding:6px 14px;border:none;border-radius:6px;font-size:0.78rem;font-weight:700;cursor:pointer;}
     .btn-logout{background:var(--red);color:white;}
-
-    /* LOGIN */
     .login-card{background:var(--white);margin:30px 14px;border-radius:14px;border:1.5px solid #FFD70044;box-shadow:0 4px 24px #0D2B5E18;overflow:hidden;}
     .card-header{background:linear-gradient(90deg,var(--deep-blue),var(--light-blue));padding:12px 18px;}
     .card-header h2{font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;letter-spacing:0.05em;}
     .card-body{padding:22px 18px;}
-    label{display:block;font-weight:700;color:var(--deep-blue);font-size:0.85rem;margin-bottom:5px;}
-    input{width:100%;padding:11px 13px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.95rem;font-family:'Lato',sans-serif;background:#F7FAFF;margin-bottom:14px;-webkit-appearance:none;}
+    label{display:block;font-weight:700;color:var(--deep-blue);font-size:0.95rem;margin-bottom:5px;}
+    input{width:100%;padding:12px 13px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:1rem;font-family:'Lato',sans-serif;background:#F7FAFF;margin-bottom:14px;-webkit-appearance:none;}
     input:focus{outline:none;border-color:var(--light-blue);}
     .btn-main{width:100%;padding:13px;background:linear-gradient(135deg,var(--saffron),#C9400A);color:var(--white);font-family:'Cinzel',serif;font-size:1rem;font-weight:700;letter-spacing:0.06em;border:none;border-radius:10px;cursor:pointer;}
     .btn-main:disabled{opacity:0.6;cursor:not-allowed;}
-    .err-msg{color:var(--red);font-size:0.82rem;margin-bottom:10px;display:none;font-weight:700;}
+    .err-msg{color:var(--red);font-size:0.88rem;margin-bottom:10px;display:none;font-weight:700;}
     .spinner{display:inline-block;width:16px;height:16px;border:3px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
     @keyframes spin{to{transform:rotate(360deg);}}
-
-    /* SCANNER */
     #scanner-section{display:none;}
-    .scan-card{background:var(--white);margin:14px 14px 0;border-radius:14px;border:1.5px solid #FFD70044;box-shadow:0 4px 24px #0D2B5E18;overflow:hidden;}
-    #reader{width:100%;}
-    .scan-note{text-align:center;padding:12px;font-size:0.84rem;color:#555;background:#F7FAFF;border-top:1px solid #eee;}
     .scan-stats{display:flex;gap:10px;padding:10px 14px 0;}
     .scan-stat{flex:1;background:var(--white);border-radius:8px;border:1.5px solid #FFD70044;padding:10px;text-align:center;}
     .scan-stat-num{font-family:'Cinzel',serif;font-size:1.4rem;font-weight:900;color:var(--deep-blue);}
     .scan-stat-label{font-size:0.7rem;color:#777;margin-top:2px;}
-
-    /* RESULT OVERLAY — full screen */
+    .scan-card{background:var(--white);margin:14px 14px 0;border-radius:14px;border:1.5px solid #FFD70044;box-shadow:0 4px 24px #0D2B5E18;overflow:hidden;}
+    #reader{width:100%;}
+    .scan-note{text-align:center;padding:12px;font-size:0.88rem;color:#555;background:#F7FAFF;border-top:1px solid #eee;}
+    /* Event day info */
+    .day-info{margin:10px 14px 0;background:var(--white);border-radius:8px;border:1.5px solid #FFD70044;padding:10px 14px;font-size:0.82rem;color:var(--deep-blue);font-weight:700;text-align:center;}
+    /* RESULT OVERLAY */
     #result-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;}
     #result-overlay.active{display:flex;}
     #result-overlay.green{background:var(--success);}
@@ -82,17 +76,13 @@ const firebaseConfig = {
     @keyframes pop{from{transform:scale(0.4);}to{transform:scale(1);}}
     .result-status{font-family:'Cinzel',serif;font-size:clamp(2.2rem,11vw,3.5rem);font-weight:900;color:white;letter-spacing:0.06em;margin-bottom:8px;}
     .result-name{font-size:1.1rem;color:rgba(255,255,255,0.95);font-weight:700;margin-bottom:4px;}
-    .result-detail{font-size:0.9rem;color:rgba(255,255,255,0.85);line-height:1.7;margin-bottom:18px;white-space:pre-line;}
-
-    /* COUNTER */
+    .result-detail{font-size:0.95rem;color:rgba(255,255,255,0.85);line-height:1.7;margin-bottom:18px;white-space:pre-line;}
     .counter-section{margin-bottom:18px;}
-    .counter-label{font-size:0.85rem;color:rgba(255,255,255,0.85);margin-bottom:10px;}
+    .counter-label{font-size:0.9rem;color:rgba(255,255,255,0.85);margin-bottom:10px;}
     .counter-row{display:flex;align-items:center;justify-content:center;gap:18px;}
-    .cnt-btn{width:50px;height:50px;border-radius:50%;border:3px solid white;background:transparent;color:white;font-size:1.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+    .cnt-btn{width:50px;height:50px;border-radius:50%;border:3px solid white;background:transparent;color:white;font-size:1.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;}
     .cnt-btn:active{background:rgba(255,255,255,0.2);}
     .cnt-num{font-family:'Cinzel',serif;font-size:2.5rem;font-weight:900;color:white;min-width:50px;}
-
-    /* ACTION BUTTONS */
     .result-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:280px;}
     .btn-confirm{padding:14px;background:white;border:none;border-radius:10px;font-family:'Cinzel',serif;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:0.05em;}
     #result-overlay.green .btn-confirm{color:var(--success);}
@@ -129,9 +119,10 @@ const firebaseConfig = {
     <span id="att-email-display">Attendant</span>
     <button class="btn-sm btn-logout" onclick="attLogout()">LOGOUT</button>
   </div>
+  <div class="day-info" id="day-info">📅 Loading event day info...</div>
   <div class="scan-stats">
-    <div class="scan-stat"><div class="scan-stat-num" id="scan-count-ok">0</div><div class="scan-stat-label">Allowed Today</div></div>
-    <div class="scan-stat"><div class="scan-stat-num" id="scan-count-fail">0</div><div class="scan-stat-label">Rejected Today</div></div>
+    <div class="scan-stat"><div class="scan-stat-num" id="scan-count-ok">0</div><div class="scan-stat-label">Allowed</div></div>
+    <div class="scan-stat"><div class="scan-stat-num" id="scan-count-fail">0</div><div class="scan-stat-label">Rejected</div></div>
     <div class="scan-stat"><div class="scan-stat-num" id="scan-count-total">0</div><div class="scan-stat-label">Total Scans</div></div>
   </div>
   <div class="scan-card">
@@ -142,7 +133,7 @@ const firebaseConfig = {
 
 <!-- RESULT OVERLAY -->
 <div id="result-overlay">
-  <div class="result-icon"  id="result-icon"></div>
+  <div class="result-icon"   id="result-icon"></div>
   <div class="result-status" id="result-status"></div>
   <div class="result-name"   id="result-name"></div>
   <div class="result-detail" id="result-detail"></div>
@@ -162,30 +153,49 @@ const firebaseConfig = {
 
 <script>
   // ============================================================
-  // ⚙️  EVENT CONFIGURATION — CHANGE THESE FOR YOUR EVENT
+  // ⚙️ EVENT CONFIGURATION — CHANGE THESE FOR YOUR EVENT
   // ============================================================
-  const EVENT_CONFIG = {
-    DAY1_DATE: '2026-05-18',   // ← CHANGE THIS: First day of event
-    DAY2_DATE: '2026-05-19',   // ← CHANGE THIS: Second day of event
-  };
+  const EVENT_START_DATE = '2026-12-20'; // ← CHANGE THIS
+  const EVENT_END_DATE   = '2026-12-22'; // ← CHANGE THIS
   // ============================================================
+
+  function getEventDays() {
+    const days = [];
+    let current = new Date(EVENT_START_DATE);
+    const end   = new Date(EVENT_END_DATE);
+    let dayNum  = 1;
+    while (current <= end) {
+      days.push({
+        num:   dayNum,
+        date:  current.toISOString().split('T')[0],
+        label: `Day ${dayNum} — ${current.toLocaleDateString('en-IN',{day:'numeric',month:'long'})}`
+      });
+      current.setDate(current.getDate()+1);
+      dayNum++;
+    }
+    return days;
+  }
+
+  function getEventDay() {
+    const today = new Date().toISOString().split('T')[0];
+    return getEventDays().find(d => d.date === today) || null;
+  }
 
   let scanner      = null;
   let pendingEntry = null;
   let entryCount   = 1;
   let maxCount     = 1;
-  let scanOk   = parseInt(localStorage.getItem('scanOk'))  || 0;
-  let scanFail = parseInt(localStorage.getItem('scanFail')) || 0;
+  let scanOk       = parseInt(localStorage.getItem('scanOk'))   || 0;
+  let scanFail     = parseInt(localStorage.getItem('scanFail')) || 0;
 
-function updateScanStats() {
-  localStorage.setItem('scanOk',   scanOk);
-  localStorage.setItem('scanFail', scanFail);
-  document.getElementById('scan-count-ok').textContent    = scanOk;
-  document.getElementById('scan-count-fail').textContent  = scanFail;
-  document.getElementById('scan-count-total').textContent = scanOk + scanFail;
-}
+  function updateScanStats() {
+    localStorage.setItem('scanOk',   scanOk);
+    localStorage.setItem('scanFail', scanFail);
+    document.getElementById('scan-count-ok').textContent    = scanOk;
+    document.getElementById('scan-count-fail').textContent  = scanFail;
+    document.getElementById('scan-count-total').textContent = scanOk + scanFail;
+  }
 
-  // ── AUTH ──
   function attLogin() {
     const email = document.getElementById('att-email').value.trim();
     const pass  = document.getElementById('att-pass').value.trim();
@@ -200,40 +210,55 @@ function updateScanStats() {
     });
   }
 
-function attLogout() {
-  if (scanner) {
-    scanner.stop().then(() => {
-      scanner = null;
+  function attLogout() {
+    if (scanner) {
+      scanner.stop().then(() => {
+        scanner = null;
+        window._signOut(window._auth);
+      }).catch(() => {
+        scanner = null;
+        window._signOut(window._auth);
+      });
+    } else {
       window._signOut(window._auth);
-    }).catch(() => {
-      scanner = null;
-      window._signOut(window._auth);
-    });
-  } else {
-    window._signOut(window._auth);
+    }
   }
-}
 
-function showLogin() {
-  document.getElementById('login-section').style.display = 'block';
-  document.getElementById('dashboard-section').style.display = 'none';
-  // Reset login button
-  const btn = document.getElementById('btn-login');
-  btn.disabled = false;
-  btn.textContent = 'LOGIN';
-  // Clear fields
-  document.getElementById('admin-email').value = '';
-  document.getElementById('admin-pass').value = '';
-  document.getElementById('login-err').style.display = 'none';
-}
+  function showLogin() {
+    document.getElementById('login-section').style.display  = 'block';
+    document.getElementById('scanner-section').style.display = 'none';
+    const btn = document.getElementById('btn-login');
+    btn.disabled = false; btn.textContent = 'LOGIN';
+    document.getElementById('att-email').value = '';
+    document.getElementById('att-pass').value  = '';
+    document.getElementById('login-err').style.display = 'none';
+  }
 
-function showScanner(email) {
-  document.getElementById('login-section').style.display = 'none';
-  document.getElementById('scanner-section').style.display = 'block';
-  document.getElementById('att-email-display').textContent = email;
-  updateScanStats();
-  startScanner();
-}
+  function showScanner(email) {
+    document.getElementById('login-section').style.display  = 'none';
+    document.getElementById('scanner-section').style.display = 'block';
+    document.getElementById('att-email-display').textContent = email;
+
+    // Show event day info
+    const eventDay = getEventDay();
+    const dayInfoEl = document.getElementById('day-info');
+    if (eventDay) {
+      dayInfoEl.textContent = `📅 Today: ${eventDay.label}`;
+      dayInfoEl.style.color = 'var(--success)';
+    } else {
+      const today = new Date().toISOString().split('T')[0];
+      const start = EVENT_START_DATE;
+      if (today < start) {
+        dayInfoEl.textContent = `⏳ Event starts on ${new Date(EVENT_START_DATE).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}`;
+      } else {
+        dayInfoEl.textContent = `ℹ️ Event has ended. Scanning disabled.`;
+      }
+      dayInfoEl.style.color = 'var(--red)';
+    }
+
+    updateScanStats();
+    startScanner();
+  }
 
   function startScanner() {
     if (scanner) return;
@@ -248,14 +273,6 @@ function showScanner(email) {
     });
   }
 
-  function getEventDay() {
-    const today = new Date().toISOString().split('T')[0];
-    if (today === EVENT_CONFIG.DAY1_DATE) return 1;
-    if (today === EVENT_CONFIG.DAY2_DATE) return 2;
-    return null;
-  }
-
-  // ── SCAN SUCCESS ──
   async function onScanSuccess(rawText) {
     if (!window._firebaseReady || pendingEntry) return;
     if (scanner) scanner.pause();
@@ -275,16 +292,21 @@ function showScanner(email) {
       return;
     }
 
-    // Check event day matches
+    // Check event day
     const eventDay = getEventDay();
     if (!eventDay) {
       scanFail++; updateScanStats();
-      showResult('warning','⚠️','WRONG DAY',`Today is not an event day.\nEvent: ${EVENT_CONFIG.DAY1_DATE} & ${EVENT_CONFIG.DAY2_DATE}`,'',null);
+      showResult('warning','⚠️','WRONG DAY',
+        `Today is not an event day.\nEvent: ${EVENT_START_DATE} to ${EVENT_END_DATE}`,
+        name||'', null);
       return;
     }
-    if (parseInt(day) !== eventDay) {
+
+    if (parseInt(day) !== eventDay.num) {
       scanFail++; updateScanStats();
-      showResult('warning','⚠️','WRONG DAY QR',`This QR is for Day ${day}.\nToday is Day ${eventDay}.`,name||'',null);
+      showResult('warning','⚠️','WRONG DAY QR',
+        `This QR is for Day ${day}.\nToday is ${eventDay.label}.`,
+        name||'', null);
       return;
     }
 
@@ -313,17 +335,16 @@ function showScanner(email) {
       if (remaining <= 0) {
         scanFail++; updateScanStats();
         showResult('red','❌','LIMIT REACHED',
-          `${meal.toUpperCase()} – Day ${day}\nAll ${allowed} entries used.\nNo more entries allowed.`,
+          `${meal.toUpperCase()} — ${eventDay.label}\nAll ${allowed} entries used.\nNo more entries allowed.`,
           g.name, null);
         return;
       }
 
-      // ✅ OK — show green with counter
       pendingEntry = { ref, dayKey, meal, used, allowed };
       entryCount   = 1;
       maxCount     = remaining;
       showResult('green','✅','ALLOWED',
-        `${meal.toUpperCase()} – Day ${day}\nUsed: ${used} / ${allowed}\nRemaining: ${remaining}`,
+        `${meal.toUpperCase()} — ${eventDay.label}\nUsed: ${used} / ${allowed} — ${remaining} remaining`,
         g.name, remaining);
 
     } catch(e) {
@@ -381,12 +402,17 @@ function showScanner(email) {
     }
   }
 
-  // Keyboard shortcut — spacebar to dismiss
   document.addEventListener('keydown', e => {
-    if (e.code === 'Space' && document.getElementById('result-overlay').classList.contains('active')) {
+    if (e.code==='Space' && document.getElementById('result-overlay').classList.contains('active')) {
       e.preventDefault();
       dismissResult();
     }
+  });
+
+  window.addEventListener('load', () => {
+    document.getElementById('att-pass').addEventListener('keydown', e => {
+      if (e.key==='Enter') attLogin();
+    });
   });
 </script>
 </body>
