@@ -10,58 +10,48 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, query, where, getDocs, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
     // ── PASTE YOUR FIREBASE CONFIG HERE ──
-const firebaseConfig = {
-    apiKey: "AIzaSyAAW9zZmE1cEUUWLEwT1hWtY1fQoiGt_No",
-    authDomain: "rkmvp-reunion-2026.firebaseapp.com",
-    projectId: "rkmvp-reunion-2026",
-    storageBucket: "rkmvp-reunion-2026.firebasestorage.app",
-    messagingSenderId: "552260116936",
-    appId: "1:552260116936:web:5d731a1fa2746ad149e0fd"
-  };
-
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
     const app = initializeApp(firebaseConfig);
     const db  = getFirestore(app);
-    window._db         = db;
-    window._collection = collection;
-    window._query      = query;
-    window._where      = where;
-    window._getDocs    = getDocs;
-    window._doc        = doc;
-    window._onSnapshot = onSnapshot;
-    window._firebaseReady = true;
+    window._db=db; window._collection=collection; window._query=query;
+    window._where=where; window._getDocs=getDocs;
+    window._doc=doc; window._onSnapshot=onSnapshot;
+    window._firebaseReady=true;
   </script>
 
   <style>
-    :root {
-      --saffron:#E8560A; --gold:#FFD700; --deep-blue:#0D2B5E;
-      --light-blue:#1A4A9E; --cream:#FDF6E3; --white:#FFFFFF;
-      --red:#CC0000; --success:#1A7A3C; --border:#FFD70044;
-    }
+    :root{--saffron:#E8560A;--gold:#FFD700;--deep-blue:#0D2B5E;--light-blue:#1A4A9E;--cream:#FDF6E3;--white:#FFFFFF;--red:#CC0000;--success:#1A7A3C;--border:#FFD70044;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Lato',sans-serif;background:var(--cream);min-height:100vh;padding-bottom:40px;}
     header{background:linear-gradient(135deg,var(--deep-blue),var(--light-blue));padding:22px 18px 18px;text-align:center;border-bottom:4px solid var(--gold);}
     header h1{font-family:'Cinzel',serif;color:var(--white);font-size:clamp(1.5rem,6.5vw,2.2rem);letter-spacing:0.04em;text-shadow:0 2px 8px #00000055;}
-    header p.address{color:#B8CFFF;font-size:clamp(0.72rem,3.2vw,0.88rem);margin-top:6px;}
+    header p.address{color:#B8CFFF;font-size:clamp(0.85rem,3.5vw,1rem);margin-top:6px;}
     .reunion-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px;}
-    .logo-wrap{width:52px;height:52px;border-radius:50%;background:var(--cream);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+    .logo-wrap{width:56px;height:56px;border-radius:50%;background:var(--cream);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
     .logo-wrap img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
     .logo-wrap span{font-size:0.55rem;color:var(--deep-blue);font-weight:700;text-align:center;line-height:1.2;padding:2px;}
-    .reunion-title{font-family:'Cinzel',serif;color:var(--gold);font-size:clamp(1.3rem,6vw,2rem);font-weight:900;letter-spacing:0.06em;text-shadow:0 2px 10px #00000066;}
+    .reunion-title{font-family:'Cinzel',serif;color:var(--gold);font-size:clamp(1.4rem,6.5vw,2.2rem);font-weight:900;letter-spacing:0.06em;text-shadow:0 2px 10px #00000066;}
     .card{background:var(--white);margin:22px 14px 0;border-radius:14px;border:1.5px solid var(--border);box-shadow:0 4px 24px #0D2B5E18;overflow:hidden;}
-    .card-header{background:linear-gradient(90deg,var(--deep-blue),var(--light-blue));padding:12px 18px;}
-    .card-header h2{font-family:'Cinzel',serif;color:var(--gold);font-size:clamp(0.95rem,4vw,1.1rem);letter-spacing:0.05em;}
+    .card-header{background:linear-gradient(90deg,var(--deep-blue),var(--light-blue));padding:14px 18px;}
+    .card-header h2{font-family:'Cinzel',serif;color:var(--gold);font-size:clamp(1.1rem,4.5vw,1.3rem);letter-spacing:0.05em;}
     .card-body{padding:22px 18px;}
-    label{display:block;font-weight:700;color:var(--deep-blue);font-size:0.87rem;margin-bottom:5px;}
-    input{width:100%;padding:13px 14px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:1.5rem;font-family:'Lato',sans-serif;color:#1a1a1a;background:#F7FAFF;text-align:center;letter-spacing:0.4em;-webkit-appearance:none;}
+    label{display:block;font-weight:700;color:var(--deep-blue);font-size:1rem;margin-bottom:8px;}
+    input{width:100%;padding:14px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:1.5rem;font-family:'Lato',sans-serif;color:#1a1a1a;background:#F7FAFF;text-align:center;letter-spacing:0.4em;-webkit-appearance:none;}
     input:focus{outline:none;border-color:var(--light-blue);box-shadow:0 0 0 3px #1A4A9E22;}
     input.error{border-color:var(--red);}
-    .field-error{font-size:0.78rem;color:var(--red);margin-top:6px;display:none;font-weight:700;text-align:center;}
-    .btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--saffron),#C9400A);color:var(--white);font-family:'Cinzel',serif;font-size:1.05rem;font-weight:700;letter-spacing:0.08em;border:none;border-radius:10px;cursor:pointer;box-shadow:0 4px 16px #E8560A44;transition:transform 0.15s,opacity 0.15s;margin-top:14px;}
+    .field-error{font-size:0.9rem;color:var(--red);margin-top:6px;display:none;font-weight:700;text-align:center;}
+    .btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--saffron),#C9400A);color:var(--white);font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;letter-spacing:0.08em;border:none;border-radius:10px;cursor:pointer;box-shadow:0 4px 16px #E8560A44;transition:transform 0.15s,opacity 0.15s;margin-top:14px;}
     .btn:active{transform:scale(0.97);}
     .btn:disabled{opacity:0.6;cursor:not-allowed;}
-    .spinner{display:inline-block;width:18px;height:18px;border:3px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px;}
+    .spinner{display:inline-block;width:20px;height:20px;border:3px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px;}
     @keyframes spin{to{transform:rotate(360deg);}}
 
     /* MEAL SCREEN */
@@ -71,21 +61,21 @@ const firebaseConfig = {
     .meal-label.breakfast{color:#D4780A;}
     .meal-label.lunch{color:var(--success);}
     .meal-label.dinner{color:var(--deep-blue);}
-    .meal-day-tag{display:inline-block;background:var(--deep-blue);color:var(--gold);font-family:'Cinzel',serif;font-size:0.82rem;padding:4px 14px;border-radius:20px;margin-top:8px;letter-spacing:0.06em;}
+    .meal-day-tag{display:inline-block;background:var(--deep-blue);color:var(--gold);font-family:'Cinzel',serif;font-size:0.85rem;padding:5px 16px;border-radius:20px;margin-top:8px;letter-spacing:0.06em;}
     .outside-hours{text-align:center;padding:30px 18px;color:#888;font-size:0.95rem;line-height:1.8;}
     .outside-hours span{font-size:2rem;display:block;margin-bottom:10px;}
     .qr-section{text-align:center;padding:10px 18px 24px;}
-    .qr-note{font-size:0.83rem;color:#555;margin-bottom:14px;}
+    .qr-note{font-size:0.88rem;color:#555;margin-bottom:14px;}
     #qr-canvas{display:inline-block;padding:12px;background:white;border:3px solid var(--gold);border-radius:12px;box-shadow:0 4px 16px #00000018;}
-    .group-info{margin:6px 14px 0;background:var(--white);border-radius:10px;border:1.5px solid var(--border);padding:14px 16px;font-size:0.86rem;color:#333;line-height:1.9;}
+    .group-info{margin:6px 14px 0;background:var(--white);border-radius:10px;border:1.5px solid var(--border);padding:14px 16px;font-size:0.9rem;color:#333;line-height:2;}
     .group-info strong{color:var(--deep-blue);}
-    .meal-count-badge{display:inline-block;background:#EEF4FF;color:var(--deep-blue);border-radius:6px;padding:2px 10px;font-weight:700;font-size:0.8rem;margin-left:4px;}
+    .meal-count-badge{display:inline-block;background:#EEF4FF;color:var(--deep-blue);border-radius:6px;padding:2px 10px;font-weight:700;font-size:0.82rem;margin-left:4px;}
 
-    /* NOT EVENT DAY */
+    /* INFO BOXES */
     .info-box{margin:22px 14px 0;background:var(--white);border-radius:14px;border:2px solid var(--gold);padding:28px 18px;text-align:center;}
-    .info-box .icon{font-size:2.5rem;margin-bottom:10px;}
-    .info-box h3{font-family:'Cinzel',serif;color:var(--deep-blue);font-size:1rem;margin-bottom:8px;}
-    .info-box p{color:#555;font-size:0.87rem;line-height:1.7;}
+    .info-box .icon{font-size:2.8rem;margin-bottom:12px;}
+    .info-box h3{font-family:'Cinzel',serif;color:var(--deep-blue);font-size:1.1rem;margin-bottom:8px;}
+    .info-box p{color:#555;font-size:0.95rem;line-height:1.7;}
   </style>
 </head>
 <body>
@@ -106,7 +96,7 @@ const firebaseConfig = {
   <div class="card" id="pin-card">
     <div class="card-header"><h2>Guest Meal Portal</h2></div>
     <div class="card-body" style="text-align:center;">
-      <p style="color:#555;font-size:0.88rem;margin-bottom:18px;line-height:1.6;">Enter your <strong>Security PIN</strong> to view your meal pass.</p>
+      <p style="color:#555;font-size:1rem;margin-bottom:18px;line-height:1.6;">Enter your <strong>Security PIN</strong><br>to view your meal pass.</p>
       <label>Security PIN</label>
       <input type="password" id="pin-input" maxlength="4" inputmode="numeric" placeholder="••••" autocomplete="new-password"/>
       <div class="field-error" id="pin-error">❌ PIN not found. Please try again.</div>
@@ -118,7 +108,7 @@ const firebaseConfig = {
   <div class="info-box" id="not-approved-box" style="display:none;">
     <div class="icon">⏳</div>
     <h3>Not Yet Approved</h3>
-    <p>Your registration is pending approval.<br>Please visit the <strong>front desk</strong> to complete payment.</p>
+    <p>Your registration is pending approval.<br>Please visit the <strong>front desk</strong><br>to complete payment.</p>
   </div>
 
   <!-- NOT EVENT DAY -->
@@ -135,7 +125,7 @@ const firebaseConfig = {
       <div class="card-body" style="padding:0 0 10px;">
         <div class="meal-hero">
           <div class="meal-label" id="meal-label-display"></div>
-          <div class="meal-day-tag" id="meal-day-tag"></div>
+          <div><span class="meal-day-tag" id="meal-day-tag"></span></div>
         </div>
         <div class="outside-hours" id="outside-hours" style="display:none;">
           <span>🕐</span>
@@ -152,38 +142,43 @@ const firebaseConfig = {
 
   <script>
     // ============================================================
-    // ⚙️  EVENT CONFIGURATION — CHANGE THESE FOR YOUR EVENT
+    // ⚙️ EVENT CONFIGURATION — CHANGE THESE FOR YOUR EVENT
     // ============================================================
-    const EVENT_CONFIG = {
-      // Event start and end dates (YYYY-MM-DD format)
-      // Change these to your actual event dates before the event!
-      DAY1_DATE: '2026-05-18',   // ← CHANGE THIS: First day of event
-      DAY2_DATE: '2026-05-19',   // ← CHANGE THIS: Second day of event
+    const EVENT_START_DATE = '2026-12-20'; // ← CHANGE THIS
+    const EVENT_END_DATE   = '2026-12-22'; // ← CHANGE THIS
 
-      // Meal timings (24-hour format)
-      // Change start and end hours to match your event schedule
-      MEALS: {
-        breakfast: { start: 6,  end: 10, label: 'BREAKFAST', class: 'breakfast' },
-        lunch:     { start: 11, end: 17, label: 'LUNCH',     class: 'lunch'     },
-        dinner:    { start: 18, end: 22, label: 'DINNER',    class: 'dinner'    }
-      }
+    const MEAL_TIMES = {
+      breakfast: { start: 7,  end: 10, label: 'BREAKFAST', cls: 'breakfast' },
+      lunch:     { start: 12, end: 15, label: 'LUNCH',     cls: 'lunch'     },
+      dinner:    { start: 19, end: 22, label: 'DINNER',    cls: 'dinner'    }
     };
     // ============================================================
 
-    function getTodayStr() {
-      return new Date().toISOString().split('T')[0];
+    function getEventDays() {
+      const days = [];
+      let current = new Date(EVENT_START_DATE);
+      const end   = new Date(EVENT_END_DATE);
+      let dayNum  = 1;
+      while (current <= end) {
+        days.push({
+          num:   dayNum,
+          date:  current.toISOString().split('T')[0],
+          label: `Day ${dayNum} — ${current.toLocaleDateString('en-IN',{day:'numeric',month:'long'})}`
+        });
+        current.setDate(current.getDate()+1);
+        dayNum++;
+      }
+      return days;
     }
 
     function getEventDay() {
-      const today = getTodayStr();
-      if (today === EVENT_CONFIG.DAY1_DATE) return 1;
-      if (today === EVENT_CONFIG.DAY2_DATE) return 2;
-      return null;
+      const today = new Date().toISOString().split('T')[0];
+      return getEventDays().find(d => d.date === today) || null;
     }
 
     function getCurrentMeal() {
       const hour = new Date().getHours();
-      for (const [key, m] of Object.entries(EVENT_CONFIG.MEALS)) {
+      for (const [key, m] of Object.entries(MEAL_TIMES)) {
         if (hour >= m.start && hour < m.end) return { key, ...m };
       }
       return null;
@@ -204,8 +199,8 @@ const firebaseConfig = {
       }
       if (!window._firebaseReady) { alert('Loading...'); return; }
 
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> Loading...';
+      btn.disabled=true;
+      btn.innerHTML='<span class="spinner"></span> Loading...';
 
       try {
         const q    = window._query(window._collection(window._db,'guests'), window._where('pin','==',pin));
@@ -213,8 +208,8 @@ const firebaseConfig = {
 
         if (snap.empty) {
           pinInp.classList.add('error');
-          errEl.style.display = 'block';
-          btn.disabled = false; btn.innerHTML = 'ENTER'; return;
+          errEl.style.display='block';
+          btn.disabled=false; btn.innerHTML='ENTER'; return;
         }
 
         const docId = snap.docs[0].id;
@@ -224,163 +219,159 @@ const firebaseConfig = {
 
         if (!g.approved) {
           document.getElementById('not-approved-box').style.display = 'block';
-          btn.disabled = false; btn.innerHTML = 'ENTER'; return;
+          btn.disabled=false; btn.innerHTML='ENTER'; return;
         }
 
         // Check event day
         const eventDay = getEventDay();
-        const today    = getTodayStr();
-
         if (!eventDay) {
-          const d1 = new Date(EVENT_CONFIG.DAY1_DATE);
-          const now = new Date();
-          const msgEl  = document.getElementById('not-event-day-msg');
-          const subEl  = document.getElementById('not-event-day-sub');
-          if (now < d1) {
+          const now  = new Date();
+          const start = new Date(EVENT_START_DATE);
+          const msgEl = document.getElementById('not-event-day-msg');
+          const subEl = document.getElementById('not-event-day-sub');
+          if (now < start) {
             msgEl.textContent = 'Event Has Not Started Yet';
-            subEl.textContent = `Event begins on ${EVENT_CONFIG.DAY1_DATE}. Please come back then!`;
+            subEl.textContent = `Event begins on ${new Date(EVENT_START_DATE).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}. Please come back then!`;
           } else {
             msgEl.textContent = 'Event Has Ended';
             subEl.textContent = 'Thank you for attending RKMVP Reunion 2026!';
           }
           document.getElementById('not-event-day-box').style.display = 'block';
-          btn.disabled = false; btn.innerHTML = 'ENTER'; return;
+          btn.disabled=false; btn.innerHTML='ENTER'; return;
         }
 
         // Show meal screen
-        const total   = (g.familyCount || 0) + 1;
-        const meals   = g.meals || { day1:{breakfast:0,lunch:0,dinner:0}, day2:{breakfast:0,lunch:0,dinner:0} };
-        const dayKey  = `day${eventDay}`;
+        const total       = (g.familyCount||0)+1;
         const currentMeal = getCurrentMeal();
+        const dayKey      = `day${eventDay.num}`;
+        const meals       = g.meals || {};
 
         document.getElementById('meal-screen').style.display = 'block';
 
         if (!currentMeal) {
           document.getElementById('outside-hours').style.display = 'block';
-          document.getElementById('qr-section').style.display = 'none';
+          document.getElementById('qr-section').style.display    = 'none';
           document.getElementById('meal-label-display').textContent = '';
-          document.getElementById('meal-day-tag').textContent = `Day ${eventDay}`;
+          document.getElementById('meal-day-tag').textContent = eventDay.label;
         } else {
-          const usedCount = (meals[dayKey] && meals[dayKey][currentMeal.key]) || 0;
-          const remaining = total - usedCount;
+          const used      = (meals[dayKey] && meals[dayKey][currentMeal.key]) || 0;
+          const remaining = total - used;
 
-          const labelEl = document.getElementById('meal-label-display');
-          labelEl.textContent = currentMeal.label;
-          labelEl.className   = `meal-label ${currentMeal.class}`;
-          document.getElementById('meal-day-tag').textContent = `Day ${eventDay}`;
+          if (remaining <= 0) {
+            // All served — show completion
+            showCompletion(currentMeal.label, eventDay.label, total);
+          } else {
+            // Show QR
+            const labelEl = document.getElementById('meal-label-display');
+            labelEl.textContent = currentMeal.label;
+            labelEl.className   = `meal-label ${currentMeal.cls}`;
+            document.getElementById('meal-day-tag').textContent = eventDay.label;
 
-          // Generate QR
-          const qrData = JSON.stringify({
-            guestId: docId,
-            pin:     pin,
-            meal:    currentMeal.key,
-            day:     String(eventDay),
-            total:   total,
-            name:    g.name
-          });
+            // Generate QR
+            const qrData = JSON.stringify({
+              guestId: docId,
+              pin:     pin,
+              meal:    currentMeal.key,
+              day:     String(eventDay.num),
+              total:   total,
+              name:    g.name
+            });
 
-document.getElementById('qr-canvas').innerHTML = '';
-const canvas = document.createElement('canvas');
-document.getElementById('qr-canvas').appendChild(canvas);
-QRCode.toCanvas(canvas, qrData, {
-  width: 250,
-  margin: 2,
-  color: {
-    dark: '#000000',
-    light: '#ffffff'
-  }
-});
+            document.getElementById('qr-canvas').innerHTML = '';
+            const canvas = document.createElement('canvas');
+            document.getElementById('qr-canvas').appendChild(canvas);
+            QRCode.toCanvas(canvas, qrData, {
+              width: 250, margin: 2,
+              color: { dark:'#000000', light:'#ffffff' }
+            });
+          }
         }
 
-        // Group info + meal summary (realtime)
-        listenMealUpdates(docId, total, eventDay);
+        // Realtime meal summary
+        setTimeout(() => { listenMealUpdates(docId, total, eventDay); }, 800);
 
-        btn.disabled = false; btn.innerHTML = 'ENTER';
+        btn.disabled=false; btn.innerHTML='ENTER';
 
       } catch(e) {
         console.error(e);
         alert('Something went wrong. Please try again.');
-        btn.disabled = false; btn.innerHTML = 'ENTER';
+        btn.disabled=false; btn.innerHTML='ENTER';
       }
     }
 
-    // Realtime listener to keep meal counts updated
-function listenMealUpdates(docId, total, eventDay) {
-  const ref = window._doc(window._db, 'guests', docId);
-  setTimeout(() => {
-	window._onSnapshot(ref, snap => {
-    if (!snap.exists()) return;
-    const g     = snap.data();
-    const meals = g.meals || { day1:{breakfast:0,lunch:0,dinner:0}, day2:{breakfast:0,lunch:0,dinner:0} };
-    const d1    = meals.day1 || {};
-    const d2    = meals.day2 || {};
-    const dayKey      = `day${eventDay}`;
-    const currentMeal = getCurrentMeal();
+    function showCompletion(mealLabel, dayLabel, total) {
+      document.getElementById('qr-section').style.display    = 'none';
+      document.getElementById('outside-hours').style.display = 'none';
+      const labelEl = document.getElementById('meal-label-display');
+      labelEl.textContent = '✅';
+      labelEl.className   = 'meal-label';
+      document.getElementById('meal-day-tag').textContent = `${mealLabel} Complete!`;
 
-    // Check if current meal is fully used
-    if (currentMeal) {
-      const used = (meals[dayKey] && meals[dayKey][currentMeal.key]) || 0;
-if (used >= total) {
-  document.getElementById('qr-section').style.display    = 'none';
-  document.getElementById('outside-hours').style.display = 'none';
-  document.getElementById('meal-label-display').textContent = '✅';
-  document.getElementById('meal-label-display').className = 'meal-label';
-  document.getElementById('meal-day-tag').textContent = `${currentMeal.label} – Day ${eventDay}`;
+      let compBox = document.getElementById('completion-box');
+      if (!compBox) {
+        compBox = document.createElement('div');
+        compBox.id = 'completion-box';
+        compBox.style.cssText = 'text-align:center;padding:20px 18px;';
+        document.querySelector('#meal-screen .card .card-body').appendChild(compBox);
+      }
+      compBox.innerHTML = `
+        <div style="font-size:3rem;margin-bottom:10px;">🎉</div>
+        <div style="font-family:Cinzel,serif;font-size:1.2rem;font-weight:900;color:var(--success);margin-bottom:8px;">All Members Served!</div>
+        <div style="font-size:0.95rem;color:#555;line-height:1.7;">
+          All ${total} member(s) have enjoyed<br>
+          <strong>${mealLabel}</strong> — ${dayLabel}.<br><br>
+          See you at the next meal! 🙏😊
+        </div>`;
+    }
 
-        // Show completion box
-        let compBox = document.getElementById('completion-box');
-        if (!compBox) {
-          compBox = document.createElement('div');
-          compBox.id = 'completion-box';
-          compBox.style.cssText = 'text-align:center;padding:20px 18px;';
-compBox.innerHTML = `
-  <div style="font-size:3rem;margin-bottom:10px;">🎉</div>
-  <div style="font-family:Cinzel,serif;font-size:1.2rem;font-weight:900;color:var(--success);margin-bottom:8px;">
-    All Members Served!
-  </div>
-  <div style="font-size:0.88rem;color:#555;line-height:1.7;">
-    All ${total} member(s) have enjoyed<br>
-    <strong>${currentMeal.label}</strong> on Day ${eventDay}.<br><br>
-    See you at the next meal! 🙏😊
-  </div>
-`;
-          document.querySelector('.card .card-body').appendChild(compBox);
+    function listenMealUpdates(docId, total, eventDay) {
+      if (!window._firebaseReady) return;
+      const ref = window._doc(window._db,'guests',docId);
+      window._onSnapshot(ref, snap => {
+        if (!snap.exists()) return;
+        const g     = snap.data();
+        const meals = g.meals || {};
+        const d     = getEventDays();
+        const currentMeal = getCurrentMeal();
+        const dayKey = `day${eventDay.num}`;
+
+        // Check completion
+        if (currentMeal) {
+          const used = (meals[dayKey] && meals[dayKey][currentMeal.key]) || 0;
+          if (used >= total) showCompletion(currentMeal.label, eventDay.label, total);
         }
-      }
+
+        // Build group info
+        let infoHtml = `
+          <strong>Name:</strong> ${g.name}<br>
+          <strong>Batch:</strong> ${g.batch}<br>
+          <strong>Family Members:</strong> ${g.familyCount||0}<br>
+          <strong>Total in Group:</strong> ${total}
+          <hr style="margin:10px 0;border:none;border-top:1px solid #eee;"/>`;
+
+        d.forEach(day => {
+          const dm = meals[`day${day.num}`] || {};
+          infoHtml += `<strong>${day.label} &nbsp;</strong>
+            🍳 <span class="meal-count-badge">${dm.breakfast||0}/${total}</span>
+            🍽 <span class="meal-count-badge">${dm.lunch||0}/${total}</span>
+            🌙 <span class="meal-count-badge">${dm.dinner||0}/${total}</span><br>`;
+        });
+
+        document.getElementById('group-info').innerHTML = infoHtml;
+      });
     }
 
-    // Update group info
-    document.getElementById('group-info').innerHTML = `
-      <strong>Name:</strong> ${g.name}<br>
-      <strong>Batch:</strong> ${g.batch}<br>
-      <strong>Family Members:</strong> ${g.familyCount || 0}<br>
-      <strong>Total in Group:</strong> ${total}
-      <hr style="margin:10px 0;border-color:#eee;border-top:1px solid #eee;"/>
-      <strong>Day 1 &nbsp;</strong>
-      Breakfast <span class="meal-count-badge">${d1.breakfast||0}/${total}</span>
-      &nbsp;Lunch <span class="meal-count-badge">${d1.lunch||0}/${total}</span>
-      &nbsp;Dinner <span class="meal-count-badge">${d1.dinner||0}/${total}</span><br>
-      <strong>Day 2 &nbsp;</strong>
-      Breakfast <span class="meal-count-badge">${d2.breakfast||0}/${total}</span>
-      &nbsp;Lunch <span class="meal-count-badge">${d2.lunch||0}/${total}</span>
-      &nbsp;Dinner <span class="meal-count-badge">${d2.dinner||0}/${total}</span>
-    `;
-});
-  }, 800);
-}
-
-    // Auto-load from URL param or localStorage
+    // Auto load from URL param or localStorage
     window.addEventListener('load', () => {
+      document.getElementById('pin-input').addEventListener('keydown', e => {
+        if (e.key==='Enter') enterPortal();
+      });
       const params = new URLSearchParams(window.location.search);
       const pin    = params.get('pin') || localStorage.getItem('rkmvp_pin') || '';
       if (pin) {
         document.getElementById('pin-input').value = pin;
         enterPortal();
       }
-    });
-
-    document.getElementById('pin-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter') enterPortal();
     });
   </script>
 </body>
