@@ -82,8 +82,9 @@
     .badge-pending{background:#FFF3CD;color:#856404;}
     .badge-approved{background:#D4EDDA;color:#155724;}
     .gc-body{padding:12px 14px;}
-    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;font-size:0.82rem;}
-    .info-item strong{color:var(--deep-blue);display:block;font-size:0.74rem;text-transform:uppercase;letter-spacing:0.03em;}
+	.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;font-size:0.95rem;}
+	.info-item{background:#F7FAFF;border-radius:8px;padding:8px 10px;border:1px solid #E0E8F8;}
+	.info-item strong{color:var(--deep-blue);display:block;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:3px;}
     .edit-section label{font-size:0.78rem;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.03em;}
     .edit-section input{margin-bottom:8px;padding:9px 12px;font-size:0.9rem;}
     .meal-title{font-size:0.76rem;font-weight:700;color:var(--deep-blue);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;margin-top:10px;}
@@ -376,7 +377,7 @@
         </div>
         ${mealRows}
         <div class="action-row">
-          <button class="abtn abtn-generate" onclick="generateBankQR('${docId}')">💳 Generate QR</button>
+          <button class="abtn abtn-generate" onclick="generateBankQR('${docId}')">💳 Bank QR</button>
           <button class="abtn abtn-hide" onclick="hideBankQR('${docId}')">🙈 Hide QR</button>
         </div>
         <div class="action-row">
