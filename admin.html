@@ -618,12 +618,9 @@ const notSpecified = snap.docs.length - tshirtTotal;
     if (!window._firebaseReady) return;
     const days = getEventDays();
     document.getElementById('event-config-display').innerHTML = `
-      <strong>📅 Event Start:</strong> ${new Date(EVENT_START_DATE).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}<br>
-      <strong>📅 Event End:</strong> ${new Date(EVENT_END_DATE).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}<br>
-      <strong>📆 Total Days:</strong> ${days.length}<br>
-      <strong>🍳 Breakfast:</strong> ${MEAL_TIMES.breakfast.start}:00–${MEAL_TIMES.breakfast.end}:00 &nbsp;
-      <strong>🍽 Lunch:</strong> ${MEAL_TIMES.lunch.start}:00–${MEAL_TIMES.lunch.end}:00 &nbsp;
-      <strong>🌙 Dinner:</strong> ${MEAL_TIMES.dinner.start}:00–${MEAL_TIMES.dinner.end}:00
+      <strong>Event Start:</strong> ${new Date(EVENT_START_DATE).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}<br>
+      <strong>Event End:</strong> ${new Date(EVENT_END_DATE).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}<br>
+      <strong>Total Days:</strong> ${days.length}<br>
     `;
     try {
       const snap = await window._getDocs(window._collection(window._db,'guests'));
