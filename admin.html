@@ -173,10 +173,10 @@
   </div>
 
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('search')">🔍 Search</div>
-    <div class="tab" onclick="switchTab('all')">👥 Guests</div>
-    <div class="tab" onclick="switchTab('food')">👕 Estimate</div>
-    <div class="tab" onclick="switchTab('stats')">📊 Stats</div>
+<div class="tab active" onclick="switchTab('search')">Search</div>
+    <div class="tab" onclick="switchTab('all')">Guests</div>
+    <div class="tab" onclick="switchTab('food')">Estimate</div>
+    <div class="tab" onclick="switchTab('stats')">Stats</div>
   </div>
 
   <!-- SEARCH TAB -->
@@ -205,28 +205,28 @@
       </select>
     </div>
     <div class="list-count" id="list-count"></div>
-    <button class="btn-excel" onclick="exportExcel()">📥 Download Excel Report</button>
+    <button class="btn-excel" onclick="exportExcel()">Download Excel Report</button>
     <div id="all-guests-list"></div>
   </div>
 
   <!-- FOOD SUMMARY TAB -->
   <div id="tab-food" class="tab-content">
-    <div class="section-title">🍽 Food Requirements (Pre-registered)</div>
+    <div class="section-title">Food Requirements (Pre-registered)</div>
     <div style="padding:0 14px;">
       <table class="food-table" id="food-required-table">
-        <thead><tr><th>Day</th><th>🍳 Breakfast</th><th>🍽 Lunch</th><th>🌙 Dinner</th></tr></thead>
+        <thead><tr><th>Day</th><th>Breakfast</th><th>Lunch</th><th>Dinner</th></tr></thead>
         <tbody id="food-required-body"></tbody>
       </table>
     </div>
-    <div class="section-title">✅ Actual Attendance (Scanned)</div>
+    <div class="section-title">Actual Attendance (Scanned)</div>
     <div style="padding:0 14px;">
       <table class="food-table" id="food-actual-table">
-        <thead><tr><th>Day</th><th>🍳 Breakfast</th><th>🍽 Lunch</th><th>🌙 Dinner</th></tr></thead>
+        <thead><tr><th>Day</th><th>Breakfast</th><th>Lunch</th><th>Dinner</th></tr></thead>
         <tbody id="food-actual-body"></tbody>
       </table>
     </div>
-    <button class="btn-excel" onclick="loadFoodSummary()" style="background:var(--light-blue);">🔄 Refresh Data</button>
-    <div class="section-title">👕 T-Shirt Requirements</div>
+    <button class="btn-excel" onclick="loadFoodSummary()" style="background:var(--light-blue);">Refresh Data</button>
+    <div class="section-title">T-Shirt Requirements</div>
     <div style="padding:0 14px;">
       <table class="food-table" id="tshirt-table">
         <thead><tr><th>Size (cm)</th><th>Count</th></tr></thead>
