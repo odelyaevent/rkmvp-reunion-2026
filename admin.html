@@ -537,10 +537,11 @@ const name   = document.getElementById('e-name-'+docId).value.trim();
     const days = getEventDays();
     try {
       const snap = await window._getDocs(window._collection(window._db,'guests'));
-      const required = {}; const actual = {};
+      const required = {}; const actual = {}; const guestSelected = {};
       days.forEach(day => {
-        required[day.num] = { breakfast:0, lunch:0, dinner:0 };
-        actual[day.num]   = { breakfast:0, lunch:0, dinner:0 };
+        required[day.num]      = { breakfast:0, lunch:0, dinner:0 };
+        actual[day.num]        = { breakfast:0, lunch:0, dinner:0 };
+        guestSelected[day.num] = { breakfast:0, lunch:0, dinner:0 };
       });
 
       snap.docs.forEach(d => {
@@ -556,6 +557,9 @@ const name   = document.getElementById('e-name-'+docId).value.trim();
           actual[day.num].breakfast   += dma.breakfast||0;
           actual[day.num].lunch       += dma.lunch||0;
           actual[day.num].dinner      += dma.dinner||0;
+          if ((dmr.breakfast||0)>0) guestSelected[day.num].breakfast++;
+          if ((dmr.lunch||0)>0)     guestSelected[day.num].lunch++;
+          if ((dmr.dinner||0)>0)    guestSelected[day.num].dinner++;
         });
       });
 
@@ -704,7 +708,7 @@ const notSpecified = snap.docs.length - tshirtTotal;
       // Food summary sheet
       const foodRows = [['Food Requirements Summary'],[''],['Day','Breakfast Required','Lunch Required','Dinner Required','Breakfast Actual','Lunch Actual','Dinner Actual']];
       const fsnap = await window._getDocs(window._collection(window._db,'guests'));
-const required = {}; const actual = {}; const guestSelected = {};
+	  const required = {}; const actual = {}; const guestSelected = {};
       days.forEach(day => {
         required[day.num]     = { breakfast:0, lunch:0, dinner:0 };
         actual[day.num]       = { breakfast:0, lunch:0, dinner:0 };
