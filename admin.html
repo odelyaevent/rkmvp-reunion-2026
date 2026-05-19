@@ -354,6 +354,7 @@
           <div class="info-item"><strong>Total People</strong>${total}</div>
           <div class="info-item"><strong>Bank QR</strong>${qrVisible?'🟢 Visible':'⚫ Hidden'}</div>
           <div class="info-item"><strong>Registered</strong>${(g.registeredAt||'').split('T')[0]||'—'}</div>
+		  <div class="info-item"><strong>T-Shirt Size</strong>${g.tshirtSize>0 ? g.tshirtSize+' cm' : 'None'}</div>
         </div>
         <div class="edit-section">
           <label>Full Name</label>
@@ -362,6 +363,9 @@
           <input type="number" id="e-batch-${docId}" value="${g.batch}"/>
           <label>Family Members</label>
           <input type="number" id="e-family-${docId}" value="${g.familyCount||0}" min="0"/>
+		  <label>T-Shirt Size (cm)</label>
+          <input type="number" id="e-tshirt-${docId}" value="${g.tshirtSize||0}" min="0" max="150"/>
+		  
         </div>
         ${mealRows}
         <div class="action-row">
@@ -425,6 +429,7 @@
     const name   = document.getElementById('e-name-'+docId).value.trim();
     const batch  = parseInt(document.getElementById('e-batch-'+docId).value);
     const family = parseInt(document.getElementById('e-family-'+docId).value)||0;
+	const tshirt = parseInt(document.getElementById('e-tshirt-'+docId).value)||0;
     const amount = 10 + family * 5;
     const meals  = {};
     days.forEach(day => {
@@ -435,7 +440,7 @@
       };
     });
     try {
-      await window._updateDoc(window._doc(window._db,'guests',docId), { name, batch, familyCount:family, amount, meals });
+      await window._updateDoc(window._doc(window._db,'guests',docId), { name, batch, familyCount:family, amount, meals, tshirtSize:tshirt });
       showMsg(docId, '✅ Changes saved successfully!', 'ok');
     } catch(e) { showMsg(docId, '❌ Error saving. Try again.', 'err'); }
   }
