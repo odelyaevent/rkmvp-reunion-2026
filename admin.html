@@ -168,8 +168,9 @@
 <!-- DASHBOARD -->
 <div id="dashboard-section">
   <div class="top-bar">
-<button class="btn-sm btn-logout" style="background:var(--light-blue);" onclick="loadFoodSummary()">Refresh</button>
-<button class="btn-sm btn-logout" onclick="adminLogout()">Logout</button>
+    <span></span>
+    <button class="btn-sm" style="background:var(--light-blue);color:white;" onclick="loadFoodSummary()">Refresh</button>
+	<button class="btn-sm btn-logout" onclick="adminLogout()">LOGOUT</button>
   </div>
 
   <div class="tabs">
@@ -559,14 +560,14 @@ const name   = document.getElementById('e-name-'+docId).value.trim();
       });
 
       // Build required table
-	const totalGuests = snap.docs.length;
+const totalGuests = snap.docs.length;
       let reqHtml = ''; let rTotB=0,rTotL=0,rTotD=0;
       days.forEach(day => {
         const r = required[day.num];
         rTotB+=r.breakfast; rTotL+=r.lunch; rTotD+=r.dinner;
-        const nsB = totalGuests - r.breakfast;
-        const nsL = totalGuests - r.lunch;
-        const nsD = totalGuests - r.dinner;
+		const nsB = totalGuests - guestSelected[day.num].breakfast;
+        const nsL = totalGuests - guestSelected[day.num].lunch;
+        const nsD = totalGuests - guestSelected[day.num].dinner;
         reqHtml += `<tr><td>${day.label}</td><td>${r.breakfast}</td><td>${r.lunch}</td><td>${r.dinner}</td></tr>`;
         reqHtml += `<tr><td style="color:#888;font-style:italic;padding-left:18px;">Not Specified</td><td style="color:#888;">${nsB}</td><td style="color:#888;">${nsL}</td><td style="color:#888;">${nsD}</td></tr>`;
       });
@@ -703,23 +704,31 @@ const notSpecified = snap.docs.length - tshirtTotal;
       // Food summary sheet
       const foodRows = [['Food Requirements Summary'],[''],['Day','Breakfast Required','Lunch Required','Dinner Required','Breakfast Actual','Lunch Actual','Dinner Actual']];
       const fsnap = await window._getDocs(window._collection(window._db,'guests'));
-      const required = {}; const actual = {};
+const required = {}; const actual = {}; const guestSelected = {};
       days.forEach(day => {
-        required[day.num] = {breakfast:0,lunch:0,dinner:0};
-        actual[day.num]   = {breakfast:0,lunch:0,dinner:0};
+        required[day.num]     = { breakfast:0, lunch:0, dinner:0 };
+        actual[day.num]       = { breakfast:0, lunch:0, dinner:0 };
+        guestSelected[day.num]= { breakfast:0, lunch:0, dinner:0 };
       });
-      fsnap.docs.forEach(d => {
-        const g=d.data(); const mr=g.mealsRequired||{}; const ma=g.meals||{};
+
+      snap.docs.forEach(d => {
+        const g  = d.data();
+        const mr = g.mealsRequired || {};
+        const ma = g.meals || {};
         days.forEach(day => {
-          const dmr=mr[`day${day.num}`]||{}; const dma=ma[`day${day.num}`]||{};
-          required[day.num].breakfast+=dmr.breakfast||0;
-          required[day.num].lunch    +=dmr.lunch||0;
-          required[day.num].dinner   +=dmr.dinner||0;
-          actual[day.num].breakfast  +=dma.breakfast||0;
-          actual[day.num].lunch      +=dma.lunch||0;
-          actual[day.num].dinner     +=dma.dinner||0;
+          const dmr = mr[`day${day.num}`] || {};
+          const dma = ma[`day${day.num}`] || {};
+          required[day.num].breakfast += dmr.breakfast||0;
+          required[day.num].lunch     += dmr.lunch||0;
+          required[day.num].dinner    += dmr.dinner||0;
+          actual[day.num].breakfast   += dma.breakfast||0;
+          actual[day.num].lunch       += dma.lunch||0;
+          actual[day.num].dinner      += dma.dinner||0;
+          if ((dmr.breakfast||0)>0) guestSelected[day.num].breakfast++;
+          if ((dmr.lunch||0)>0)     guestSelected[day.num].lunch++;
+          if ((dmr.dinner||0)>0)    guestSelected[day.num].dinner++;
         });
-      });
+      });;
       days.forEach(day => {
         const r=required[day.num]; const a=actual[day.num];
         foodRows.push([day.label,r.breakfast,r.lunch,r.dinner,a.breakfast,a.lunch,a.dinner]);
