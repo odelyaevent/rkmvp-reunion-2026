@@ -559,11 +559,16 @@ const name   = document.getElementById('e-name-'+docId).value.trim();
       });
 
       // Build required table
+	const totalGuests = snap.docs.length;
       let reqHtml = ''; let rTotB=0,rTotL=0,rTotD=0;
       days.forEach(day => {
         const r = required[day.num];
         rTotB+=r.breakfast; rTotL+=r.lunch; rTotD+=r.dinner;
+        const nsB = totalGuests - r.breakfast;
+        const nsL = totalGuests - r.lunch;
+        const nsD = totalGuests - r.dinner;
         reqHtml += `<tr><td>${day.label}</td><td>${r.breakfast}</td><td>${r.lunch}</td><td>${r.dinner}</td></tr>`;
+        reqHtml += `<tr><td style="color:#888;font-style:italic;padding-left:18px;">Not Specified</td><td style="color:#888;">${nsB}</td><td style="color:#888;">${nsL}</td><td style="color:#888;">${nsD}</td></tr>`;
       });
       reqHtml += `<tr class="total-row"><td>TOTAL</td><td>${rTotB}</td><td>${rTotL}</td><td>${rTotD}</td></tr>`;
       document.getElementById('food-required-body').innerHTML = reqHtml;
