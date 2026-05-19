@@ -168,8 +168,9 @@
 <!-- DASHBOARD -->
 <div id="dashboard-section">
   <div class="top-bar">
-    <span id="admin-email-display">Admin</span>
-    <button class="btn-sm btn-logout" onclick="adminLogout()">LOGOUT</button>
+    <span></span>
+    <button class="btn-sm" style="background:var(--light-blue);color:white;" onclick="loadFoodSummary()">Refresh</button>
+	<button class="btn-sm btn-logout" onclick="adminLogout()">LOGOUT</button>
   </div>
 
   <div class="tabs">
@@ -225,7 +226,6 @@
         <tbody id="food-actual-body"></tbody>
       </table>
     </div>
-    <button class="btn-excel" onclick="loadFoodSummary()" style="background:var(--light-blue);">Refresh Data</button>
     <div class="section-title">T-Shirt Requirements</div>
     <div style="padding:0 14px;">
       <table class="food-table" id="tshirt-table">
