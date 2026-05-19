@@ -129,6 +129,12 @@
 
       <div class="divider"></div>
 
+<div class="inline-field">
+        <label for="tshirt">T-Shirt Size</label>
+        <input type="number" id="tshirt" placeholder="0" min="0" max="150" value="0" autocomplete="off"/> cm
+      </div>
+      <div class="field-note" style="margin-bottom:18px;">Enter your chest size in cm.</div>
+
       <div class="inline-field">
         <label for="pin">Security PIN<span class="req">*</span></label>
         <input type="password" id="pin" placeholder="4-digit" maxlength="4" inputmode="numeric" autocomplete="new-password"/>
@@ -383,6 +389,7 @@
         }
 
         const amount    = 10 + family * 5;
+		const tshirt = parseInt(document.getElementById('tshirt').value) || 0;
         const finalName = toTitleCase(name.trim());
 
         const docRef = await window._addDoc(window._collection(window._db,'guests'), {
@@ -395,6 +402,7 @@
           bankQrVisible: false,
           mealsRequired: getMealSelections(),
           meals:         Object.fromEntries(getEventDays().map(d => [`day${d.num}`,{breakfast:0,lunch:0,dinner:0}])),
+		  tshirtSize:    tshirt,
           registeredAt:  new Date().toISOString()
         });
 
