@@ -11,14 +11,14 @@
     import { getFirestore, collection, query, where, getDocs, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     // ── PASTE YOUR FIREBASE CONFIG HERE ──
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyAAW9zZmE1cEUUWLEwT1hWtY1fQoiGt_No",
+    authDomain: "rkmvp-reunion-2026.firebaseapp.com",
+    projectId: "rkmvp-reunion-2026",
+    storageBucket: "rkmvp-reunion-2026.firebasestorage.app",
+    messagingSenderId: "552260116936",
+    appId: "1:552260116936:web:5d731a1fa2746ad149e0fd"
+  };
     const app  = initializeApp(firebaseConfig);
     const db   = getFirestore(app);
     const auth = getAuth(app);
