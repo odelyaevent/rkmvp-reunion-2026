@@ -126,7 +126,7 @@
     /* FOOD SUMMARY */
     .food-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin:14px 0;}
     .food-table th{background:var(--deep-blue);color:var(--gold);padding:8px 10px;text-align:left;font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:0.03em;}
-    .food-table td{padding:8px 10px;border-bottom:1px solid #eee;color:#333;}
+    .food-table td{padding:8px 10px;border-bottom:1px solid #eee;color:#333;font-size:0.92rem;}
     .food-table tr:nth-child(even){background:#F7FAFF;}
     .food-table .total-row{background:#FFF3CD!important;font-weight:700;color:var(--deep-blue);}
     /* ALL GUESTS */
@@ -571,8 +571,8 @@ const totalGuests = snap.docs.length;
 		const nsB = totalGuests - guestSelected[day.num].breakfast;
         const nsL = totalGuests - guestSelected[day.num].lunch;
         const nsD = totalGuests - guestSelected[day.num].dinner;
-        reqHtml += `<tr><td>${day.label}</td><td>${r.breakfast}</td><td>${r.lunch}</td><td>${r.dinner}</td></tr>`;
-        reqHtml += `<tr><td style="color:#888;font-style:italic;padding-left:18px;">Not Specified</td><td style="color:#888;">${nsB}</td><td style="color:#888;">${nsL}</td><td style="color:#888;">${nsD}</td></tr>`;
+		reqHtml += `<tr><td style="color:var(--success);font-weight:700;font-size:0.95rem;">${day.label}</td><td style="color:var(--success);font-weight:700;font-size:0.95rem;">${r.breakfast}</td><td style="color:var(--success);font-weight:700;font-size:0.95rem;">${r.lunch}</td><td style="color:var(--success);font-weight:700;font-size:0.95rem;">${r.dinner}</td></tr>`;
+        reqHtml += `<tr><td style="color:#555;font-style:italic;padding-left:18px;font-size:0.92rem;">Not Specified</td><td style="color:#555;font-size:0.92rem;">${nsB}</td><td style="color:#555;font-size:0.92rem;">${nsL}</td><td style="color:#555;font-size:0.92rem;">${nsD}</td></tr>`;
       });
       reqHtml += `<tr class="total-row"><td>TOTAL</td><td>${rTotB}</td><td>${rTotL}</td><td>${rTotD}</td></tr>`;
       document.getElementById('food-required-body').innerHTML = reqHtml;
