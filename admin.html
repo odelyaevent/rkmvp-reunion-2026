@@ -5,21 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin – RKMVP Reunion 2026</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lato:wght@400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, query, where, getDocs, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
     // ── PASTE YOUR FIREBASE CONFIG HERE ──
-  const firebaseConfig = {
-    apiKey: "AIzaSyAAW9zZmE1cEUUWLEwT1hWtY1fQoiGt_No",
-    authDomain: "rkmvp-reunion-2026.firebaseapp.com",
-    projectId: "rkmvp-reunion-2026",
-    storageBucket: "rkmvp-reunion-2026.firebasestorage.app",
-    messagingSenderId: "552260116936",
-    appId: "1:552260116936:web:5d731a1fa2746ad149e0fd"
-  };
-
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
     const app  = initializeApp(firebaseConfig);
     const db   = getFirestore(app);
     const auth = getAuth(app);
@@ -30,7 +29,6 @@
     window._signIn=signInWithEmailAndPassword;
     window._signOut=signOut;
     window._firebaseReady=true;
-
     onAuthStateChanged(auth, user => {
       if (user) showDashboard(user.email);
       else showLogin();
@@ -48,14 +46,13 @@
     .top-bar span{font-size:0.78rem;color:var(--deep-blue);font-weight:700;}
     .btn-sm{padding:6px 14px;border:none;border-radius:6px;font-size:0.78rem;font-weight:700;cursor:pointer;}
     .btn-logout{background:var(--red);color:white;}
-
     /* LOGIN */
     #login-section{display:block;}
     .login-card{background:var(--white);margin:30px 14px;border-radius:14px;border:1.5px solid var(--border);box-shadow:0 4px 24px #0D2B5E18;overflow:hidden;}
     .card-header{background:linear-gradient(90deg,var(--deep-blue),var(--light-blue));padding:12px 18px;}
     .card-header h2{font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;letter-spacing:0.05em;}
     .card-body{padding:22px 18px;}
-    label{display:block;font-weight:700;color:var(--deep-blue);font-size:0.85rem;margin-bottom:5px;}
+    label{display:block;font-weight:700;color:var(--deep-blue);font-size:0.88rem;margin-bottom:5px;}
     input[type=email],input[type=password],input[type=text],input[type=number]{width:100%;padding:11px 13px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.95rem;font-family:'Lato',sans-serif;background:#F7FAFF;margin-bottom:14px;-webkit-appearance:none;}
     input:focus{outline:none;border-color:var(--light-blue);box-shadow:0 0 0 3px #1A4A9E22;}
     .btn-main{width:100%;padding:13px;background:linear-gradient(135deg,var(--saffron),#C9400A);color:var(--white);font-family:'Cinzel',serif;font-size:1rem;font-weight:700;letter-spacing:0.06em;border:none;border-radius:10px;cursor:pointer;}
@@ -63,22 +60,19 @@
     .err-msg{color:var(--red);font-size:0.82rem;margin-bottom:10px;display:none;font-weight:700;}
     .spinner{display:inline-block;width:16px;height:16px;border:3px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
     @keyframes spin{to{transform:rotate(360deg);}}
-
     /* DASHBOARD */
     #dashboard-section{display:none;}
-    .tabs{display:flex;background:var(--deep-blue);}
-    .tab{flex:1;padding:11px 4px;text-align:center;font-family:'Cinzel',serif;font-size:0.7rem;color:#B8CFFF;cursor:pointer;border-bottom:3px solid transparent;letter-spacing:0.03em;transition:all 0.2s;}
+    .tabs{display:flex;background:var(--deep-blue);overflow-x:auto;}
+    .tab{flex:1;min-width:60px;padding:11px 4px;text-align:center;font-family:'Cinzel',serif;font-size:0.65rem;color:#B8CFFF;cursor:pointer;border-bottom:3px solid transparent;letter-spacing:0.02em;transition:all 0.2s;white-space:nowrap;}
     .tab.active{color:var(--gold);border-bottom-color:var(--gold);background:#1A4A9E;}
     .tab-content{display:none;}
     .tab-content.active{display:block;}
-
     /* SEARCH */
     .search-box{padding:14px 14px 0;}
     .search-row{display:flex;gap:8px;margin-bottom:10px;}
     .search-row select{flex:1;padding:10px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.88rem;background:#F7FAFF;font-family:'Lato',sans-serif;}
     .search-row input{flex:2;padding:10px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.88rem;background:#F7FAFF;font-family:'Lato',sans-serif;margin:0;}
     .btn-search{padding:10px 16px;background:var(--light-blue);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;white-space:nowrap;}
-
     /* GUEST CARD */
     .guest-card{background:var(--white);margin:10px 14px;border-radius:10px;border:1.5px solid var(--border);box-shadow:0 2px 10px #0D2B5E10;overflow:hidden;}
     .gc-header{background:#F0F4FF;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E0E8F8;}
@@ -90,19 +84,14 @@
     .gc-body{padding:12px 14px;}
     .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;font-size:0.82rem;}
     .info-item strong{color:var(--deep-blue);display:block;font-size:0.74rem;text-transform:uppercase;letter-spacing:0.03em;}
-    .edit-section{margin-bottom:12px;}
     .edit-section label{font-size:0.78rem;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.03em;}
     .edit-section input{margin-bottom:8px;padding:9px 12px;font-size:0.9rem;}
-
-    /* MEAL GRID */
-    .meal-title{font-size:0.76rem;font-weight:700;color:var(--deep-blue);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;}
+    .meal-title{font-size:0.76rem;font-weight:700;color:var(--deep-blue);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;margin-top:10px;}
     .meal-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
     .meal-row label{font-size:0.78rem;color:#555;margin:0;min-width:74px;font-weight:700;}
     .meal-row input{width:52px;padding:5px 8px;border:1.5px solid #C5D3E8;border-radius:6px;font-size:0.88rem;text-align:center;margin:0;}
     .meal-row .of{font-size:0.72rem;color:#999;}
-
-    /* ACTION BUTTONS */
-    .action-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:6px;}
+    .action-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;margin-bottom:6px;}
     .abtn{flex:1;padding:9px 6px;border:none;border-radius:8px;font-weight:700;font-size:0.78rem;cursor:pointer;min-width:90px;font-family:'Lato',sans-serif;}
     .abtn-generate{background:var(--light-blue);color:white;}
     .abtn-approve{background:var(--success);color:white;}
@@ -112,22 +101,32 @@
     .action-msg{font-size:0.78rem;font-weight:700;margin-top:6px;display:none;padding:6px 10px;border-radius:6px;}
     .action-msg.ok{background:#D4EDDA;color:#155724;}
     .action-msg.err{background:#F8D7DA;color:#721C24;}
-
+    /* MEAL REQUIRED BADGE */
+    .req-badge{display:inline-block;background:#EEF4FF;color:var(--deep-blue);border-radius:6px;padding:2px 8px;font-size:0.75rem;font-weight:700;margin:2px;}
+    .req-badge.selected{background:#D4EDDA;color:#155724;}
     /* STATS */
     .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;}
-    .stat-card{background:var(--white);border-radius:10px;border:1.5px solid var(--border);padding:16px;text-align:center;}
-    .stat-num{font-family:'Cinzel',serif;font-size:2rem;font-weight:900;color:var(--deep-blue);}
-    .stat-label{font-size:0.74rem;color:#777;margin-top:4px;}
-
+    .stat-card{background:var(--white);border-radius:10px;border:1.5px solid var(--border);padding:14px;text-align:center;}
+    .stat-num{font-family:'Cinzel',serif;font-size:1.8rem;font-weight:900;color:var(--deep-blue);}
+    .stat-label{font-size:0.72rem;color:#777;margin-top:4px;}
+    /* FOOD SUMMARY */
+    .food-table{width:100%;border-collapse:collapse;font-size:0.82rem;margin:14px 0;}
+    .food-table th{background:var(--deep-blue);color:var(--gold);padding:8px 10px;text-align:left;font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:0.03em;}
+    .food-table td{padding:8px 10px;border-bottom:1px solid #eee;color:#333;}
+    .food-table tr:nth-child(even){background:#F7FAFF;}
+    .food-table .total-row{background:#FFF3CD!important;font-weight:700;color:var(--deep-blue);}
     /* ALL GUESTS */
-    .filter-row{padding:10px 14px 0;display:flex;gap:8px;}
-    .filter-row select{flex:1;padding:9px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.85rem;background:#F7FAFF;font-family:'Lato',sans-serif;}
+    .filter-row{padding:10px 14px 0;display:flex;gap:8px;flex-wrap:wrap;}
+    .filter-row select{flex:1;min-width:120px;padding:9px;border:1.8px solid #C5D3E8;border-radius:8px;font-size:0.85rem;background:#F7FAFF;font-family:'Lato',sans-serif;}
     .list-count{padding:6px 14px;font-size:0.78rem;color:#777;}
     .no-results{text-align:center;padding:30px 14px;color:#888;font-size:0.88rem;}
-
-    /* EVENT CONFIG INFO */
-    .config-box{margin:14px 14px 0;background:var(--white);border-radius:10px;border:1.5px solid var(--border);padding:14px 16px;font-size:0.82rem;color:#444;line-height:1.8;}
+    /* CONFIG BOX */
+    .config-box{margin:14px 14px 0;background:var(--white);border-radius:10px;border:1.5px solid var(--border);padding:12px 16px;font-size:0.82rem;color:#444;line-height:1.9;}
     .config-box strong{color:var(--deep-blue);}
+    /* EXCEL BUTTON */
+    .btn-excel{display:block;width:calc(100% - 28px);margin:10px 14px 0;padding:12px;background:var(--success);color:white;font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;letter-spacing:0.05em;border:none;border-radius:10px;cursor:pointer;text-align:center;}
+    .btn-excel:active{opacity:0.85;}
+    .section-title{font-family:'Cinzel',serif;font-size:0.95rem;color:var(--deep-blue);padding:14px 14px 4px;font-weight:700;letter-spacing:0.04em;}
   </style>
 </head>
 <body>
@@ -162,6 +161,7 @@
   <div class="tabs">
     <div class="tab active" onclick="switchTab('search')">🔍 Search</div>
     <div class="tab" onclick="switchTab('all')">👥 Guests</div>
+    <div class="tab" onclick="switchTab('food')">🍽 Food</div>
     <div class="tab" onclick="switchTab('stats')">📊 Stats</div>
   </div>
 
@@ -191,7 +191,27 @@
       </select>
     </div>
     <div class="list-count" id="list-count"></div>
+    <button class="btn-excel" onclick="exportExcel()">📥 Download Excel Report</button>
     <div id="all-guests-list"></div>
+  </div>
+
+  <!-- FOOD SUMMARY TAB -->
+  <div id="tab-food" class="tab-content">
+    <div class="section-title">🍽 Food Requirements (Pre-registered)</div>
+    <div style="padding:0 14px;">
+      <table class="food-table" id="food-required-table">
+        <thead><tr><th>Day</th><th>🍳 Breakfast</th><th>🍽 Lunch</th><th>🌙 Dinner</th></tr></thead>
+        <tbody id="food-required-body"></tbody>
+      </table>
+    </div>
+    <div class="section-title">✅ Actual Attendance (Scanned)</div>
+    <div style="padding:0 14px;">
+      <table class="food-table" id="food-actual-table">
+        <thead><tr><th>Day</th><th>🍳 Breakfast</th><th>🍽 Lunch</th><th>🌙 Dinner</th></tr></thead>
+        <tbody id="food-actual-body"></tbody>
+      </table>
+    </div>
+    <button class="btn-excel" onclick="loadFoodSummary()" style="background:var(--light-blue);">🔄 Refresh Food Data</button>
   </div>
 
   <!-- STATS TAB -->
@@ -210,18 +230,33 @@
 
 <script>
   // ============================================================
-  // ⚙️  EVENT CONFIGURATION — CHANGE THESE FOR YOUR EVENT
+  // ⚙️ EVENT CONFIGURATION — CHANGE THESE FOR YOUR EVENT
   // ============================================================
-  const EVENT_CONFIG = {
-    DAY1_DATE: '2026-05-18',   // ← CHANGE THIS: First day of event
-    DAY2_DATE: '2026-05-19',   // ← CHANGE THIS: Second day of event
-    MEALS: {
-      breakfast: { start: 6,  end: 10 },
-      lunch:     { start: 11, end: 17 },
-      dinner:    { start: 18, end: 22 }
-    }
+  const EVENT_START_DATE = '2026-12-20'; // ← CHANGE THIS
+  const EVENT_END_DATE   = '2026-12-22'; // ← CHANGE THIS
+  const MEAL_TIMES = {
+    breakfast: { start: 7,  end: 10 },
+    lunch:     { start: 12, end: 15 },
+    dinner:    { start: 19, end: 22 }
   };
   // ============================================================
+
+  function getEventDays() {
+    const days = [];
+    let current = new Date(EVENT_START_DATE);
+    const end   = new Date(EVENT_END_DATE);
+    let dayNum  = 1;
+    while (current <= end) {
+      days.push({
+        num:   dayNum,
+        date:  current.toISOString().split('T')[0],
+        label: `Day ${dayNum} — ${current.toLocaleDateString('en-IN',{day:'numeric',month:'long'})}`
+      });
+      current.setDate(current.getDate()+1);
+      dayNum++;
+    }
+    return days;
+  }
 
   // ── AUTH ──
   function adminLogin() {
@@ -240,21 +275,18 @@
 
   function adminLogout() { window._signOut(window._auth); }
 
-function showLogin() {
-  document.getElementById('login-section').style.display = 'block';
-  document.getElementById('dashboard-section').style.display = 'none';
-  // Reset login button
-  const btn = document.getElementById('btn-login');
-  btn.disabled = false;
-  btn.textContent = 'LOGIN';
-  // Clear fields
-  document.getElementById('admin-email').value = '';
-  document.getElementById('admin-pass').value = '';
-  document.getElementById('login-err').style.display = 'none';
-}
+  function showLogin() {
+    document.getElementById('login-section').style.display    = 'block';
+    document.getElementById('dashboard-section').style.display = 'none';
+    const btn = document.getElementById('btn-login');
+    btn.disabled = false; btn.textContent = 'LOGIN';
+    document.getElementById('admin-email').value = '';
+    document.getElementById('admin-pass').value  = '';
+    document.getElementById('login-err').style.display = 'none';
+  }
 
   function showDashboard(email) {
-    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('login-section').style.display    = 'none';
     document.getElementById('dashboard-section').style.display = 'block';
     document.getElementById('admin-email-display').textContent = email;
     loadStats();
@@ -264,20 +296,47 @@ function showLogin() {
   function switchTab(name) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    const tabs = ['search','all','stats'];
+    const tabs = ['search','all','food','stats'];
     document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
     document.getElementById('tab-'+name).classList.add('active');
     if (name === 'all')   loadAllGuests();
     if (name === 'stats') loadStats();
+    if (name === 'food')  loadFoodSummary();
   }
 
   // ── BUILD GUEST CARD ──
   function buildCard(docId, g) {
-    const total   = (g.familyCount || 0) + 1;
-    const m       = g.meals || { day1:{breakfast:0,lunch:0,dinner:0}, day2:{breakfast:0,lunch:0,dinner:0} };
-    const d1 = m.day1 || {}; const d2 = m.day2 || {};
-    const approved    = g.approved || false;
-    const qrVisible   = g.bankQrVisible || false;
+    const days    = getEventDays();
+    const total   = (g.familyCount||0)+1;
+    const m       = g.meals || {};
+    const mr      = g.mealsRequired || {};
+    const approved   = g.approved || false;
+    const qrVisible  = g.bankQrVisible || false;
+
+    // Meal attendance rows
+    let mealRows = '';
+    days.forEach(day => {
+      const dm  = m[`day${day.num}`]  || {};
+      const dmr = mr[`day${day.num}`] || {};
+      mealRows += `
+        <div class="meal-title">${day.label}</div>
+        <div class="meal-row"><label>Breakfast</label>
+          <input type="number" id="d${day.num}b-${docId}" value="${dm.breakfast||0}" min="0" max="${total}"/>
+          <span class="of">/ ${total}</span>
+          <span class="req-badge ${dmr.breakfast>0?'selected':''}">Req: ${dmr.breakfast||0}</span>
+        </div>
+        <div class="meal-row"><label>Lunch</label>
+          <input type="number" id="d${day.num}l-${docId}" value="${dm.lunch||0}" min="0" max="${total}"/>
+          <span class="of">/ ${total}</span>
+          <span class="req-badge ${dmr.lunch>0?'selected':''}">Req: ${dmr.lunch||0}</span>
+        </div>
+        <div class="meal-row" style="margin-bottom:4px;"><label>Dinner</label>
+          <input type="number" id="d${day.num}d-${docId}" value="${dm.dinner||0}" min="0" max="${total}"/>
+          <span class="of">/ ${total}</span>
+          <span class="req-badge ${dmr.dinner>0?'selected':''}">Req: ${dmr.dinner||0}</span>
+        </div>`;
+    });
+
     return `
     <div class="guest-card" id="gc-${docId}">
       <div class="gc-header">
@@ -296,8 +355,6 @@ function showLogin() {
           <div class="info-item"><strong>Bank QR</strong>${qrVisible?'🟢 Visible':'⚫ Hidden'}</div>
           <div class="info-item"><strong>Registered</strong>${(g.registeredAt||'').split('T')[0]||'—'}</div>
         </div>
-
-        <!-- Edit fields -->
         <div class="edit-section">
           <label>Full Name</label>
           <input type="text" id="e-name-${docId}" value="${g.name}"/>
@@ -306,22 +363,10 @@ function showLogin() {
           <label>Family Members</label>
           <input type="number" id="e-family-${docId}" value="${g.familyCount||0}" min="0"/>
         </div>
-
-        <!-- Meal attendance -->
-        <div class="meal-title">Day 1 Attendance</div>
-        <div class="meal-row"><label>Breakfast</label><input type="number" id="d1b-${docId}" value="${d1.breakfast||0}" min="0" max="${total}"/><span class="of">/ ${total}</span></div>
-        <div class="meal-row"><label>Lunch</label><input type="number" id="d1l-${docId}" value="${d1.lunch||0}" min="0" max="${total}"/><span class="of">/ ${total}</span></div>
-        <div class="meal-row" style="margin-bottom:12px;"><label>Dinner</label><input type="number" id="d1d-${docId}" value="${d1.dinner||0}" min="0" max="${total}"/><span class="of">/ ${total}</span></div>
-
-        <div class="meal-title">Day 2 Attendance</div>
-        <div class="meal-row"><label>Breakfast</label><input type="number" id="d2b-${docId}" value="${d2.breakfast||0}" min="0" max="${total}"/><span class="of">/ ${total}</span></div>
-        <div class="meal-row"><label>Lunch</label><input type="number" id="d2l-${docId}" value="${d2.lunch||0}" min="0" max="${total}"/><span class="of">/ ${total}</span></div>
-        <div class="meal-row" style="margin-bottom:12px;"><label>Dinner</label><input type="number" id="d2d-${docId}" value="${d2.dinner||0}" min="0" max="${total}"/><span class="of">/ ${total}</span></div>
-
-        <!-- Action buttons -->
+        ${mealRows}
         <div class="action-row">
           <button class="abtn abtn-generate" onclick="generateBankQR('${docId}')">💳 Generate QR</button>
-          <button class="abtn abtn-hide" onclick="hideBankQR('${docId}')" ${!qrVisible?'style="opacity:0.4"':''}>🙈 Hide QR</button>
+          <button class="abtn abtn-hide" onclick="hideBankQR('${docId}')">🙈 Hide QR</button>
         </div>
         <div class="action-row">
           <button class="abtn ${approved?'abtn-unapprove':'abtn-approve'}" id="appbtn-${docId}" onclick="toggleApprove('${docId}',${approved})">
@@ -336,20 +381,16 @@ function showLogin() {
 
   function showMsg(docId, text, type) {
     const el = document.getElementById('msg-'+docId);
-    el.textContent = text;
-    el.className = `action-msg ${type}`;
+    el.textContent = text; el.className = `action-msg ${type}`;
     el.style.display = 'block';
     setTimeout(() => el.style.display='none', 3000);
   }
 
-  // ── GENERATE BANK QR (pushes to guest screen instantly) ──
+  // ── GENERATE BANK QR ──
   async function generateBankQR(docId) {
     try {
       await window._updateDoc(window._doc(window._db,'guests',docId), { bankQrVisible: true });
       showMsg(docId, '✅ Bank QR is now visible on guest screen!', 'ok');
-      // Refresh card
-      const snap = await window._getDoc(window._doc(window._db,'guests',docId));
-      if (snap.exists()) refreshCard(docId, snap.data());
     } catch(e) { showMsg(docId, '❌ Error. Try again.', 'err'); }
   }
 
@@ -365,47 +406,38 @@ function showLogin() {
   async function toggleApprove(docId, current) {
     const newVal = !current;
     try {
-      // When approving — also hide bank QR (payment done)
       const update = { approved: newVal };
       if (newVal) update.bankQrVisible = false;
       await window._updateDoc(window._doc(window._db,'guests',docId), update);
-      document.getElementById('badge-'+docId).className = `badge ${newVal?'badge-approved':'badge-pending'}`;
+      document.getElementById('badge-'+docId).className   = `badge ${newVal?'badge-approved':'badge-pending'}`;
       document.getElementById('badge-'+docId).textContent = newVal?'✅ Approved':'⏳ Pending';
       const btn = document.getElementById('appbtn-'+docId);
       btn.textContent = newVal?'❌ Unapprove':'✅ Approve';
       btn.className   = `abtn ${newVal?'abtn-unapprove':'abtn-approve'}`;
       btn.onclick     = () => toggleApprove(docId, newVal);
-      showMsg(docId, newVal?'✅ Guest approved! Redirecting to meal portal...':'✅ Approval removed.', 'ok');
+      showMsg(docId, newVal?'✅ Guest approved!':'✅ Approval removed.', 'ok');
     } catch(e) { showMsg(docId, '❌ Error. Try again.', 'err'); }
   }
 
-  // ── SAVE GUEST DETAILS ──
+  // ── SAVE GUEST ──
   async function saveGuest(docId) {
+    const days   = getEventDays();
     const name   = document.getElementById('e-name-'+docId).value.trim();
     const batch  = parseInt(document.getElementById('e-batch-'+docId).value);
-    const family = parseInt(document.getElementById('e-family-'+docId).value) || 0;
+    const family = parseInt(document.getElementById('e-family-'+docId).value)||0;
     const amount = 10 + family * 5;
-    const meals  = {
-      day1: {
-        breakfast: parseInt(document.getElementById('d1b-'+docId).value)||0,
-        lunch:     parseInt(document.getElementById('d1l-'+docId).value)||0,
-        dinner:    parseInt(document.getElementById('d1d-'+docId).value)||0
-      },
-      day2: {
-        breakfast: parseInt(document.getElementById('d2b-'+docId).value)||0,
-        lunch:     parseInt(document.getElementById('d2l-'+docId).value)||0,
-        dinner:    parseInt(document.getElementById('d2d-'+docId).value)||0
-      }
-    };
+    const meals  = {};
+    days.forEach(day => {
+      meals[`day${day.num}`] = {
+        breakfast: parseInt(document.getElementById(`d${day.num}b-${docId}`).value)||0,
+        lunch:     parseInt(document.getElementById(`d${day.num}l-${docId}`).value)||0,
+        dinner:    parseInt(document.getElementById(`d${day.num}d-${docId}`).value)||0
+      };
+    });
     try {
       await window._updateDoc(window._doc(window._db,'guests',docId), { name, batch, familyCount:family, amount, meals });
       showMsg(docId, '✅ Changes saved successfully!', 'ok');
     } catch(e) { showMsg(docId, '❌ Error saving. Try again.', 'err'); }
-  }
-
-  function refreshCard(docId, g) {
-    const el = document.getElementById('gc-'+docId);
-    if (el) el.outerHTML = buildCard(docId, g);
   }
 
   // ── SEARCH ──
@@ -417,23 +449,20 @@ function showLogin() {
     if (!val) return;
     res.innerHTML = '<p style="padding:14px;color:#888;font-size:0.85rem;">Searching...</p>';
     try {
-      let q;
-      if      (type === 'pin')   q = window._query(window._collection(window._db,'guests'), window._where('pin','==',val));
-      else if (type === 'batch') q = window._query(window._collection(window._db,'guests'), window._where('batch','==',parseInt(val)));
-      else {
-  const snap = await window._getDocs(window._collection(window._db,'guests'));
-  const results = snap.docs.filter(d => 
-    d.data().name.toLowerCase().includes(val.toLowerCase())
-  );
-  if (results.length === 0) { res.innerHTML = '<p class="no-results">No guest found.</p>'; return; }
-  res.innerHTML = '';
-  results.forEach(d => res.innerHTML += buildCard(d.id, d.data()));
-  return;
-}
-      const snap = await window._getDocs(q);
-      if (snap.empty) { res.innerHTML = '<p class="no-results">No guest found.</p>'; return; }
+      let docs;
+      if (type === 'pin') {
+        const q = window._query(window._collection(window._db,'guests'), window._where('pin','==',val));
+        docs = (await window._getDocs(q)).docs;
+      } else if (type === 'batch') {
+        const q = window._query(window._collection(window._db,'guests'), window._where('batch','==',parseInt(val)));
+        docs = (await window._getDocs(q)).docs;
+      } else {
+        const snap = await window._getDocs(window._collection(window._db,'guests'));
+        docs = snap.docs.filter(d => d.data().name.toLowerCase().includes(val.toLowerCase()));
+      }
+      if (!docs.length) { res.innerHTML = '<p class="no-results">No guest found.</p>'; return; }
       res.innerHTML = '';
-      snap.docs.forEach(d => res.innerHTML += buildCard(d.id, d.data()));
+      docs.forEach(d => res.innerHTML += buildCard(d.id, d.data()));
     } catch(e) { console.error(e); res.innerHTML = '<p class="no-results">Error. Try again.</p>'; }
   }
 
@@ -455,16 +484,68 @@ function showLogin() {
     } catch(e) { list.innerHTML = '<p class="no-results">Error loading.</p>'; }
   }
 
+  // ── FOOD SUMMARY ──
+  async function loadFoodSummary() {
+    if (!window._firebaseReady) return;
+    const days = getEventDays();
+    try {
+      const snap = await window._getDocs(window._collection(window._db,'guests'));
+      const required = {}; const actual = {};
+      days.forEach(day => {
+        required[day.num] = { breakfast:0, lunch:0, dinner:0 };
+        actual[day.num]   = { breakfast:0, lunch:0, dinner:0 };
+      });
+
+      snap.docs.forEach(d => {
+        const g  = d.data();
+        const mr = g.mealsRequired || {};
+        const ma = g.meals || {};
+        days.forEach(day => {
+          const dmr = mr[`day${day.num}`] || {};
+          const dma = ma[`day${day.num}`] || {};
+          required[day.num].breakfast += dmr.breakfast||0;
+          required[day.num].lunch     += dmr.lunch||0;
+          required[day.num].dinner    += dmr.dinner||0;
+          actual[day.num].breakfast   += dma.breakfast||0;
+          actual[day.num].lunch       += dma.lunch||0;
+          actual[day.num].dinner      += dma.dinner||0;
+        });
+      });
+
+      // Build required table
+      let reqHtml = ''; let rTotB=0,rTotL=0,rTotD=0;
+      days.forEach(day => {
+        const r = required[day.num];
+        rTotB+=r.breakfast; rTotL+=r.lunch; rTotD+=r.dinner;
+        reqHtml += `<tr><td>${day.label}</td><td>${r.breakfast}</td><td>${r.lunch}</td><td>${r.dinner}</td></tr>`;
+      });
+      reqHtml += `<tr class="total-row"><td>TOTAL</td><td>${rTotB}</td><td>${rTotL}</td><td>${rTotD}</td></tr>`;
+      document.getElementById('food-required-body').innerHTML = reqHtml;
+
+      // Build actual table
+      let actHtml = ''; let aTotB=0,aTotL=0,aTotD=0;
+      days.forEach(day => {
+        const a = actual[day.num];
+        aTotB+=a.breakfast; aTotL+=a.lunch; aTotD+=a.dinner;
+        actHtml += `<tr><td>${day.label}</td><td>${a.breakfast}</td><td>${a.lunch}</td><td>${a.dinner}</td></tr>`;
+      });
+      actHtml += `<tr class="total-row"><td>TOTAL</td><td>${aTotB}</td><td>${aTotL}</td><td>${aTotD}</td></tr>`;
+      document.getElementById('food-actual-body').innerHTML = actHtml;
+
+    } catch(e) { console.error(e); }
+  }
+
   // ── STATS ──
   async function loadStats() {
     if (!window._firebaseReady) return;
-    // Show event config
+    const days = getEventDays();
     document.getElementById('event-config-display').innerHTML = `
-      <strong>📅 Event Day 1:</strong> ${EVENT_CONFIG.DAY1_DATE}<br>
-      <strong>📅 Event Day 2:</strong> ${EVENT_CONFIG.DAY2_DATE}<br>
-      <strong>🍳 Breakfast:</strong> ${EVENT_CONFIG.MEALS.breakfast.start}:00 – ${EVENT_CONFIG.MEALS.breakfast.end}:00 &nbsp;
-      <strong>🍽 Lunch:</strong> ${EVENT_CONFIG.MEALS.lunch.start}:00 – ${EVENT_CONFIG.MEALS.lunch.end}:00 &nbsp;
-      <strong>🌙 Dinner:</strong> ${EVENT_CONFIG.MEALS.dinner.start}:00 – ${EVENT_CONFIG.MEALS.dinner.end}:00
+      <strong>📅 Event Start:</strong> ${new Date(EVENT_START_DATE).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}<br>
+      <strong>📅 Event End:</strong> ${new Date(EVENT_END_DATE).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}<br>
+      <strong>📆 Total Days:</strong> ${days.length}<br>
+      <strong>🍳 Breakfast:</strong> ${MEAL_TIMES.breakfast.start}:00–${MEAL_TIMES.breakfast.end}:00 &nbsp;
+      <strong>🍽 Lunch:</strong> ${MEAL_TIMES.lunch.start}:00–${MEAL_TIMES.lunch.end}:00 &nbsp;
+      <strong>🌙 Dinner:</strong> ${MEAL_TIMES.dinner.start}:00–${MEAL_TIMES.dinner.end}:00
     `;
     try {
       const snap = await window._getDocs(window._collection(window._db,'guests'));
@@ -474,7 +555,7 @@ function showLogin() {
         if (g.approved) approved++; else pending++;
         people += (g.familyCount||0)+1;
         amount += g.amount||(10+(g.familyCount||0)*5);
-        if ((g.familyCount||0) > 0) withFamily++;
+        if ((g.familyCount||0)>0) withFamily++;
       });
       document.getElementById('st-total').textContent    = total;
       document.getElementById('st-approved').textContent = approved;
@@ -485,8 +566,102 @@ function showLogin() {
     } catch(e) { console.error(e); }
   }
 
-  // Enter key
-  document.addEventListener('DOMContentLoaded', () => {
+  // ── EXCEL EXPORT ──
+  async function exportExcel() {
+    if (!window._firebaseReady) return;
+    try {
+      const snap = await window._getDocs(window._collection(window._db,'guests'));
+      const days = getEventDays();
+      const rows = [];
+
+      // Header row
+      const header = ['Name','Batch','PIN','Family Members','Total People','Amount (Rs.)','Status','Registered At'];
+      days.forEach(day => {
+        header.push(`${day.label} - Breakfast Req`);
+        header.push(`${day.label} - Lunch Req`);
+        header.push(`${day.label} - Dinner Req`);
+        header.push(`${day.label} - Breakfast Actual`);
+        header.push(`${day.label} - Lunch Actual`);
+        header.push(`${day.label} - Dinner Actual`);
+      });
+      rows.push(header);
+
+      // Data rows
+      snap.docs.forEach(d => {
+        const g   = d.data();
+        const mr  = g.mealsRequired || {};
+        const ma  = g.meals || {};
+        const total = (g.familyCount||0)+1;
+        const row = [
+          g.name,
+          g.batch,
+          g.pin,
+          g.familyCount||0,
+          total,
+          g.amount||(10+(g.familyCount||0)*5),
+          g.approved ? 'Approved' : 'Pending',
+          (g.registeredAt||'').split('T')[0]||''
+        ];
+        days.forEach(day => {
+          const dmr = mr[`day${day.num}`] || {};
+          const dma = ma[`day${day.num}`] || {};
+          row.push(dmr.breakfast||0);
+          row.push(dmr.lunch||0);
+          row.push(dmr.dinner||0);
+          row.push(dma.breakfast||0);
+          row.push(dma.lunch||0);
+          row.push(dma.dinner||0);
+        });
+        rows.push(row);
+      });
+
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+
+      // Column widths
+      ws['!cols'] = rows[0].map(() => ({ wch: 18 }));
+
+      // Page setup — A4 landscape
+      ws['!pageSetup'] = { paperSize: 9, orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0 };
+
+      XLSX.utils.book_append_sheet(wb, ws, 'Guests');
+
+      // Food summary sheet
+      const foodRows = [['Food Requirements Summary'],[''],['Day','Breakfast Required','Lunch Required','Dinner Required','Breakfast Actual','Lunch Actual','Dinner Actual']];
+      const fsnap = await window._getDocs(window._collection(window._db,'guests'));
+      const required = {}; const actual = {};
+      days.forEach(day => {
+        required[day.num] = {breakfast:0,lunch:0,dinner:0};
+        actual[day.num]   = {breakfast:0,lunch:0,dinner:0};
+      });
+      fsnap.docs.forEach(d => {
+        const g=d.data(); const mr=g.mealsRequired||{}; const ma=g.meals||{};
+        days.forEach(day => {
+          const dmr=mr[`day${day.num}`]||{}; const dma=ma[`day${day.num}`]||{};
+          required[day.num].breakfast+=dmr.breakfast||0;
+          required[day.num].lunch    +=dmr.lunch||0;
+          required[day.num].dinner   +=dmr.dinner||0;
+          actual[day.num].breakfast  +=dma.breakfast||0;
+          actual[day.num].lunch      +=dma.lunch||0;
+          actual[day.num].dinner     +=dma.dinner||0;
+        });
+      });
+      days.forEach(day => {
+        const r=required[day.num]; const a=actual[day.num];
+        foodRows.push([day.label,r.breakfast,r.lunch,r.dinner,a.breakfast,a.lunch,a.dinner]);
+      });
+      const ws2 = XLSX.utils.aoa_to_sheet(foodRows);
+      ws2['!cols'] = foodRows[2].map(() => ({wch:22}));
+      XLSX.utils.book_append_sheet(wb, ws2, 'Food Summary');
+
+      XLSX.writeFile(wb, `RKMVP_Reunion_2026_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+    } catch(e) { console.error(e); alert('Error generating Excel. Try again.'); }
+  }
+
+  // Enter key support
+  window.addEventListener('load', () => {
     document.getElementById('search-val')?.addEventListener('keydown', e => { if(e.key==='Enter') searchGuest(); });
     document.getElementById('admin-pass')?.addEventListener('keydown', e => { if(e.key==='Enter') adminLogin(); });
   });
