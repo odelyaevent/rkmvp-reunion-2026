@@ -557,11 +557,13 @@
           tshirtTotal++;
         }
       });
+const notSpecified = snap.docs.length - tshirtTotal;
       let tshirtHtml = '';
       sizes.forEach(s => {
         tshirtHtml += `<tr><td>${s} cm</td><td>${tshirtCount[s]}</td></tr>`;
       });
-      tshirtHtml += `<tr class="total-row"><td>TOTAL</td><td>${tshirtTotal}</td></tr>`;
+      tshirtHtml += `<tr><td>Not Specified</td><td>${notSpecified}</td></tr>`;
+      tshirtHtml += `<tr class="total-row"><td>TOTAL REGISTERED</td><td>${snap.docs.length}</td></tr>`;
       document.getElementById('tshirt-body').innerHTML = tshirtHtml;
 
     } catch(e) { console.error(e); }
