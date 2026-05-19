@@ -211,7 +211,8 @@
 
   <!-- FOOD SUMMARY TAB -->
   <div id="tab-food" class="tab-content">
-    <div class="section-title">Food Requirements (Pre-registered)</div>
+	<button class="btn-excel" onclick="exportEstimate()" style="background:#6A0DAD;">Download Estimate Report</button>
+	  <div class="section-title">Food Requirements (Pre-registered)</div>
     <div style="padding:0 14px;">
       <table class="food-table" id="food-required-table">
         <thead><tr><th>Day</th><th>Breakfast</th><th>Lunch</th><th>Dinner</th></tr></thead>
@@ -232,7 +233,6 @@
         <tbody id="tshirt-body"></tbody>
       </table>
     </div>
-    <button class="btn-excel" onclick="exportEstimate()" style="background:#6A0DAD;">Download Estimate Report</button>
   </div>
 
   <!-- STATS TAB -->
