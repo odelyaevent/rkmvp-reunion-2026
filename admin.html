@@ -63,7 +63,7 @@
     /* DASHBOARD */
     #dashboard-section{display:none;}
     .tabs{display:flex;background:var(--deep-blue);overflow-x:auto;}
-    .tab{flex:1;min-width:60px;padding:11px 4px;text-align:center;font-family:'Cinzel',serif;font-size:0.65rem;color:#B8CFFF;cursor:pointer;border-bottom:3px solid transparent;letter-spacing:0.02em;transition:all 0.2s;white-space:nowrap;}
+    .tab{flex:1;min-width:60px;padding:11px 4px;text-align:center;font-family:'Cinzel',serif;font-size:0.85rem;color:#B8CFFF;cursor:pointer;border-bottom:3px solid transparent;letter-spacing:0.02em;transition:all 0.2s;line-height:1.4;}
     .tab.active{color:var(--gold);border-bottom-color:var(--gold);background:#1A4A9E;}
     .tab-content{display:none;}
     .tab-content.active{display:block;}
@@ -158,11 +158,10 @@
     <button class="btn-sm btn-logout" onclick="adminLogout()">LOGOUT</button>
   </div>
 
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('search')">🔍 Search</div>
-    <div class="tab" onclick="switchTab('all')">👥 Guests</div>
-    <div class="tab" onclick="switchTab('food')">🍽 Food</div>
-    <div class="tab" onclick="switchTab('stats')">📊 Stats</div>
+<div class="tab active" onclick="switchTab('search')">🔍<br>Search</div>
+    <div class="tab" onclick="switchTab('all')">👥<br>Guests</div>
+    <div class="tab" onclick="switchTab('food')">🍽<br>Food</div>
+    <div class="tab" onclick="switchTab('stats')">📊<br>Stats</div>
   </div>
 
   <!-- SEARCH TAB -->
