@@ -225,13 +225,14 @@
         <tbody id="food-actual-body"></tbody>
       </table>
     </div>
-    <div class="section-title">T-Shirt Requirements</div>
+<div class="section-title">T-Shirt Requirements</div>
     <div style="padding:0 14px;">
       <table class="food-table" id="tshirt-table">
         <thead><tr><th>Size (cm)</th><th>Count</th></tr></thead>
         <tbody id="tshirt-body"></tbody>
       </table>
     </div>
+    <button class="btn-excel" onclick="exportEstimate()" style="background:#6A0DAD;">Download Estimate Report</button>
   </div>
 
   <!-- STATS TAB -->
@@ -745,6 +746,124 @@ const notSpecified = snap.docs.length - tshirtTotal;
     } catch(e) { console.error(e); alert('Error generating Excel. Try again.'); }
   }
 
+// ── ESTIMATE EXCEL EXPORT ──
+  async function exportEstimate() {
+    if (!window._firebaseReady) return;
+    try {
+      const snap = await window._getDocs(window._collection(window._db,'guests'));
+      const days = getEventDays();
+      const wb   = XLSX.utils.book_new();
+
+      // ── PAGE 1: FOOD ──
+      const foodRows = [];
+
+      // Title
+      foodRows.push(['RKMVP Alumni Association — Reunion 2026']);
+      foodRows.push(['']);
+
+      // Section 1: Food Requirements
+      foodRows.push(['FOOD REQUIREMENTS (PRE-REGISTERED)']);
+      foodRows.push(['Day', 'Breakfast', 'Lunch', 'Dinner']);
+
+      const required = {}; const actual = {}; const guestSelected = {};
+      days.forEach(day => {
+        required[day.num]      = { breakfast:0, lunch:0, dinner:0 };
+        actual[day.num]        = { breakfast:0, lunch:0, dinner:0 };
+        guestSelected[day.num] = { breakfast:0, lunch:0, dinner:0 };
+      });
+      snap.docs.forEach(d => {
+        const g=d.data(); const mr=g.mealsRequired||{}; const ma=g.meals||{};
+        days.forEach(day => {
+          const dmr=mr[`day${day.num}`]||{}; const dma=ma[`day${day.num}`]||{};
+          required[day.num].breakfast += dmr.breakfast||0;
+          required[day.num].lunch     += dmr.lunch||0;
+          required[day.num].dinner    += dmr.dinner||0;
+          actual[day.num].breakfast   += dma.breakfast||0;
+          actual[day.num].lunch       += dma.lunch||0;
+          actual[day.num].dinner      += dma.dinner||0;
+          if ((dmr.breakfast||0)>0) guestSelected[day.num].breakfast++;
+          if ((dmr.lunch||0)>0)     guestSelected[day.num].lunch++;
+          if ((dmr.dinner||0)>0)    guestSelected[day.num].dinner++;
+        });
+      });
+
+      const totalGuests = snap.docs.length;
+      let rTotB=0,rTotL=0,rTotD=0;
+      days.forEach(day => {
+        const r = required[day.num];
+        rTotB+=r.breakfast; rTotL+=r.lunch; rTotD+=r.dinner;
+        const nsB = totalGuests - guestSelected[day.num].breakfast;
+        const nsL = totalGuests - guestSelected[day.num].lunch;
+        const nsD = totalGuests - guestSelected[day.num].dinner;
+        foodRows.push([day.label, r.breakfast, r.lunch, r.dinner]);
+        foodRows.push(['  Not Specified', nsB, nsL, nsD]);
+      });
+      foodRows.push(['TOTAL', rTotB, rTotL, rTotD]);
+
+      foodRows.push(['']);
+      foodRows.push(['']);
+
+      // Section 2: Actual Attendance
+      foodRows.push(['ACTUAL ATTENDANCE (SCANNED)']);
+      foodRows.push(['Day', 'Breakfast', 'Lunch', 'Dinner']);
+      let aTotB=0,aTotL=0,aTotD=0;
+      days.forEach(day => {
+        const a = actual[day.num];
+        aTotB+=a.breakfast; aTotL+=a.lunch; aTotD+=a.dinner;
+        foodRows.push([day.label, a.breakfast, a.lunch, a.dinner]);
+      });
+      foodRows.push(['TOTAL', aTotB, aTotL, aTotD]);
+
+      const ws1 = XLSX.utils.aoa_to_sheet(foodRows);
+      ws1['!cols'] = [{wch:36},{wch:16},{wch:16},{wch:16}];
+      ws1['!pageSetup'] = { paperSize:9, orientation:'landscape', fitToPage:true, fitToWidth:1, fitToHeight:0 };
+
+      // Bold + big font for title and section headers
+      const boldCells = ['A1','A3','A4','B4','C4','D4'];
+      days.forEach((day,i) => {
+        const rowBase = 5 + i*2;
+        boldCells.push(`A${rowBase}`);
+      });
+      boldCells.forEach(cell => {
+        if (ws1[cell]) ws1[cell].s = { font:{ bold:true, sz:13 } };
+      });
+      if (ws1['A1']) ws1['A1'].s = { font:{ bold:true, sz:16 } };
+
+      XLSX.utils.book_append_sheet(wb, ws1, 'Food & Attendance');
+
+      // ── PAGE 2: T-SHIRT ──
+      const sizes = [26,28,30,32,34,36,38,40,42,44];
+      const tshirtCount = {};
+      sizes.forEach(s => tshirtCount[s]=0);
+      let tshirtTotal = 0;
+      snap.docs.forEach(d => {
+        const s = d.data().tshirtSize || 0;
+        if (s>0 && tshirtCount[s]!==undefined) { tshirtCount[s]++; tshirtTotal++; }
+      });
+      const notSpecified = totalGuests - tshirtTotal;
+
+      const tshirtRows = [];
+      tshirtRows.push(['RKMVP Alumni Association — Reunion 2026']);
+      tshirtRows.push(['']);
+      tshirtRows.push(['T-SHIRT REQUIREMENTS']);
+      tshirtRows.push(['Size (cm)', 'Count']);
+      sizes.forEach(s => tshirtRows.push([`${s} cm`, tshirtCount[s]]));
+      tshirtRows.push(['Total T-Shirt Required', tshirtTotal]);
+      tshirtRows.push(['Not Specified', notSpecified]);
+
+      const ws2 = XLSX.utils.aoa_to_sheet(tshirtRows);
+      ws2['!cols'] = [{wch:28},{wch:16}];
+      ws2['!pageSetup'] = { paperSize:9, orientation:'landscape', fitToPage:true, fitToWidth:1, fitToHeight:0 };
+      if (ws2['A1']) ws2['A1'].s = { font:{ bold:true, sz:16 } };
+      if (ws2['A3']) ws2['A3'].s = { font:{ bold:true, sz:13 } };
+
+      XLSX.utils.book_append_sheet(wb, ws2, 'T-Shirt Requirements');
+
+      XLSX.writeFile(wb, `RKMVP_Estimate_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+    } catch(e) { console.error(e); alert('Error generating report. Try again.'); }
+  }
+	
   // Enter key support
   window.addEventListener('load', () => {
     document.getElementById('search-val')?.addEventListener('keydown', e => { if(e.key==='Enter') searchGuest(); });
