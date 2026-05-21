@@ -486,6 +486,7 @@ try {
       await window._updateDoc(window._doc(window._db,'guests',docId), { name, batch, familyCount:family, amount, meals, tshirtSize:tshirt, pin });
       showMsg(docId, '✅ Changes saved successfully!', 'ok');
     } catch(e) { showMsg(docId, '❌ Error saving. Try again.', 'err'); }
+  }
 
   // ── SEARCH ──
   async function searchGuest() {
