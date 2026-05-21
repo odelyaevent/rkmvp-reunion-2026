@@ -56,7 +56,17 @@
     .err-msg{color:var(--red);font-size:0.88rem;margin-bottom:10px;display:none;font-weight:700;}
     .spinner{display:inline-block;width:16px;height:16px;border:3px solid #ffffff55;border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
     @keyframes spin{to{transform:rotate(360deg);}}
-    #scanner-section{display:none;}
+#scanner-section{display:none;height:100vh;display:none;flex-direction:column;}
+.scanner-wrap{height:70vh;overflow:hidden;position:relative;}
+.manual-wrap{height:30vh;background:var(--deep-blue);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:10px;}
+.manual-title{font-family:'Cinzel',serif;color:var(--gold);font-size:0.9rem;letter-spacing:0.05em;}
+.manual-counter-row{display:flex;align-items:center;gap:20px;}
+.manual-btn{width:56px;height:56px;border-radius:50%;border:3px solid white;background:transparent;color:white;font-size:2rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.manual-btn:active{background:rgba(255,255,255,0.2);}
+.manual-num{font-family:'Cinzel',serif;font-size:2.8rem;font-weight:900;color:white;min-width:50px;text-align:center;}
+.manual-allow{padding:10px 32px;background:var(--success);color:white;font-family:'Cinzel',serif;font-size:1rem;font-weight:700;border:none;border-radius:10px;cursor:pointer;letter-spacing:0.05em;}
+.manual-allow:active{opacity:0.85;}
+.manual-meal{font-size:0.78rem;color:#B8CFFF;font-weight:700;}
     .scan-stats{display:flex;gap:10px;padding:10px 14px 0;}
     .scan-stat{flex:1;background:var(--white);border-radius:8px;border:1.5px solid #FFD70044;padding:10px;text-align:center;}
     .scan-stat-num{font-family:'Cinzel',serif;font-size:1.4rem;font-weight:900;color:var(--deep-blue);}
@@ -116,18 +126,27 @@
 <!-- SCANNER -->
 <div id="scanner-section">
   <div class="top-bar">
-    <span id="att-email-display">Attendant</span>
+    <span></span>
     <button class="btn-sm btn-logout" onclick="attLogout()">LOGOUT</button>
   </div>
-  <div class="day-info" id="day-info">📅 Loading event day info...</div>
+  <div class="day-info" id="day-info">Loading event day info...</div>
   <div class="scan-stats">
     <div class="scan-stat"><div class="scan-stat-num" id="scan-count-ok">0</div><div class="scan-stat-label">Allowed</div></div>
-    <div class="scan-stat"><div class="scan-stat-num" id="scan-count-fail">0</div><div class="scan-stat-label">Rejected</div></div>
-    <div class="scan-stat"><div class="scan-stat-num" id="scan-count-total">0</div><div class="scan-stat-label">Total Scans</div></div>
+    <div class="scan-stat"><div class="scan-stat-num" id="scan-count-fail">0</div><div class="scan-stat-label">Invalid</div></div>
+    <div class="scan-stat"><div class="scan-stat-num" id="scan-count-total">0</div><div class="scan-stat-label">Total</div></div>
   </div>
-  <div class="scan-card">
+  <div class="scanner-wrap">
     <div id="reader"></div>
-    <div class="scan-note">📷 Point camera at guest's meal QR code</div>
+  </div>
+  <div class="manual-wrap">
+    <div class="manual-title">Manual Entry</div>
+    <div class="manual-meal" id="manual-meal-label">Detecting meal time...</div>
+    <div class="manual-counter-row">
+      <button class="manual-btn" onclick="manualChange(-1)">−</button>
+      <div class="manual-num" id="manual-num">0</div>
+      <button class="manual-btn" onclick="manualChange(1)">+</button>
+    </div>
+    <button class="manual-allow" onclick="manualAllow()">ALLOW</button>
   </div>
 </div>
 
@@ -256,7 +275,9 @@
       dayInfoEl.style.color = 'var(--red)';
     }
 
-    updateScanStats();
+updateScanStats();
+    updateManualMealLabel();
+    setInterval(updateManualMealLabel, 60000);
     startScanner();
   }
 
@@ -281,14 +302,14 @@
     try { data = JSON.parse(rawText); }
     catch {
       scanFail++; updateScanStats();
-      showResult('red','❌','INVALID QR','This QR code is not recognized.','',null);
+      showResult('red','❌','Invalid QR','This QR code is not recognized.','');
       return;
     }
 
     const { guestId, meal, day, total, name } = data;
     if (!guestId || !meal || !day) {
       scanFail++; updateScanStats();
-      showResult('red','❌','INVALID QR','Unrecognized QR format.','',null);
+      showResult('red','❌','Invalid QR','Unrecognized QR format.','');
       return;
     }
 
@@ -296,17 +317,17 @@
     const eventDay = getEventDay();
     if (!eventDay) {
       scanFail++; updateScanStats();
-      showResult('warning','⚠️','WRONG DAY',
-        `Today is not an event day.\nEvent: ${EVENT_START_DATE} to ${EVENT_END_DATE}`,
-        name||'', null);
+      showResult('warning','⚠️','Invalid QR',
+        `Today is not an event day.`,
+        name||'');
       return;
     }
 
     if (parseInt(day) !== eventDay.num) {
       scanFail++; updateScanStats();
-      showResult('warning','⚠️','WRONG DAY QR',
+      showResult('warning','⚠️','Invalid QR',
         `This QR is for Day ${day}.\nToday is ${eventDay.label}.`,
-        name||'', null);
+        name||'');
       return;
     }
 
@@ -316,14 +337,14 @@
 
       if (!snap.exists()) {
         scanFail++; updateScanStats();
-        showResult('red','❌','NOT FOUND','Guest not found in database.',name||'',null);
+        showResult('red','❌','Invalid QR','Guest not found in database.',name||'');
         return;
       }
 
       const g       = snap.data();
       if (!g.approved) {
         scanFail++; updateScanStats();
-        showResult('warning','⚠️','NOT APPROVED','This guest has not been approved yet.',g.name,null);
+        showResult('warning','⚠️','Invalid QR','This guest has not been approved yet.',g.name);
         return;
       }
 
@@ -332,62 +353,97 @@
       const allowed   = total || ((g.familyCount||0)+1);
       const remaining = allowed - used;
 
-      if (remaining <= 0) {
+if (remaining <= 0) {
         scanFail++; updateScanStats();
-        showResult('red','❌','LIMIT REACHED',
-          `${meal.toUpperCase()} — ${eventDay.label}\nAll ${allowed} entries used.\nNo more entries allowed.`,
-          g.name, null);
+        showResult('red','❌','Invalid QR',
+          `${meal.toUpperCase()} — ${eventDay.label}\nAll ${allowed} entries used.`,
+          g.name);
         return;
       }
 
-      pendingEntry = { ref, dayKey, meal, used, allowed };
-      entryCount   = 1;
-      maxCount     = remaining;
+      // AUTO CONFIRM instantly
+      const newUsed = used + 1;
+      await window._updateDoc(ref, { [`meals.${dayKey}.${meal}`]: newUsed });
+      scanOk++; updateScanStats();
       showResult('green','✅','ALLOWED',
-        `${meal.toUpperCase()} — ${eventDay.label}\nUsed: ${used} / ${allowed} — ${remaining} remaining`,
-        g.name, remaining);
+        `${meal.toUpperCase()} — ${eventDay.label}\nEntry ${newUsed} of ${allowed}`,
+        g.name);
+      setTimeout(() => dismissResult(), 500);
+      pendingEntry = null;
+      return;
 
     } catch(e) {
       console.error(e);
       scanFail++; updateScanStats();
-      showResult('red','❌','ERROR','Database error. Please try again.','',null);
+      showResult('red','❌','Invalid QR','Database error. Please try again.','');
     }
   }
 
-  function showResult(color, icon, status, detail, name, remaining) {
+  function getCurrentMeal() {
+    const h = new Date().getHours();
+    if (h >= 7  && h < 11) return 'breakfast';
+    if (h >= 12 && h < 16) return 'lunch';
+    if (h >= 18 && h < 23) return 'dinner';
+    return null;
+  }
+
+  function updateManualMealLabel() {
+    const meal = getCurrentMeal();
+    const el   = document.getElementById('manual-meal-label');
+    if (meal) {
+      el.textContent = `Current meal: ${meal.charAt(0).toUpperCase()+meal.slice(1)}`;
+      el.style.color = '#B8CFFF';
+    } else {
+      el.textContent = 'No active meal time';
+      el.style.color = '#FF8888';
+    }
+  }
+
+  let manualCount = 0;
+  function manualChange(delta) {
+    manualCount = Math.max(0, manualCount + delta);
+    document.getElementById('manual-num').textContent = manualCount;
+  }
+
+  async function manualAllow() {
+    if (manualCount === 0) return;
+    const eventDay = getEventDay();
+    const meal     = getCurrentMeal();
+    if (!eventDay || !meal) { alert('No active event day or meal time.'); return; }
+    const dayKey   = `day${eventDay.num}`;
+    try {
+      const metaRef  = window._doc(window._db, 'manualEntries', dayKey);
+      const metaSnap = await window._getDoc(metaRef);
+      const existing = metaSnap.exists() ? (metaSnap.data()[meal] || 0) : 0;
+      await window._updateDoc(metaRef, { [meal]: existing + manualCount })
+        .catch(async () => {
+          const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+          await setDoc(metaRef, { [meal]: existing + manualCount }, { merge: true });
+        });
+      scanOk += manualCount; updateScanStats();
+      manualCount = 0;
+      document.getElementById('manual-num').textContent = 0;
+    } catch(e) { console.error(e); alert('Error saving. Try again.'); }
+  }
+
+  function showResult(color, icon, status, detail, name) {
     const overlay = document.getElementById('result-overlay');
     overlay.className = `active ${color}`;
     document.getElementById('result-icon').textContent   = icon;
     document.getElementById('result-status').textContent = status;
     document.getElementById('result-name').textContent   = name;
     document.getElementById('result-detail').textContent = detail;
-
-    const counterSec = document.getElementById('counter-section');
-    const confirmBtn = document.getElementById('btn-confirm');
-
-    if (color === 'green' && remaining && remaining > 0) {
-      counterSec.style.display = 'block';
-      entryCount = 1;
-      document.getElementById('cnt-display').textContent = entryCount;
-      confirmBtn.style.display = 'block';
-    } else {
-      counterSec.style.display = 'none';
-      confirmBtn.style.display = color === 'green' ? 'block' : 'none';
-    }
-  }
-
-  function changeCount(delta) {
-    entryCount = Math.max(1, Math.min(maxCount, entryCount + delta));
-    document.getElementById('cnt-display').textContent = entryCount;
+    document.getElementById('counter-section').style.display = 'none';
+    document.getElementById('btn-confirm').style.display     = 'none';
   }
 
   async function confirmEntry() {
     if (!pendingEntry) { dismissResult(); return; }
     const { ref, dayKey, meal, used, allowed } = pendingEntry;
-    const newUsed = Math.min(used + entryCount, allowed);
+    const newUsed = Math.min(used + 1, allowed);
     try {
       await window._updateDoc(ref, { [`meals.${dayKey}.${meal}`]: newUsed });
-      scanOk += entryCount; updateScanStats();
+      scanOk++; updateScanStats();
     } catch(e) { console.error(e); }
     pendingEntry = null;
     dismissResult();
