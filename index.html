@@ -11,7 +11,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs, addDoc, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, addDoc, onSnapshot, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     // ── PASTE YOUR FIREBASE CONFIG HERE ──
   const firebaseConfig = {
@@ -27,7 +27,7 @@
     window._db=db; window._collection=collection; window._query=query;
     window._where=where; window._getDocs=getDocs; window._addDoc=addDoc;
     window._onSnapshot=onSnapshot; window._doc=doc;
-    window._firebaseReady=true;
+    window._getDoc=getDoc; window._updateDoc=updateDoc; window._firebaseReady=true;
   </script>
 
   <style>
@@ -104,6 +104,22 @@
     </div>
   </header>
 
+<!-- LOADING SCREEN -->
+  <div id="loading-screen" style="display:none;text-align:center;padding:60px 18px;">
+    <div style="font-family:'Cinzel',serif;color:var(--deep-blue);font-size:1.2rem;margin-bottom:16px;">Checking your device...</div>
+    <div style="display:inline-block;width:36px;height:36px;border:4px solid #C5D3E8;border-top-color:var(--deep-blue);border-radius:50%;animation:spin 0.7s linear infinite;"></div>
+  </div>
+
+  <!-- LANDING SCREEN -->
+  <div id="landing-screen" style="display:none;padding:30px 18px;">
+    <div style="text-align:center;margin-bottom:30px;">
+      <div style="font-family:'Cinzel',serif;color:var(--deep-blue);font-size:1.4rem;font-weight:700;margin-bottom:8px;">Welcome!</div>
+      <div style="color:#555;font-size:1rem;">Please choose an option to continue.</div>
+    </div>
+    <button onclick="showLogin()" style="width:100%;padding:22px;background:linear-gradient(135deg,var(--deep-blue),var(--light-blue));color:white;font-family:'Cinzel',serif;font-size:1.4rem;font-weight:700;border:none;border-radius:14px;cursor:pointer;margin-bottom:16px;letter-spacing:0.05em;box-shadow:0 4px 16px #0D2B5E33;">Login</button>
+    <button onclick="showRegistration()" style="width:100%;padding:22px;background:linear-gradient(135deg,var(--saffron),#C9400A);color:white;font-family:'Cinzel',serif;font-size:1.4rem;font-weight:700;border:none;border-radius:14px;cursor:pointer;letter-spacing:0.05em;box-shadow:0 4px 16px #E8560A44;">New Registration</button>
+  </div>
+  
   <!-- SCREEN 1: REGISTRATION -->
   <div class="card" id="reg-card">
     <div class="card-header"><h2>Delegate Details</h2></div>
@@ -324,10 +340,20 @@
       el.style.display = show ? 'block' : 'none';
     }
 
-    function hideAll() {
-      ['reg-card','pin-screen','pending-screen','bankqr-screen'].forEach(id => {
+function hideAll() {
+      ['reg-card','pin-screen','pending-screen','bankqr-screen','landing-screen','loading-screen'].forEach(id => {
         document.getElementById(id).style.display = 'none';
       });
+    }
+
+    function showLogin() {
+      hideAll();
+      document.getElementById('pin-screen').style.display = 'block';
+    }
+
+    function showRegistration() {
+      hideAll();
+      document.getElementById('reg-card').style.display = 'block';
     }
 
     function showBankQR(name, amount, family) {
@@ -417,7 +443,8 @@
           registeredAt:  new Date().toISOString()
         });
 
-        localStorage.setItem('rkmvp_pin', pin);
+		localStorage.setItem('rkmvp_pin', pin);
+        await saveDeviceToken(docRef.id, family);
         hideAll();
         document.getElementById('pending-screen').style.display = 'block';
         startRealtimeListener(docRef.id);
@@ -444,9 +471,10 @@
         const snap = await window._getDocs(q);
         if (snap.empty) { err.style.display='block'; btn.disabled=false; btn.innerHTML='ENTER'; return; }
 
-        const docId = snap.docs[0].id;
+const docId = snap.docs[0].id;
         const g     = snap.docs[0].data();
         localStorage.setItem('rkmvp_pin', pin);
+        await saveDeviceToken(docId, g.familyCount||0);
         hideAll();
 
         if (g.approved) {
@@ -468,8 +496,64 @@
       }
     }
 
+// ── DEVICE TOKEN ──
+    function generateToken() {
+      return 'dev_' + Math.random().toString(36).substr(2,16) + '_' + Date.now();
+    }
+
+    function getEventEndMidnight() {
+      const d = new Date(EVENT_END_DATE);
+      d.setDate(d.getDate()+1);
+      d.setHours(0,0,0,0);
+      return d.getTime();
+    }
+
+    function isTokenExpired() {
+      return Date.now() > getEventEndMidnight();
+    }
+
+    async function checkDeviceToken() {
+      const token = localStorage.getItem('rkmvp_device_token');
+      if (!token || isTokenExpired()) {
+        localStorage.removeItem('rkmvp_device_token');
+        localStorage.removeItem('rkmvp_pin');
+        return false;
+      }
+      if (!window._firebaseReady) return false;
+      try {
+        const snap = await window._getDocs(
+          window._query(window._collection(window._db,'guests'),
+          window._where('devices','array-contains',token))
+        );
+        if (!snap.empty) {
+          const g = snap.docs[0].data();
+          window.location.href = `guest.html?pin=${encodeURIComponent(g.pin)}`;
+          return true;
+        }
+      } catch(e) { console.error(e); }
+      localStorage.removeItem('rkmvp_device_token');
+      return false;
+    }
+
+    async function saveDeviceToken(docId, familyCount) {
+      const maxDevices = (familyCount||0) + 1 + 1;
+      let token = localStorage.getItem('rkmvp_device_token');
+      if (!token) token = generateToken();
+      try {
+        const ref  = window._doc(window._db,'guests',docId);
+        const snap = await window._getDoc(ref);
+        if (!snap.exists()) return;
+        const devices = snap.data().devices || [];
+        if (devices.includes(token)) return;
+        if (devices.length >= maxDevices) return;
+        devices.push(token);
+        await window._updateDoc(ref, { devices });
+        localStorage.setItem('rkmvp_device_token', token);
+      } catch(e) { console.error(e); }
+    }
+
     // ── ON PAGE LOAD ──
-    window.addEventListener('load', () => {
+    window.addEventListener('load', async () => {
       generateMealCheckboxes();
       setTimeout(() => { updateMealPreviews(); }, 100);
 
@@ -488,12 +572,18 @@
         if (e.key==='Enter') enterWithPin();
       });
 
-      const savedPin = localStorage.getItem('rkmvp_pin');
-      if (savedPin) {
-        hideAll();
-        document.getElementById('pin-screen').style.display = 'block';
-      }
+      // Check device token first
+      hideAll();
+      document.getElementById('loading-screen').style.display = 'block';
+      const found = await checkDeviceToken();
+      if (found) return;
+
+      document.getElementById('loading-screen').style.display = 'none';
+
+      // Show landing page
+      document.getElementById('landing-screen').style.display = 'block';
     });
+
   </script>
 </body>
 </html>
