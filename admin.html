@@ -8,7 +8,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     // ── PASTE YOUR FIREBASE CONFIG HERE ──
   const firebaseConfig = {
@@ -578,14 +578,34 @@ const totalGuests = snap.docs.length;
       reqHtml += `<tr class="total-row"><td>TOTAL</td><td>${rTotB}</td><td>${rTotL}</td><td>${rTotD}</td></tr>`;
       document.getElementById('food-required-body').innerHTML = reqHtml;
 
+// Fetch manual entries
+      const manualData = {};
+      days.forEach(day => manualData[day.num] = {breakfast:0,lunch:0,dinner:0});
+      for (const day of days) {
+        try {
+          const mSnap = await window._getDoc(window._doc(window._db,'manualEntries',`day${day.num}`));
+          if (mSnap.exists()) {
+            const md = mSnap.data();
+            manualData[day.num].breakfast = md.breakfast||0;
+            manualData[day.num].lunch     = md.lunch||0;
+            manualData[day.num].dinner    = md.dinner||0;
+          }
+        } catch(e) {}
+      }
+
       // Build actual table
       let actHtml = ''; let aTotB=0,aTotL=0,aTotD=0;
+      let mTotB=0,mTotL=0,mTotD=0;
       days.forEach(day => {
         const a = actual[day.num];
+        const mn = manualData[day.num];
         aTotB+=a.breakfast; aTotL+=a.lunch; aTotD+=a.dinner;
+        mTotB+=mn.breakfast; mTotL+=mn.lunch; mTotD+=mn.dinner;
         actHtml += `<tr><td>${day.label}</td><td>${a.breakfast}</td><td>${a.lunch}</td><td>${a.dinner}</td></tr>`;
+        actHtml += `<tr><td style="color:#856404;font-style:italic;padding-left:18px;">Manual Entry</td><td style="color:#856404;">${mn.breakfast}</td><td style="color:#856404;">${mn.lunch}</td><td style="color:#856404;">${mn.dinner}</td></tr>`;
       });
-      actHtml += `<tr class="total-row"><td>TOTAL</td><td>${aTotB}</td><td>${aTotL}</td><td>${aTotD}</td></tr>`;
+      actHtml += `<tr class="total-row"><td>TOTAL (Scanned)</td><td>${aTotB}</td><td>${aTotL}</td><td>${aTotD}</td></tr>`;
+      actHtml += `<tr class="total-row"><td>TOTAL (Manual)</td><td>${mTotB}</td><td>${mTotL}</td><td>${mTotD}</td></tr>`;
       document.getElementById('food-actual-body').innerHTML = actHtml;
 
 // T-shirt summary
