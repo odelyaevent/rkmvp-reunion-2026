@@ -223,12 +223,24 @@
   </div>
 
   <script>
+
+// ============================================================
+    // ⚙️ EVENT CONFIGURATION — loaded from Firebase
     // ============================================================
-    // ⚙️ EVENT CONFIGURATION — CHANGE THESE FOR YOUR EVENT
+    let EVENT_START_DATE = '2026-05-21'; // fallback
+    let EVENT_END_DATE   = '2026-05-22'; // fallback
     // ============================================================
-    const EVENT_START_DATE = '2026-05-21'; // ← CHANGE THIS
-    const EVENT_END_DATE   = '2026-05-22'; // ← CHANGE THIS
-    // ============================================================
+
+    async function loadEventConfig() {
+      if (!window._firebaseReady) return;
+      try {
+        const snap = await window._getDoc(window._doc(window._db,'config','event'));
+        if (!snap.exists()) return;
+        const d = snap.data();
+        if (d.startDate) EVENT_START_DATE = d.startDate;
+        if (d.endDate)   EVENT_END_DATE   = d.endDate;
+      } catch(e) { console.error(e); }
+    }
 
     function getEventDays() {
       const days = [];
@@ -552,8 +564,9 @@ const docId = snap.docs[0].id;
       } catch(e) { console.error(e); }
     }
 
-    // ── ON PAGE LOAD ──
+// ── ON PAGE LOAD ──
     window.addEventListener('load', async () => {
+      await loadEventConfig();
       generateMealCheckboxes();
       setTimeout(() => { updateMealPreviews(); }, 100);
 
