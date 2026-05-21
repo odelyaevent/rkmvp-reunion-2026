@@ -174,10 +174,11 @@
   </div>
 
   <div class="tabs">
-<div class="tab active" onclick="switchTab('search')">Search</div>
+	<div class="tab active" onclick="switchTab('search')">Search</div>
     <div class="tab" onclick="switchTab('all')">Guests</div>
     <div class="tab" onclick="switchTab('food')">Estimate</div>
     <div class="tab" onclick="switchTab('stats')">Stats</div>
+    <div class="tab" onclick="switchTab('event')">Event</div>
   </div>
 
   <!-- SEARCH TAB -->
@@ -233,6 +234,52 @@
         <thead><tr><th>Size (cm)</th><th>Count</th></tr></thead>
         <tbody id="tshirt-body"></tbody>
       </table>
+    </div>
+  </div>
+
+<!-- EVENT TAB -->
+  <div id="tab-event" class="tab-content">
+    <div class="section-title">Event Configuration</div>
+    <div style="padding:0 14px;">
+
+      <div class="field-row" style="margin-top:10px;">
+        <label>Start Date</label>
+        <input type="text" id="ev-start" placeholder="2026-05-21"/>
+      </div>
+      <div class="field-row">
+        <label>End Date</label>
+        <input type="text" id="ev-end" placeholder="2026-05-22"/>
+      </div>
+
+      <div class="section-title" style="padding:14px 0 4px;">Meal Timings (24hr)</div>
+
+      <div class="field-row">
+        <label>Breakfast Start</label>
+        <input type="number" id="ev-bs" placeholder="7" min="0" max="23"/>
+      </div>
+      <div class="field-row">
+        <label>Breakfast End</label>
+        <input type="number" id="ev-be" placeholder="11" min="0" max="23"/>
+      </div>
+      <div class="field-row">
+        <label>Lunch Start</label>
+        <input type="number" id="ev-ls" placeholder="12" min="0" max="23"/>
+      </div>
+      <div class="field-row">
+        <label>Lunch End</label>
+        <input type="number" id="ev-le" placeholder="16" min="0" max="23"/>
+      </div>
+      <div class="field-row">
+        <label>Dinner Start</label>
+        <input type="number" id="ev-ds" placeholder="18" min="0" max="23"/>
+      </div>
+      <div class="field-row">
+        <label>Dinner End</label>
+        <input type="number" id="ev-de" placeholder="23" min="0" max="23"/>
+      </div>
+
+      <button class="btn-excel" onclick="saveEventConfig()" style="margin-top:14px;">Save Event Config</button>
+      <div id="ev-msg" style="display:none;text-align:center;padding:10px;font-weight:700;border-radius:8px;margin-top:10px;font-size:1rem;"></div>
     </div>
   </div>
 
@@ -319,12 +366,13 @@
   function switchTab(name) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    const tabs = ['search','all','food','stats'];
+    const tabs = ['search','all','food','stats','event'];
     document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
     document.getElementById('tab-'+name).classList.add('active');
     if (name === 'all')   loadAllGuests();
     if (name === 'stats') loadStats();
     if (name === 'food')  loadFoodSummary();
+    if (name === 'event') loadEventConfig();
   }
 
   // ── BUILD GUEST CARD ──
@@ -882,6 +930,69 @@ const notSpecified = snap.docs.length - tshirtTotal;
       XLSX.writeFile(wb, `RKMVP_Estimate_${new Date().toISOString().split('T')[0]}.xlsx`);
 
     } catch(e) { console.error(e); alert('Error generating report. Try again.'); }
+  }
+
+// ── EVENT CONFIG ──
+  async function loadEventConfig() {
+    if (!window._firebaseReady) return;
+    try {
+      const snap = await window._getDoc(window._doc(window._db,'config','event'));
+      if (!snap.exists()) return;
+      const d = snap.data();
+      document.getElementById('ev-start').value = d.startDate || '';
+      document.getElementById('ev-end').value   = d.endDate   || '';
+      document.getElementById('ev-bs').value    = d.breakfastStart ?? '';
+      document.getElementById('ev-be').value    = d.breakfastEnd   ?? '';
+      document.getElementById('ev-ls').value    = d.lunchStart     ?? '';
+      document.getElementById('ev-le').value    = d.lunchEnd       ?? '';
+      document.getElementById('ev-ds').value    = d.dinnerStart    ?? '';
+      document.getElementById('ev-de').value    = d.dinnerEnd      ?? '';
+    } catch(e) { console.error(e); }
+  }
+
+  async function saveEventConfig() {
+    if (!window._firebaseReady) return;
+    const startDate      = document.getElementById('ev-start').value.trim();
+    const endDate        = document.getElementById('ev-end').value.trim();
+    const breakfastStart = parseInt(document.getElementById('ev-bs').value);
+    const breakfastEnd   = parseInt(document.getElementById('ev-be').value);
+    const lunchStart     = parseInt(document.getElementById('ev-ls').value);
+    const lunchEnd       = parseInt(document.getElementById('ev-le').value);
+    const dinnerStart    = parseInt(document.getElementById('ev-ds').value);
+    const dinnerEnd      = parseInt(document.getElementById('ev-de').value);
+
+    const msgEl = document.getElementById('ev-msg');
+
+    // Validate dates
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
+      msgEl.textContent = '❌ Please enter dates in YYYY-MM-DD format.';
+      msgEl.style.background = '#F8D7DA'; msgEl.style.color = '#721C24';
+      msgEl.style.display = 'block'; return;
+    }
+    if ([breakfastStart,breakfastEnd,lunchStart,lunchEnd,dinnerStart,dinnerEnd].some(isNaN)) {
+      msgEl.textContent = '❌ Please fill all meal timing fields.';
+      msgEl.style.background = '#F8D7DA'; msgEl.style.color = '#721C24';
+      msgEl.style.display = 'block'; return;
+    }
+
+    try {
+      const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      await setDoc(window._doc(window._db,'config','event'), {
+        startDate, endDate,
+        breakfastStart, breakfastEnd,
+        lunchStart, lunchEnd,
+        dinnerStart, dinnerEnd
+      });
+      msgEl.textContent = '✅ Event config saved! All pages will use new settings.';
+      msgEl.style.background = '#D4EDDA'; msgEl.style.color = '#155724';
+      msgEl.style.display = 'block';
+      setTimeout(() => msgEl.style.display='none', 4000);
+    } catch(e) {
+      console.error(e);
+      msgEl.textContent = '❌ Error saving. Try again.';
+      msgEl.style.background = '#F8D7DA'; msgEl.style.color = '#721C24';
+      msgEl.style.display = 'block';
+    }
   }
 
 // ── MASTER CLEAR ──
