@@ -61,7 +61,7 @@
     .meal-label.breakfast{color:#D4780A;}
     .meal-label.lunch{color:var(--success);}
     .meal-label.dinner{color:var(--deep-blue);}
-    .meal-day-tag{display:inline-block;background:var(--deep-blue);color:var(--gold);font-family:'Cinzel',serif;font-size:0.85rem;padding:5px 16px;border-radius:20px;margin-top:8px;letter-spacing:0.06em;}
+    .meal-day-tag{display:inline-block;background:var(--deep-blue);color:var(--gold);font-family:'Cinzel',serif;font-size:1.3rem;padding:8px 20px;border-radius:20px;margin-top:8px;letter-spacing:0.06em;}
     .outside-hours{text-align:center;padding:30px 18px;color:#888;font-size:0.95rem;line-height:1.8;}
     .outside-hours span{font-size:2rem;display:block;margin-bottom:10px;}
     .qr-section{text-align:center;padding:10px 18px 24px;}
@@ -314,12 +314,12 @@
         compBox.style.cssText = 'text-align:center;padding:20px 18px;';
         document.querySelector('#meal-screen .card .card-body').appendChild(compBox);
       }
-      compBox.innerHTML = `
+compBox.innerHTML = `
         <div style="font-size:3rem;margin-bottom:10px;">🎉</div>
-        <div style="font-family:Cinzel,serif;font-size:1.2rem;font-weight:900;color:var(--success);margin-bottom:8px;">All Members Served!</div>
-        <div style="font-size:0.95rem;color:#555;line-height:1.7;">
+        <div style="font-family:Cinzel,serif;font-size:2rem;font-weight:900;color:var(--success);margin-bottom:12px;">All Members Served!</div>
+        <div style="font-size:1.4rem;font-weight:700;color:#333;line-height:1.9;">
           All ${total} member(s) have enjoyed<br>
-          <strong>${mealLabel}</strong> — ${dayLabel}.<br><br>
+          <strong style="color:var(--deep-blue);">${mealLabel}</strong> — ${dayLabel}.<br><br>
           See you at the next meal! 🙏😊
         </div>`;
     }
