@@ -85,20 +85,13 @@
     .result-icon{font-size:5rem;margin-bottom:12px;animation:pop 0.3s ease;}
     @keyframes pop{from{transform:scale(0.4);}to{transform:scale(1);}}
     .result-status{font-family:'Cinzel',serif;font-size:clamp(2.2rem,11vw,3.5rem);font-weight:900;color:white;letter-spacing:0.06em;margin-bottom:8px;}
-    .result-name{font-size:1.1rem;color:rgba(255,255,255,0.95);font-weight:700;margin-bottom:4px;}
-    .result-detail{font-size:0.95rem;color:rgba(255,255,255,0.85);line-height:1.7;margin-bottom:18px;white-space:pre-line;}
-    .counter-section{margin-bottom:18px;}
-    .counter-label{font-size:0.9rem;color:rgba(255,255,255,0.85);margin-bottom:10px;}
-    .counter-row{display:flex;align-items:center;justify-content:center;gap:18px;}
-    .cnt-btn{width:50px;height:50px;border-radius:50%;border:3px solid white;background:transparent;color:white;font-size:1.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-    .cnt-btn:active{background:rgba(255,255,255,0.2);}
-    .cnt-num{font-family:'Cinzel',serif;font-size:2.5rem;font-weight:900;color:white;min-width:50px;}
-    .result-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:280px;}
-    .btn-confirm{padding:14px;background:white;border:none;border-radius:10px;font-family:'Cinzel',serif;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:0.05em;}
-    #result-overlay.green .btn-confirm{color:var(--success);}
-    #result-overlay.red   .btn-confirm{color:var(--red);}
-    #result-overlay.warning .btn-confirm{color:#856404;}
-    .btn-cancel{padding:12px;background:transparent;border:2px solid white;border-radius:10px;font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;cursor:pointer;color:white;letter-spacing:0.04em;}
+    
+.result-name{font-size:1.6rem;color:rgba(255,255,255,0.95);font-weight:900;margin-bottom:8px;font-family:'Cinzel',serif;}
+.result-detail{font-size:1.2rem;color:rgba(255,255,255,0.95);line-height:1.8;margin-bottom:18px;white-space:pre-line;font-weight:700;text-align:center;}
+.result-actions{display:flex;flex-direction:column;gap:10px;width:100%;max-width:280px;}
+.btn-cancel{padding:14px;background:transparent;border:3px solid white;border-radius:10px;font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;cursor:pointer;color:white;letter-spacing:0.06em;}
+.btn-cancel:active{background:rgba(255,255,255,0.2);}
+    
   </style>
 </head>
 <body>
@@ -156,17 +149,8 @@
   <div class="result-status" id="result-status"></div>
   <div class="result-name"   id="result-name"></div>
   <div class="result-detail" id="result-detail"></div>
-  <div class="counter-section" id="counter-section" style="display:none;">
-    <div class="counter-label">How many people entering?</div>
-    <div class="counter-row">
-      <button class="cnt-btn" onclick="changeCount(-1)">−</button>
-      <div class="cnt-num" id="cnt-display">1</div>
-      <button class="cnt-btn" onclick="changeCount(1)">+</button>
-    </div>
-  </div>
   <div class="result-actions">
-    <button class="btn-confirm" id="btn-confirm" onclick="confirmEntry()">✅ CONFIRM ENTRY</button>
-    <button class="btn-cancel"  onclick="dismissResult()">CANCEL / NEXT SCAN</button>
+    <button class="btn-cancel" id="btn-next-scan" onclick="dismissResult()">Next Scan</button>
   </div>
 </div>
 
@@ -354,20 +338,19 @@ updateScanStats();
 
 if (remaining <= 0) {
         scanFail++; updateScanStats();
-        showResult('red','❌','Invalid QR',
-          `${meal.toUpperCase()} — ${eventDay.label}\nAll ${allowed} entries used.`,
+        showResult('red','✅','Thank You!',
+          `${meal.charAt(0).toUpperCase()+meal.slice(1)} — ${eventDay.label}\nAll ${allowed} entries used.`,
           g.name);
         return;
       }
 
-      // AUTO CONFIRM instantly
+// AUTO CONFIRM instantly
       const newUsed = used + 1;
       await window._updateDoc(ref, { [`meals.${dayKey}.${meal}`]: newUsed });
       scanOk++; updateScanStats();
       showResult('green','✅','ALLOWED',
-        `${meal.toUpperCase()} — ${eventDay.label}\nEntry ${newUsed} of ${allowed}`,
+        `${meal.charAt(0).toUpperCase()+meal.slice(1)} — ${eventDay.label}\nEntry ${newUsed} of ${allowed}`,
         g.name);
-      setTimeout(() => dismissResult(), 500);
       pendingEntry = null;
       return;
 
@@ -425,15 +408,13 @@ if (remaining <= 0) {
     } catch(e) { console.error(e); alert('Error saving. Try again.'); }
   }
 
-  function showResult(color, icon, status, detail, name) {
+function showResult(color, icon, status, detail, name) {
     const overlay = document.getElementById('result-overlay');
     overlay.className = `active ${color}`;
     document.getElementById('result-icon').textContent   = icon;
     document.getElementById('result-status').textContent = status;
     document.getElementById('result-name').textContent   = name;
     document.getElementById('result-detail').textContent = detail;
-    document.getElementById('counter-section').style.display = 'none';
-    document.getElementById('btn-confirm').style.display     = 'none';
   }
 
   async function confirmEntry() {
