@@ -145,18 +145,34 @@
   </div>
 
   <script>
-    // ============================================================
-    // ⚙️ EVENT CONFIGURATION — CHANGE THESE FOR YOUR EVENT
-    // ============================================================
-    const EVENT_START_DATE = '2026-05-21'; // ← CHANGE THIS
-    const EVENT_END_DATE   = '2026-05-22'; // ← CHANGE THIS
 
-    const MEAL_TIMES = {
+// ============================================================
+    // ⚙️ EVENT CONFIGURATION — loaded from Firebase
+    // ============================================================
+    let EVENT_START_DATE = '2026-05-21'; // fallback
+    let EVENT_END_DATE   = '2026-05-22'; // fallback
+    let MEAL_TIMES = {
       breakfast: { start: 7,  end: 11, label: 'BREAKFAST', cls: 'breakfast' },
       lunch:     { start: 12, end: 16, label: 'LUNCH',     cls: 'lunch'     },
       dinner:    { start: 18, end: 23, label: 'DINNER',    cls: 'dinner'    }
     };
     // ============================================================
+
+    async function loadEventConfig() {
+      if (!window._firebaseReady) return;
+      try {
+        const snap = await window._getDoc(window._doc(window._db,'config','event'));
+        if (!snap.exists()) return;
+        const d = snap.data();
+        if (d.startDate) EVENT_START_DATE = d.startDate;
+        if (d.endDate)   EVENT_END_DATE   = d.endDate;
+        MEAL_TIMES = {
+          breakfast: { start: d.breakfastStart??7,  end: d.breakfastEnd??11, label: 'BREAKFAST', cls: 'breakfast' },
+          lunch:     { start: d.lunchStart??12,     end: d.lunchEnd??16,     label: 'LUNCH',     cls: 'lunch'     },
+          dinner:    { start: d.dinnerStart??18,    end: d.dinnerEnd??23,    label: 'DINNER',    cls: 'dinner'    }
+        };
+      } catch(e) { console.error(e); }
+    }
 
     function getEventDays() {
       const days = [];
@@ -406,7 +422,8 @@ function notYou() {
     }
 
     // Auto load from URL param or localStorage
-    window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
+      await loadEventConfig();
       document.getElementById('pin-input').addEventListener('keydown', e => {
         if (e.key==='Enter') enterPortal();
       });
@@ -417,6 +434,7 @@ function notYou() {
         enterPortal();
       }
     });
+
   </script>
 </body>
 </html>
