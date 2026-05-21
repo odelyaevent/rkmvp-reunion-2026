@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, doc, onSnapshot, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     // ── PASTE YOUR FIREBASE CONFIG HERE ──
   const firebaseConfig = {
     apiKey: "AIzaSyAAW9zZmE1cEUUWLEwT1hWtY1fQoiGt_No",
@@ -24,6 +24,7 @@
     window._db=db; window._collection=collection; window._query=query;
     window._where=where; window._getDocs=getDocs;
     window._doc=doc; window._onSnapshot=onSnapshot;
+    window._getDoc=getDoc; window._updateDoc=updateDoc;
     window._firebaseReady=true;
   </script>
 
@@ -138,6 +139,9 @@
       </div>
     </div>
     <div class="group-info" id="group-info"></div>
+	<div style="text-align:center;margin:20px 14px 0;">
+    <button onclick="notYou()" style="background:transparent;border:2px solid var(--deep-blue);color:var(--deep-blue);font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;padding:14px 24px;border-radius:12px;cursor:pointer;width:100%;letter-spacing:0.04em;">Not You? Register Here</button>
+  </div>
   </div>
 
   <script>
@@ -184,6 +188,35 @@
       return null;
     }
 
+// ── DEVICE TOKEN ──
+    function getEventEndMidnight() {
+      const d = new Date(EVENT_END_DATE);
+      d.setDate(d.getDate()+1);
+      d.setHours(0,0,0,0);
+      return d.getTime();
+    }
+
+    function isTokenExpired() {
+      return Date.now() > getEventEndMidnight();
+    }
+
+    async function saveDeviceToken(docId, familyCount) {
+      const maxDevices = (familyCount||0) + 1 + 1;
+      let token = localStorage.getItem('rkmvp_device_token');
+      if (!token) token = 'dev_' + Math.random().toString(36).substr(2,16) + '_' + Date.now();
+      try {
+        const ref  = window._doc(window._db,'guests',docId);
+        const snap = await window._getDoc(ref);
+        if (!snap.exists()) return;
+        const devices = snap.data().devices || [];
+        if (devices.includes(token)) { localStorage.setItem('rkmvp_device_token', token); return; }
+        if (devices.length >= maxDevices) return;
+        devices.push(token);
+        await window._updateDoc(ref, { devices });
+        localStorage.setItem('rkmvp_device_token', token);
+      } catch(e) { console.error(e); }
+    }
+
     async function enterPortal() {
       const pin    = document.getElementById('pin-input').value.trim();
       const errEl  = document.getElementById('pin-error');
@@ -212,8 +245,13 @@
           btn.disabled=false; btn.innerHTML='ENTER'; return;
         }
 
-        const docId = snap.docs[0].id;
+const docId = snap.docs[0].id;
         const g     = snap.docs[0].data();
+
+        // Register this device
+        if (!isTokenExpired()) {
+          await saveDeviceToken(docId, g.familyCount||0);
+        }
 
         document.getElementById('pin-card').style.display = 'none';
 
@@ -359,6 +397,12 @@ compBox.innerHTML = `
 
         document.getElementById('group-info').innerHTML = infoHtml;
       });
+    }
+
+function notYou() {
+      localStorage.removeItem('rkmvp_device_token');
+      localStorage.removeItem('rkmvp_pin');
+      window.location.href = 'index.html';
     }
 
     // Auto load from URL param or localStorage
