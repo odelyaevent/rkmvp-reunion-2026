@@ -8,7 +8,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, updateDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     // ── PASTE YOUR FIREBASE CONFIG HERE ──
   const firebaseConfig = {
@@ -24,6 +24,7 @@
     const auth = getAuth(app);
     window._db=db; window._auth=auth;
     window._doc=doc; window._getDoc=getDoc; window._updateDoc=updateDoc;
+    window._collection=collection; window._getDocs=getDocs;
     window._signIn=signInWithEmailAndPassword;
     window._signOut=signOut;
     window._firebaseReady=true;
@@ -155,12 +156,34 @@
 </div>
 
 <script>
+
+// ============================================================
+  // ⚙️ EVENT CONFIGURATION — loaded from Firebase
   // ============================================================
-  // ⚙️ EVENT CONFIGURATION — CHANGE THESE FOR YOUR EVENT
+  let EVENT_START_DATE = '2026-05-21'; // fallback
+  let EVENT_END_DATE   = '2026-05-22'; // fallback
+  let MEAL_TIMES = {
+    breakfast: { start: 7,  end: 11 },
+    lunch:     { start: 12, end: 16 },
+    dinner:    { start: 18, end: 23 }
+  };
   // ============================================================
-  const EVENT_START_DATE = '2026-05-21'; // ← CHANGE THIS
-  const EVENT_END_DATE   = '2026-05-22'; // ← CHANGE THIS
-  // ============================================================
+
+  async function loadEventConfig() {
+    if (!window._firebaseReady) return;
+    try {
+      const snap = await window._getDoc(window._doc(window._db,'config','event'));
+      if (!snap.exists()) return;
+      const d = snap.data();
+      if (d.startDate) EVENT_START_DATE = d.startDate;
+      if (d.endDate)   EVENT_END_DATE   = d.endDate;
+      MEAL_TIMES = {
+        breakfast: { start: d.breakfastStart??7,  end: d.breakfastEnd??11 },
+        lunch:     { start: d.lunchStart??12,     end: d.lunchEnd??16     },
+        dinner:    { start: d.dinnerStart??18,    end: d.dinnerEnd??23    }
+      };
+    } catch(e) { console.error(e); }
+  }
 
   function getEventDays() {
     const days = [];
@@ -237,7 +260,8 @@
     document.getElementById('login-err').style.display = 'none';
   }
 
-  function showScanner(email) {
+async function showScanner(email) {
+    await loadEventConfig();
     document.getElementById('login-section').style.display  = 'none';
     document.getElementById('scanner-section').style.display = 'block';
 
@@ -361,11 +385,11 @@ if (remaining <= 0) {
     }
   }
 
-  function getCurrentMeal() {
+function getCurrentMeal() {
     const h = new Date().getHours();
-    if (h >= 7  && h < 11) return 'breakfast';
-    if (h >= 12 && h < 16) return 'lunch';
-    if (h >= 18 && h < 23) return 'dinner';
+    if (h >= MEAL_TIMES.breakfast.start && h < MEAL_TIMES.breakfast.end) return 'breakfast';
+    if (h >= MEAL_TIMES.lunch.start     && h < MEAL_TIMES.lunch.end)     return 'lunch';
+    if (h >= MEAL_TIMES.dinner.start    && h < MEAL_TIMES.dinner.end)    return 'dinner';
     return null;
   }
 
