@@ -8,7 +8,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, doc, updateDoc, getDoc, setDoc, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     // ── PASTE YOUR FIREBASE CONFIG HERE ──
   const firebaseConfig = {
@@ -26,6 +26,7 @@
     window._collection=collection; window._query=query;
     window._where=where; window._getDocs=getDocs;
     window._doc=doc; window._updateDoc=updateDoc; window._getDoc=getDoc;
+    window._deleteDoc=deleteDoc; window._writeBatch=writeBatch;
     window._signIn=signInWithEmailAndPassword;
     window._signOut=signOut;
     window._firebaseReady=true;
@@ -238,7 +239,8 @@
   <!-- STATS TAB -->
   <div id="tab-stats" class="tab-content">
     <div class="config-box" id="event-config-display"></div>
-    <div class="stats-grid">
+<button class="btn-excel" onclick="masterClear()" style="background:var(--red);margin-bottom:0;">⚠️ Master Clear</button>    
+	  <div class="stats-grid">
       <div class="stat-card"><div class="stat-num" id="st-total">—</div><div class="stat-label">Total Registered</div></div>
       <div class="stat-card"><div class="stat-num" id="st-approved">—</div><div class="stat-label">Approved</div></div>
       <div class="stat-card"><div class="stat-num" id="st-pending">—</div><div class="stat-label">Pending</div></div>
@@ -881,6 +883,60 @@ const notSpecified = snap.docs.length - tshirtTotal;
 
     } catch(e) { console.error(e); alert('Error generating report. Try again.'); }
   }
+
+// ── MASTER CLEAR ──
+  async function masterClear() {
+    if (!window._firebaseReady) return;
+
+    // Step 1 — first confirmation
+    const confirm1 = confirm('⚠️ WARNING!\n\nThis will permanently delete ALL guest registrations and manual entries.\n\nAre you sure you want to continue?');
+    if (!confirm1) return;
+
+    // Step 2 — password confirmation
+    const pass = prompt('Enter your admin password to confirm Master Clear:');
+    if (!pass) return;
+
+    // Verify password via re-auth
+    try {
+      const user  = window._auth.currentUser;
+      if (!user) { alert('Not logged in.'); return; }
+
+      const { EmailAuthProvider, reauthenticateWithCredential } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+      const credential = EmailAuthProvider.credential(user.email, pass);
+      await reauthenticateWithCredential(user, credential);
+
+    } catch(e) {
+      alert('❌ Wrong password. Master Clear cancelled.');
+      return;
+    }
+
+    // Step 3 — final confirmation
+    const confirm2 = confirm('🚨 FINAL WARNING!\n\nAll guest data will be deleted permanently.\n\nPress OK to proceed.');
+    if (!confirm2) return;
+
+    try {
+      // Delete all guests
+      const guestSnap = await window._getDocs(window._collection(window._db,'guests'));
+      const batch1    = window._writeBatch(window._db);
+      guestSnap.docs.forEach(d => batch1.delete(window._doc(window._db,'guests',d.id)));
+      await batch1.commit();
+
+      // Delete all manual entries
+      const manualSnap = await window._getDocs(window._collection(window._db,'manualEntries'));
+      const batch2     = window._writeBatch(window._db);
+      manualSnap.docs.forEach(d => batch2.delete(window._doc(window._db,'manualEntries',d.id)));
+      await batch2.commit();
+
+      alert('✅ Master Clear complete!\n\nAll guest registrations and manual entries have been deleted.\n\nDatabase is ready for the event!');
+
+      // Refresh stats
+      loadStats();
+
+    } catch(e) {
+      console.error(e);
+      alert('❌ Error during Master Clear. Please try again.');
+    }
+  }	
 	
   // Enter key support
   window.addEventListener('load', () => {
