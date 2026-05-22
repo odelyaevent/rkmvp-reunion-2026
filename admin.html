@@ -258,6 +258,42 @@
         <tbody id="tshirt-body"></tbody>
       </table>
     </div>
+
+<!-- GIFT SUMMARY -->
+    <div class="section-title">Gift Items Summary</div>
+    <div style="padding:0 14px;">
+      <div id="gift-summary-section">
+        <table class="food-table" id="gift-summary-table">
+          <thead>
+            <tr>
+              <th>Gift Item</th>
+              <th style="text-align:center;">Total</th>
+              <th style="text-align:center;">Received</th>
+              <th style="text-align:center;">Due</th>
+            </tr>
+          </thead>
+          <tbody id="gift-summary-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GIFT DUE GUEST LIST -->
+    <div class="section-title">Guests With Due Items</div>
+    <div style="padding:0 14px;">
+      <div id="gift-due-section">
+        <table class="food-table" id="gift-due-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th style="text-align:center;">Batch</th>
+              <th style="text-align:center;">PIN</th>
+              <th>Due Items</th>
+            </tr>
+          </thead>
+          <tbody id="gift-due-body"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
 <!-- EVENT TAB -->
@@ -864,7 +900,68 @@ const notSpecified = snap.docs.length - tshirtTotal;
       });
       tshirtHtml += `<tr class="total-row"><td>Total T-Shirt Required</td><td>${tshirtTotal}</td></tr>`;
       tshirtHtml += `<tr><td>Not Specified</td><td>${notSpecified}</td></tr>`;
-      document.getElementById('tshirt-body').innerHTML = tshirtHtml;
+document.getElementById('tshirt-body').innerHTML = tshirtHtml;
+
+      // ── GIFT SUMMARY ──
+      const configSnap = await window._getDoc(window._doc(window._db,'config','event'));
+      const giftItems  = configSnap.exists() ? (configSnap.data().giftItems || []) : [];
+
+      if (!giftItems.length) {
+        document.getElementById('gift-summary-section').innerHTML = '<p style="text-align:center;color:#888;padding:14px;">No gift items configured.</p>';
+        document.getElementById('gift-due-section').innerHTML = '';
+      } else {
+        // Count received and due per gift item
+        const giftReceived = {};
+        const giftDue      = {};
+        giftItems.forEach(item => { giftReceived[item]=0; giftDue[item]=0; });
+
+        // Guest due list
+        const dueguests = [];
+        snap.docs.forEach(d => {
+          const g          = d.data();
+          const giftsGiven = g.giftsGiven || {};
+          const dueItems   = [];
+          giftItems.forEach((item, idx) => {
+            if (giftsGiven[item]) {
+              giftReceived[item]++;
+            } else {
+              giftDue[item]++;
+              dueItems.push(`${idx+1}. ${item}`);
+            }
+          });
+          if (dueItems.length > 0) {
+            dueguests.push({ name:g.name, batch:g.batch, pin:g.pin, dueItems });
+          }
+        });
+
+        // Gift summary table
+        let giftSummaryHtml = '';
+        giftItems.forEach(item => {
+          giftSummaryHtml += `<tr>
+            <td>${item}</td>
+            <td style="text-align:center;">${snap.docs.length}</td>
+            <td style="text-align:center;color:var(--success);font-weight:700;">${giftReceived[item]}</td>
+            <td style="text-align:center;color:var(--red);font-weight:700;">${giftDue[item]}</td>
+          </tr>`;
+        });
+        document.getElementById('gift-summary-body').innerHTML = giftSummaryHtml;
+
+        // Gift due guest list table
+        let dueguestHtml = '';
+        if (!dueguests.length) {
+          dueguestHtml = '<tr><td colspan="4" style="text-align:center;color:var(--success);font-weight:700;padding:14px;">🎉 All guests have received all gift items!</td></tr>';
+        } else {
+          dueguests.forEach(g => {
+            dueguestHtml += `<tr>
+              <td style="font-weight:700;">${g.name}</td>
+              <td style="text-align:center;">${g.batch}</td>
+              <td style="text-align:center;">${g.pin}</td>
+              <td style="color:var(--red);font-weight:700;">${g.dueItems.join(', ')}</td>
+            </tr>`;
+          });
+        }
+        document.getElementById('gift-due-body').innerHTML = dueguestHtml;
+      }
 
     } catch(e) { console.error(e); }
   }
@@ -1123,6 +1220,56 @@ async function loadStats() {
       if (ws2['A3']) ws2['A3'].s = { font:{ bold:true, sz:13 } };
 
       XLSX.utils.book_append_sheet(wb, ws2, 'T-Shirt Requirements');
+
+// ── PAGE 3: GIFTS ──
+      const giftConfigSnap = await window._getDoc(window._doc(window._db,'config','event'));
+      const giftItemsList  = giftConfigSnap.exists() ? (giftConfigSnap.data().giftItems || []) : [];
+
+      if (giftItemsList.length > 0) {
+        const giftReceived = {};
+        const giftDue      = {};
+        giftItemsList.forEach(item => { giftReceived[item]=0; giftDue[item]=0; });
+        const dueGuestRows = [];
+
+        snap.docs.forEach(d => {
+          const g          = d.data();
+          const giftsGiven = g.giftsGiven || {};
+          const dueItems   = [];
+          giftItemsList.forEach((item, idx) => {
+            if (giftsGiven[item]) { giftReceived[item]++; }
+            else { giftDue[item]++; dueItems.push(`${idx+1}. ${item}`); }
+          });
+          if (dueItems.length > 0) {
+            dueGuestRows.push([g.name, g.batch, g.pin, dueItems.join(', ')]);
+          }
+        });
+
+        const giftRows = [];
+        giftRows.push(['RKMVP Alumni Association — Reunion 2026']);
+        giftRows.push(['']);
+        giftRows.push(['GIFT ITEMS SUMMARY']);
+        giftRows.push(['Gift Item', 'Total', 'Received', 'Due']);
+        giftItemsList.forEach(item => {
+          giftRows.push([item, snap.docs.length, giftReceived[item], giftDue[item]]);
+        });
+        giftRows.push(['']);
+        giftRows.push(['']);
+        giftRows.push(['GUESTS WITH DUE ITEMS']);
+        giftRows.push(['Name', 'Batch', 'PIN', 'Due Items']);
+        if (dueGuestRows.length === 0) {
+          giftRows.push(['All guests have received all gift items!','','','']);
+        } else {
+          dueGuestRows.forEach(row => giftRows.push(row));
+        }
+
+        const ws3 = XLSX.utils.aoa_to_sheet(giftRows);
+        ws3['!cols'] = [{wch:30},{wch:10},{wch:10},{wch:50}];
+        ws3['!pageSetup'] = { paperSize:9, orientation:'landscape', fitToPage:true, fitToWidth:1, fitToHeight:0 };
+        if (ws3['A1']) ws3['A1'].s = { font:{ bold:true, sz:16 } };
+        if (ws3['A3']) ws3['A3'].s = { font:{ bold:true, sz:13 } };
+        if (ws3['A8']) ws3['A8'].s = { font:{ bold:true, sz:13 } };
+        XLSX.utils.book_append_sheet(wb, ws3, 'Gift Summary');
+      }
 
       XLSX.writeFile(wb, `RKMVP_Estimate_${new Date().toISOString().split('T')[0]}.xlsx`);
 
