@@ -142,6 +142,29 @@
     .btn-excel{display:block;width:calc(100% - 28px);margin:10px 14px 0;padding:12px;background:var(--success);color:white;font-family:'Cinzel',serif;font-size:0.9rem;font-weight:700;letter-spacing:0.05em;border:none;border-radius:10px;cursor:pointer;text-align:center;}
     .btn-excel:active{opacity:0.85;}
     .section-title{font-family:'Cinzel',serif;font-size:0.95rem;color:var(--deep-blue);padding:14px 14px 4px;font-weight:700;letter-spacing:0.04em;text-align:center;}
+
+/* GIFT ITEMS */
+    .gift-section{background:#F7FFF7;border:1.5px solid #C3E6CB;border-radius:10px;padding:12px 14px;margin-bottom:12px;}
+    .gift-section-title{font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;color:var(--success);margin-bottom:10px;letter-spacing:0.03em;}
+    .gift-action-row{display:flex;gap:8px;margin-bottom:10px;}
+    .gift-item-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--white);border-radius:8px;border:1px solid #E0E8F8;margin-bottom:6px;}
+    .gift-item-name{flex:1;font-size:0.95rem;font-weight:700;color:#333;}
+    .gift-btns{display:flex;gap:6px;flex-shrink:0;}
+    .gift-btn{padding:6px 12px;border:1.5px solid #C5D3E8;border-radius:6px;font-size:0.78rem;font-weight:700;cursor:pointer;background:var(--white);color:#888;transition:all 0.15s;}
+    .gift-btn.gift-btn-active{background:var(--success);color:white;border-color:var(--success);}
+    .gift-btn.gift-btn-due-active{background:#FFF3CD;color:#856404;border-color:#FFCA28;}
+    /* PROGRAMS CONFIG */
+    .program-config-day{background:#F7FAFF;border-radius:8px;padding:10px 12px;margin-bottom:10px;border:1px solid #C5D3E8;}
+    .program-config-day-title{font-size:0.82rem;font-weight:700;color:var(--deep-blue);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:8px;}
+    .program-item-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+    .program-item-row input{flex:1;padding:8px 10px;border:1.5px solid #C5D3E8;border-radius:6px;font-size:0.88rem;font-family:'Lato',sans-serif;background:var(--white);margin:0;}
+    .program-item-row button{padding:7px 12px;border:none;border-radius:6px;font-weight:700;font-size:0.82rem;cursor:pointer;white-space:nowrap;}
+    .btn-remove-item{background:#F8D7DA;color:#721C24;}
+    .btn-add-item{background:var(--light-blue);color:white;width:100%;padding:9px;margin-top:4px;}
+    /* GIFT CONFIG */
+    .gift-config-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+    .gift-config-row input{flex:1;padding:8px 10px;border:1.5px solid #C5D3E8;border-radius:6px;font-size:0.88rem;font-family:'Lato',sans-serif;background:var(--white);margin:0;}
+    .gift-config-row button{padding:7px 12px;border:none;border-radius:6px;font-weight:700;font-size:0.82rem;cursor:pointer;}
   </style>
 </head>
 <body>
@@ -238,7 +261,7 @@
   </div>
 
 <!-- EVENT TAB -->
-  <div id="tab-event" class="tab-content">
+<div id="tab-event" class="tab-content">
     <div class="section-title">Event Configuration</div>
     <div style="padding:0 14px;">
 
@@ -277,6 +300,15 @@
         <label>Dinner End</label>
         <input type="number" id="ev-de" placeholder="23" min="0" max="23"/>
       </div>
+
+      <!-- GIFT ITEMS CONFIG -->
+      <div class="section-title" style="padding:14px 0 4px;">🎁 Gift Items</div>
+      <div id="gift-config-list"></div>
+      <button class="btn-excel" onclick="addGiftConfigItem()" style="background:var(--light-blue);margin-top:4px;">+ Add Gift Item</button>
+
+      <!-- PROGRAMS CONFIG -->
+      <div class="section-title" style="padding:14px 0 4px;">📋 Programs</div>
+      <div id="programs-config-container"></div>
 
       <button class="btn-excel" onclick="saveEventConfig()" style="margin-top:14px;">Save Event Config</button>
       <div id="ev-msg" style="display:none;text-align:center;padding:10px;font-weight:700;border-radius:8px;margin-top:10px;font-size:1rem;"></div>
@@ -376,13 +408,12 @@
   }
 
   // ── BUILD GUEST CARD ──
-function buildCard(docId, g) {
+function buildCard(docId, g, giftItems) {
     const days   = getEventDays();
     const total  = (g.familyCount||0)+1;
     const m      = g.meals || {};
     const mr     = g.mealsRequired || {};
     const approved  = g.approved || false;
-    const qrVisible = g.bankQrVisible || false;
     const sizes  = [26,28,30,32,34,36,38,40,42,44];
 
     let mealSections = '';
@@ -415,6 +446,33 @@ function buildCard(docId, g) {
     const sizeOptions = sizes.map(s =>
       `<option value="${s}" ${(g.tshirtSize||0)===s?'selected':''}>${s}</option>`
     ).join('');
+
+    // ── GIFT ITEMS SECTION ──
+    let giftSection = '';
+    if (giftItems && giftItems.length > 0) {
+      const giftsGiven = g.giftsGiven || {};
+      let giftRows = '';
+      giftItems.forEach(item => {
+        const received = giftsGiven[item] || false;
+        giftRows += `
+          <div class="gift-item-row" id="giftrow-${docId}-${item.replace(/\s+/g,'_')}">
+            <span class="gift-item-name">${item}</span>
+            <div class="gift-btns">
+              <button class="gift-btn ${received?'gift-btn-active':''}" onclick="setGift('${docId}','${item}',true)">✅ Received</button>
+              <button class="gift-btn ${!received?'gift-btn-due-active':''}" onclick="setGift('${docId}','${item}',false)">⏳ Due</button>
+            </div>
+          </div>`;
+      });
+      giftSection = `
+        <div class="gift-section">
+          <div class="gift-section-title">🎁 Gift Items</div>
+          <div class="gift-action-row">
+            <button class="abtn abtn-approve" onclick="setAllGifts('${docId}',true)">✅ Received All</button>
+            <button class="abtn abtn-unapprove" onclick="setAllGifts('${docId}',false)">⏳ Mark All Due</button>
+          </div>
+          <div id="gift-list-${docId}">${giftRows}</div>
+        </div>`;
+    }
 
     return `
     <div class="guest-card" id="gc-${docId}">
@@ -459,6 +517,8 @@ function buildCard(docId, g) {
           <span>Rs. ${g.amount||(10+(g.familyCount||0)*5)}/-</span>
         </div>
 
+        ${giftSection}
+
         <div class="action-row">
           <button class="abtn abtn-generate" onclick="generateBankQR('${docId}')">💳 Bank QR</button>
           <button class="abtn abtn-hide" onclick="hideBankQR('${docId}')">🙈 Hide QR</button>
@@ -480,6 +540,111 @@ function buildCard(docId, g) {
     el.textContent = text; el.className = `action-msg ${type}`;
     el.style.display = 'block';
     setTimeout(() => el.style.display='none', 3000);
+  }
+
+// ── GIFT CONFIG RENDER ──
+  function renderGiftConfigList(items) {
+    const container = document.getElementById('gift-config-list');
+    container.innerHTML = '';
+    if (!items.length) {
+      addGiftConfigItem(); return;
+    }
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'gift-config-row';
+      row.innerHTML = `
+        <input type="text" class="gift-config-input" value="${item}" placeholder="e.g. T-Shirt"/>
+        <button class="btn-remove-item" onclick="this.parentElement.remove()">✕ Remove</button>`;
+      container.appendChild(row);
+    });
+  }
+
+  function addGiftConfigItem() {
+    const container = document.getElementById('gift-config-list');
+    const row = document.createElement('div');
+    row.className = 'gift-config-row';
+    row.innerHTML = `
+      <input type="text" class="gift-config-input" placeholder="e.g. T-Shirt"/>
+      <button class="btn-remove-item" onclick="this.parentElement.remove()">✕ Remove</button>`;
+    container.appendChild(row);
+    row.querySelector('input').focus();
+  }
+
+  // ── PROGRAMS CONFIG RENDER ──
+  function renderProgramsConfig(programs) {
+    const container = document.getElementById('programs-config-container');
+    container.innerHTML = '';
+    const days = getEventDays();
+    days.forEach(day => {
+      const items = programs[`day${day.num}`] || [];
+      let itemsHtml = items.length
+        ? items.map(item => `
+            <div class="program-item-row">
+              <input type="text" class="program-input-day${day.num}" value="${item}" placeholder="Program item"/>
+              <button class="btn-remove-item" onclick="this.parentElement.remove()">✕</button>
+            </div>`).join('')
+        : `<div class="program-item-row">
+             <input type="text" class="program-input-day${day.num}" placeholder="Program item"/>
+             <button class="btn-remove-item" onclick="this.parentElement.remove()">✕</button>
+           </div>`;
+      container.innerHTML += `
+        <div class="program-config-day">
+          <div class="program-config-day-title">📅 ${day.label}</div>
+          <div id="prog-items-day${day.num}">${itemsHtml}</div>
+          <button class="btn-add-item" onclick="addProgramItem(${day.num})">+ Add Item</button>
+        </div>`;
+    });
+  }
+
+  function addProgramItem(dayNum) {
+    const container = document.getElementById(`prog-items-day${dayNum}`);
+    const row = document.createElement('div');
+    row.className = 'program-item-row';
+    row.innerHTML = `
+      <input type="text" class="program-input-day${dayNum}" placeholder="Program item"/>
+      <button class="btn-remove-item" onclick="this.parentElement.remove()">✕</button>`;
+    container.appendChild(row);
+    row.querySelector('input').focus();
+  }
+
+  // ── SET GIFT (single item) ──
+  async function setGift(docId, item, received) {
+    try {
+      await window._updateDoc(window._doc(window._db,'guests',docId), {
+        [`giftsGiven.${item}`]: received
+      });
+      const key = item.replace(/\s+/g,'_');
+      const row = document.getElementById(`giftrow-${docId}-${key}`);
+      if (row) {
+        const btns = row.querySelectorAll('.gift-btn');
+        btns[0].className = `gift-btn ${received?'gift-btn-active':''}`;
+        btns[1].className = `gift-btn ${!received?'gift-btn-due-active':''}`;
+      }
+      showMsg(docId, received?`✅ ${item} marked Received!`:`⏳ ${item} marked Due.`, 'ok');
+    } catch(e) { showMsg(docId,'❌ Error. Try again.','err'); }
+  }
+
+  // ── SET ALL GIFTS ──
+  async function setAllGifts(docId, received) {
+    try {
+      const configSnap = await window._getDoc(window._doc(window._db,'config','event'));
+      const giftItems  = configSnap.exists() ? (configSnap.data().giftItems || []) : [];
+      if (!giftItems.length) { showMsg(docId,'No gift items configured.','err'); return; }
+      const giftsGiven = {};
+      giftItems.forEach(item => giftsGiven[item] = received);
+      await window._updateDoc(window._doc(window._db,'guests',docId), { giftsGiven });
+      // Update all buttons in the card
+      giftItems.forEach(item => {
+        const key = item.replace(/\s+/g,'_');
+        const row = document.getElementById(`giftrow-${docId}-${key}`);
+        if (row) {
+          const btns = row.querySelectorAll('.gift-btn');
+          btns[0].className = `gift-btn ${received?'gift-btn-active':''}`;
+          btns[1].className = `gift-btn ${!received?'gift-btn-due-active':''}`;
+        }
+      });
+      showMsg(docId, received?'✅ All gifts marked Received!':'⏳ All gifts marked Due.', 'ok');
+    } catch(e) { showMsg(docId,'❌ Error. Try again.','err'); }
   }
 
   // ── GENERATE BANK QR ──
@@ -539,6 +704,7 @@ try {
   }
 
   // ── SEARCH ──
+// ── SEARCH ──
   async function searchGuest() {
     if (!window._firebaseReady) return;
     const type = document.getElementById('search-type').value;
@@ -547,6 +713,9 @@ try {
     if (!val) return;
     res.innerHTML = '<p style="padding:14px;color:#888;font-size:0.85rem;">Searching...</p>';
     try {
+      const configSnap = await window._getDoc(window._doc(window._db,'config','event'));
+      const giftItems  = configSnap.exists() ? (configSnap.data().giftItems || []) : [];
+
       let docs;
       if (type === 'pin') {
         const q = window._query(window._collection(window._db,'guests'), window._where('pin','==',val));
@@ -560,7 +729,7 @@ try {
       }
       if (!docs.length) { res.innerHTML = '<p class="no-results">No guest found.</p>'; return; }
       res.innerHTML = '';
-      docs.forEach(d => res.innerHTML += buildCard(d.id, d.data()));
+      docs.forEach(d => res.innerHTML += buildCard(d.id, d.data(), giftItems));
     } catch(e) { console.error(e); res.innerHTML = '<p class="no-results">Error. Try again.</p>'; }
   }
 
@@ -571,6 +740,9 @@ try {
     const list   = document.getElementById('all-guests-list');
     list.innerHTML = '<p style="padding:14px;color:#888;font-size:0.85rem;">Loading...</p>';
     try {
+      const configSnap = await window._getDoc(window._doc(window._db,'config','event'));
+      const giftItems  = configSnap.exists() ? (configSnap.data().giftItems || []) : [];
+
       const snap = await window._getDocs(window._collection(window._db,'guests'));
       let docs = snap.docs;
       if (filter === 'pending')  docs = docs.filter(d => !d.data().approved);
@@ -578,7 +750,7 @@ try {
       document.getElementById('list-count').textContent = `Showing ${docs.length} guest(s)`;
       if (!docs.length) { list.innerHTML = '<p class="no-results">No guests found.</p>'; return; }
       list.innerHTML = '';
-      docs.forEach(d => list.innerHTML += buildCard(d.id, d.data()));
+      docs.forEach(d => list.innerHTML += buildCard(d.id, d.data(), giftItems));
     } catch(e) { list.innerHTML = '<p class="no-results">Error loading.</p>'; }
   }
 
@@ -685,14 +857,26 @@ const notSpecified = snap.docs.length - tshirtTotal;
   }
 
   // ── STATS ──
-  async function loadStats() {
+async function loadStats() {
     if (!window._firebaseReady) return;
+
+    // ── Always read dates fresh from Firebase ──
+    try {
+      const configSnap = await window._getDoc(window._doc(window._db,'config','event'));
+      if (configSnap.exists()) {
+        const cd = configSnap.data();
+        if (cd.startDate) EVENT_START_DATE = cd.startDate;
+        if (cd.endDate)   EVENT_END_DATE   = cd.endDate;
+      }
+    } catch(e) { console.error(e); }
+
     const days = getEventDays();
     document.getElementById('event-config-display').innerHTML = `
       <strong>Event Start:</strong> ${new Date(EVENT_START_DATE).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}<br>
       <strong>Event End:</strong> ${new Date(EVENT_END_DATE).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}<br>
       <strong>Total Days:</strong> ${days.length}<br>
     `;
+
     try {
       const snap = await window._getDocs(window._collection(window._db,'guests'));
       let total=0,approved=0,pending=0,people=0,amount=0,withFamily=0;
@@ -933,11 +1117,15 @@ const notSpecified = snap.docs.length - tshirtTotal;
   }
 
 // ── EVENT CONFIG ──
-  async function loadEventConfig() {
+async function loadEventConfig() {
     if (!window._firebaseReady) return;
     try {
       const snap = await window._getDoc(window._doc(window._db,'config','event'));
-      if (!snap.exists()) return;
+      if (!snap.exists()) {
+        renderGiftConfigList([]);
+        renderProgramsConfig({});
+        return;
+      }
       const d = snap.data();
       document.getElementById('ev-start').value = d.startDate || '';
       document.getElementById('ev-end').value   = d.endDate   || '';
@@ -947,10 +1135,12 @@ const notSpecified = snap.docs.length - tshirtTotal;
       document.getElementById('ev-le').value    = d.lunchEnd       ?? '';
       document.getElementById('ev-ds').value    = d.dinnerStart    ?? '';
       document.getElementById('ev-de').value    = d.dinnerEnd      ?? '';
+      renderGiftConfigList(d.giftItems || []);
+      renderProgramsConfig(d.programs  || {});
     } catch(e) { console.error(e); }
   }
 
-  async function saveEventConfig() {
+async function saveEventConfig() {
     if (!window._firebaseReady) return;
     const startDate      = document.getElementById('ev-start').value.trim();
     const endDate        = document.getElementById('ev-end').value.trim();
@@ -963,17 +1153,35 @@ const notSpecified = snap.docs.length - tshirtTotal;
 
     const msgEl = document.getElementById('ev-msg');
 
-    // Validate dates
     if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(endDate)) {
       msgEl.textContent = '❌ Please enter dates in YYYY-MM-DD format.';
-      msgEl.style.background = '#F8D7DA'; msgEl.style.color = '#721C24';
-      msgEl.style.display = 'block'; return;
+      msgEl.style.background='#F8D7DA'; msgEl.style.color='#721C24';
+      msgEl.style.display='block'; return;
     }
     if ([breakfastStart,breakfastEnd,lunchStart,lunchEnd,dinnerStart,dinnerEnd].some(isNaN)) {
       msgEl.textContent = '❌ Please fill all meal timing fields.';
-      msgEl.style.background = '#F8D7DA'; msgEl.style.color = '#721C24';
-      msgEl.style.display = 'block'; return;
+      msgEl.style.background='#F8D7DA'; msgEl.style.color='#721C24';
+      msgEl.style.display='block'; return;
     }
+
+    // Collect gift items
+    const giftItems = [];
+    document.querySelectorAll('.gift-config-input').forEach(inp => {
+      const val = inp.value.trim();
+      if (val) giftItems.push(val);
+    });
+
+    // Collect programs per day
+    const programs = {};
+    const days = getEventDays();
+    days.forEach(day => {
+      const items = [];
+      document.querySelectorAll(`.program-input-day${day.num}`).forEach(inp => {
+        const val = inp.value.trim();
+        if (val) items.push(val);
+      });
+      programs[`day${day.num}`] = items;
+    });
 
     try {
       const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
@@ -981,17 +1189,19 @@ const notSpecified = snap.docs.length - tshirtTotal;
         startDate, endDate,
         breakfastStart, breakfastEnd,
         lunchStart, lunchEnd,
-        dinnerStart, dinnerEnd
+        dinnerStart, dinnerEnd,
+        giftItems,
+        programs
       });
-      msgEl.textContent = '✅ Event config saved! All pages will use new settings.';
-      msgEl.style.background = '#D4EDDA'; msgEl.style.color = '#155724';
-      msgEl.style.display = 'block';
+      msgEl.textContent = '✅ Event config saved!';
+      msgEl.style.background='#D4EDDA'; msgEl.style.color='#155724';
+      msgEl.style.display='block';
       setTimeout(() => msgEl.style.display='none', 4000);
     } catch(e) {
       console.error(e);
       msgEl.textContent = '❌ Error saving. Try again.';
-      msgEl.style.background = '#F8D7DA'; msgEl.style.color = '#721C24';
-      msgEl.style.display = 'block';
+      msgEl.style.background='#F8D7DA'; msgEl.style.color='#721C24';
+      msgEl.style.display='block';
     }
   }
 
