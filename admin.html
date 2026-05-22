@@ -334,11 +334,11 @@
   // ============================================================
   // ⚙️ EVENT CONFIGURATION — CHANGE THESE FOR YOUR EVENT
   // ============================================================
-  const EVENT_START_DATE = '2026-05-21'; // ← CHANGE THIS
-  const EVENT_END_DATE   = '2026-05-22'; // ← CHANGE THIS
-  const MEAL_TIMES = {
+  let EVENT_START_DATE = '2026-05-21'; // ← CHANGE THIS
+  let EVENT_END_DATE   = '2026-05-22'; // ← CHANGE THIS
+  let MEAL_TIMES = {
     breakfast: { start: 7,  end: 11 },
-    lunch:     { start: 12, end: 16 },
+    lunch:     { start: 12, end: 17 },
     dinner:    { start: 18, end: 23 }
   };
   // ============================================================
@@ -387,10 +387,23 @@
     document.getElementById('login-err').style.display = 'none';
   }
 
-  function showDashboard(email) {
+async function showDashboard(email) {
     document.getElementById('login-section').style.display    = 'none';
     document.getElementById('dashboard-section').style.display = 'block';
     document.getElementById('admin-email-display').textContent = email;
+    try {
+      const configSnap = await window._getDoc(window._doc(window._db,'config','event'));
+      if (configSnap.exists()) {
+        const cd = configSnap.data();
+        if (cd.startDate) EVENT_START_DATE = cd.startDate;
+        if (cd.endDate)   EVENT_END_DATE   = cd.endDate;
+        MEAL_TIMES = {
+          breakfast: { start: cd.breakfastStart??7,  end: cd.breakfastEnd??11 },
+          lunch:     { start: cd.lunchStart??12,     end: cd.lunchEnd??16     },
+          dinner:    { start: cd.dinnerStart??18,    end: cd.dinnerEnd??23    }
+        };
+      }
+    } catch(e) { console.error(e); }
     loadStats();
   }
 
