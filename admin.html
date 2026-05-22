@@ -179,7 +179,6 @@
     <div class="tab" onclick="switchTab('food')">Estimate</div>
     <div class="tab" onclick="switchTab('stats')">Stats</div>
     <div class="tab" onclick="switchTab('event')">Event</div>
-    <div class="tab" onclick="switchTab('gifts')">Gifts</div>
   </div>
 
   <!-- SEARCH TAB -->
@@ -279,25 +278,9 @@
         <input type="number" id="ev-de" placeholder="23" min="0" max="23"/>
       </div>
 
-      <div class="section-title" style="padding:14px 0 4px;">Gift Items</div>
-      <div id="gift-items-container"></div>
-      <button onclick="addGiftRow()" style="width:100%;padding:10px;background:#EEF4FF;border:2px dashed var(--light-blue);border-radius:8px;color:var(--light-blue);font-family:'Cinzel',serif;font-size:0.95rem;font-weight:700;cursor:pointer;margin-bottom:14px;">+ Add Gift Item</button>
+      <button class="btn-excel" onclick="saveEventConfig()" style="margin-top:14px;">Save Event Config</button>
       <div id="ev-msg" style="display:none;text-align:center;padding:10px;font-weight:700;border-radius:8px;margin-top:10px;font-size:1rem;"></div>
     </div>
-  </div>
-
-<!-- GIFTS TAB -->
-  <div id="tab-gifts" class="tab-content">
-    <div class="section-title">Due Items per Guest</div>
-    <div id="gifts-due-list" style="padding:0 14px;"></div>
-    <div class="section-title" style="margin-top:10px;">Total Due Count per Item</div>
-    <div style="padding:0 14px;">
-      <table class="food-table" id="gifts-count-table">
-        <thead><tr><th>Gift Item</th><th>Due Count</th></tr></thead>
-        <tbody id="gifts-count-body"></tbody>
-      </table>
-    </div>
-    <button class="btn-excel" onclick="loadGiftsTab()" style="background:var(--light-blue);">Refresh Gifts Data</button>
   </div>
 
   <!-- STATS TAB -->
@@ -383,14 +366,13 @@
   function switchTab(name) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    const tabs = ['search','all','food','stats','event','gifts'];
+    const tabs = ['search','all','food','stats','event'];
     document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
     document.getElementById('tab-'+name).classList.add('active');
     if (name === 'all')   loadAllGuests();
     if (name === 'stats') loadStats();
     if (name === 'food')  loadFoodSummary();
     if (name === 'event') loadEventConfig();
-    if (name === 'gifts') loadGiftsTab();
   }
 
   // ── BUILD GUEST CARD ──
@@ -476,8 +458,6 @@ function buildCard(docId, g) {
           <label>Amount Paid</label>
           <span>Rs. ${g.amount||(10+(g.familyCount||0)*5)}/-</span>
         </div>
-
-		<div id="gift-section-${docId}" style="margin-bottom:10px;"></div>
 
         <div class="action-row">
           <button class="abtn abtn-generate" onclick="generateBankQR('${docId}')">💳 Bank QR</button>
@@ -579,11 +559,8 @@ try {
         docs = snap.docs.filter(d => d.data().name.toLowerCase().includes(val.toLowerCase()));
       }
       if (!docs.length) { res.innerHTML = '<p class="no-results">No guest found.</p>'; return; }
-		res.innerHTML = '';
-		docs.forEach(d => {
-        res.innerHTML += buildCard(d.id, d.data());
-        setTimeout(() => loadGiftSection(d.id, d.data()), 100);
-      });
+      res.innerHTML = '';
+      docs.forEach(d => res.innerHTML += buildCard(d.id, d.data()));
     } catch(e) { console.error(e); res.innerHTML = '<p class="no-results">Error. Try again.</p>'; }
   }
 
@@ -600,11 +577,8 @@ try {
       if (filter === 'approved') docs = docs.filter(d =>  d.data().approved);
       document.getElementById('list-count').textContent = `Showing ${docs.length} guest(s)`;
       if (!docs.length) { list.innerHTML = '<p class="no-results">No guests found.</p>'; return; }
-		list.innerHTML = '';
-		docs.forEach(d => {
-        list.innerHTML += buildCard(d.id, d.data());
-        setTimeout(() => loadGiftSection(d.id, d.data()), 100);
-      });
+      list.innerHTML = '';
+      docs.forEach(d => list.innerHTML += buildCard(d.id, d.data()));
     } catch(e) { list.innerHTML = '<p class="no-results">Error loading.</p>'; }
   }
 
@@ -959,7 +933,7 @@ const notSpecified = snap.docs.length - tshirtTotal;
   }
 
 // ── EVENT CONFIG ──
-async function loadEventConfig() {
+  async function loadEventConfig() {
     if (!window._firebaseReady) return;
     try {
       const snap = await window._getDoc(window._doc(window._db,'config','event'));
@@ -973,54 +947,7 @@ async function loadEventConfig() {
       document.getElementById('ev-le').value    = d.lunchEnd       ?? '';
       document.getElementById('ev-ds').value    = d.dinnerStart    ?? '';
       document.getElementById('ev-de').value    = d.dinnerEnd      ?? '';
-      // Load gift items
-      const gifts = d.giftItems || [];
-      renderGiftRows(gifts);
     } catch(e) { console.error(e); }
-  }
-
-  function renderGiftRows(gifts) {
-    const container = document.getElementById('gift-items-container');
-    container.innerHTML = '';
-    gifts.forEach((name, i) => {
-      container.innerHTML += `
-        <div class="field-row" id="gift-row-${i}">
-          <label>Item ${i+1}</label>
-          <input type="text" id="gift-name-${i}" value="${name}" placeholder="e.g. Pen"/>
-          <button onclick="removeGiftRow(${i})" style="background:var(--red);color:white;border:none;border-radius:6px;padding:6px 10px;cursor:pointer;font-weight:700;flex-shrink:0;">✕</button>
-        </div>`;
-    });
-  }
-
-  function addGiftRow() {
-    const container = document.getElementById('gift-items-container');
-    const i = container.children.length;
-    container.innerHTML += `
-      <div class="field-row" id="gift-row-${i}">
-        <label>Item ${i+1}</label>
-        <input type="text" id="gift-name-${i}" value="" placeholder="e.g. Pen"/>
-        <button onclick="removeGiftRow(${i})" style="background:var(--red);color:white;border:none;border-radius:6px;padding:6px 10px;cursor:pointer;font-weight:700;flex-shrink:0;">✕</button>
-      </div>`;
-  }
-
-  function removeGiftRow(i) {
-    const row = document.getElementById('gift-row-'+i);
-    if (row) row.remove();
-    // Renumber
-    const container = document.getElementById('gift-items-container');
-    Array.from(container.children).forEach((row, idx) => {
-      row.querySelector('label').textContent = `Item ${idx+1}`;
-    });
-  }
-
-  function getGiftItems() {
-    const container = document.getElementById('gift-items-container');
-    const items = [];
-    Array.from(container.children).forEach((row, i) => {
-      const val = document.getElementById('gift-name-'+i)?.value.trim();
-      if (val) items.push(val);
-    });
-    return items;
   }
 
   async function saveEventConfig() {
@@ -1050,13 +977,11 @@ async function loadEventConfig() {
 
     try {
       const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-const giftItems = getGiftItems();
       await setDoc(window._doc(window._db,'config','event'), {
         startDate, endDate,
         breakfastStart, breakfastEnd,
         lunchStart, lunchEnd,
-        dinnerStart, dinnerEnd,
-        giftItems
+        dinnerStart, dinnerEnd
       });
       msgEl.textContent = '✅ Event config saved! All pages will use new settings.';
       msgEl.style.background = '#D4EDDA'; msgEl.style.color = '#155724';
@@ -1068,98 +993,6 @@ const giftItems = getGiftItems();
       msgEl.style.background = '#F8D7DA'; msgEl.style.color = '#721C24';
       msgEl.style.display = 'block';
     }
-  }
-
-// ── GIFT SECTION ──
-  async function loadGiftSection(docId, g) {
-    if (!window._firebaseReady) return;
-    try {
-      const configSnap = await window._getDoc(window._doc(window._db,'config','event'));
-      if (!configSnap.exists()) return;
-      const giftItems = configSnap.data().giftItems || [];
-      if (!giftItems.length) return;
-      const giftsGiven = g.giftsGiven || {};
-      let html = `<div style="background:#F7FAFF;border-radius:8px;padding:10px 12px;border:1px solid #E0E8F8;margin-bottom:10px;">`;
-      html += `<div style="font-family:'Cinzel',serif;font-size:0.85rem;font-weight:700;color:var(--deep-blue);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.03em;">Gift Items</div>`;
-      giftItems.forEach((item, i) => {
-        const received = giftsGiven[item] || false;
-        html += `
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:8px 10px;background:${received?'#D4EDDA':'#FFF5F5'};border-radius:6px;border:1px solid ${received?'#C3E6CB':'#FFCCCC'};">
-            <span style="flex:1;font-size:0.92rem;font-weight:700;color:#333;">${i+1}. ${item}</span>
-            <span style="font-size:0.85rem;font-weight:700;color:${received?'var(--success)':'var(--red)'};">${received?'✅ Received':'⏳ Due'}</span>
-            <button onclick="toggleGift('${docId}','${item}',${!received})" style="padding:5px 10px;border:none;border-radius:6px;font-size:0.78rem;font-weight:700;cursor:pointer;background:${received?'#888':'var(--success)'};color:white;">${received?'Mark Due':'Mark Received'}</button>
-          </div>`;
-      });
-      const allReceived = giftItems.every(item => giftsGiven[item]);
-      if (!allReceived) {
-        html += `<button onclick="markAllGifts('${docId}')" style="width:100%;padding:9px;background:var(--success);color:white;font-family:'Cinzel',serif;font-size:0.88rem;font-weight:700;border:none;border-radius:8px;cursor:pointer;margin-top:6px;">✅ Mark All Received</button>`;
-      }
-      html += `</div>`;
-      const el = document.getElementById('gift-section-'+docId);
-      if (el) el.innerHTML = html;
-    } catch(e) { console.error(e); }
-  }
-
-  async function toggleGift(docId, item, newVal) {
-    try {
-      await window._updateDoc(window._doc(window._db,'guests',docId), { [`giftsGiven.${item}`]: newVal });
-      const snap = await window._getDoc(window._doc(window._db,'guests',docId));
-      if (snap.exists()) loadGiftSection(docId, snap.data());
-    } catch(e) { console.error(e); alert('Error. Try again.'); }
-  }
-
-  async function markAllGifts(docId) {
-    try {
-      const configSnap = await window._getDoc(window._doc(window._db,'config','event'));
-      if (!configSnap.exists()) return;
-      const giftItems = configSnap.data().giftItems || [];
-      const update = {};
-      giftItems.forEach(item => update[`giftsGiven.${item}`] = true);
-      await window._updateDoc(window._doc(window._db,'guests',docId), update);
-      const snap = await window._getDoc(window._doc(window._db,'guests',docId));
-      if (snap.exists()) loadGiftSection(docId, snap.data());
-    } catch(e) { console.error(e); alert('Error. Try again.'); }
-  }
-
-  // ── GIFTS TAB ──
-  async function loadGiftsTab() {
-    if (!window._firebaseReady) return;
-    try {
-      const configSnap = await window._getDoc(window._doc(window._db,'config','event'));
-      const giftItems  = configSnap.exists() ? (configSnap.data().giftItems || []) : [];
-      const snap       = await window._getDocs(window._collection(window._db,'guests'));
-
-      // Due items per guest
-      const dueList    = document.getElementById('gifts-due-list');
-      let dueHtml      = '';
-      const itemDueCount = {};
-      giftItems.forEach(item => itemDueCount[item] = 0);
-
-      snap.docs.forEach(d => {
-        const g          = d.data();
-        const giftsGiven = g.giftsGiven || {};
-        const dueItems   = giftItems.filter(item => !giftsGiven[item]);
-        if (dueItems.length === 0) return;
-        dueItems.forEach(item => itemDueCount[item]++);
-        dueHtml += `
-          <div style="background:var(--white);border-radius:8px;padding:10px 14px;margin-bottom:8px;border:1.5px solid var(--border);">
-            <div style="font-weight:700;color:var(--deep-blue);font-size:0.95rem;margin-bottom:6px;">${g.name} <span style="font-size:0.78rem;color:#777;">Batch: ${g.batch}</span></div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;">
-              ${dueItems.map(item => `<span style="background:#FFF5F5;color:var(--red);border:1px solid #FFCCCC;border-radius:6px;padding:3px 10px;font-size:0.82rem;font-weight:700;">⏳ ${item}</span>`).join('')}
-            </div>
-          </div>`;
-      });
-
-      dueList.innerHTML = dueHtml || '<p class="no-results">All guests have received all gift items! 🎉</p>';
-
-      // Total due count per item
-      let countHtml = '';
-      giftItems.forEach(item => {
-        countHtml += `<tr><td>${item}</td><td style="font-weight:700;color:${itemDueCount[item]>0?'var(--red)':'var(--success)'};">${itemDueCount[item]}</td></tr>`;
-      });
-      document.getElementById('gifts-count-body').innerHTML = countHtml;
-
-    } catch(e) { console.error(e); }
   }
 
 // ── MASTER CLEAR ──

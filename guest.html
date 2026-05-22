@@ -72,40 +72,11 @@
 .group-info strong{color:var(--deep-blue);}
 .meal-count-badge{display:inline-block;background:#EEF4FF;color:var(--deep-blue);border-radius:6px;padding:4px 12px;font-weight:700;font-size:1.1rem;margin-left:4px;}
 
-/* INFO BOXES */
+    /* INFO BOXES */
     .info-box{margin:22px 14px 0;background:var(--white);border-radius:14px;border:2px solid var(--gold);padding:28px 18px;text-align:center;}
     .info-box .icon{font-size:2.8rem;margin-bottom:12px;}
     .info-box h3{font-family:'Cinzel',serif;color:var(--deep-blue);font-size:1.1rem;margin-bottom:8px;}
     .info-box p{color:#555;font-size:1.2rem;line-height:1.7;}
-
-    /* MAIN MENU */
-    #main-menu{display:none;padding:24px 14px 0;}
-    .menu-btn{width:100%;padding:26px;margin-bottom:16px;border:none;border-radius:16px;font-family:'Cinzel',serif;font-size:1.6rem;font-weight:900;cursor:pointer;letter-spacing:0.06em;box-shadow:0 4px 16px #00000022;transition:transform 0.15s;}
-    .menu-btn:active{transform:scale(0.97);}
-    .menu-btn-food{background:linear-gradient(135deg,var(--saffron),#C9400A);color:white;}
-    .menu-btn-gifts{background:linear-gradient(135deg,var(--deep-blue),var(--light-blue));color:white;}
-    .menu-btn-programs{background:linear-gradient(135deg,var(--success),#145C2E);color:white;}
-
-    /* BACK BUTTON */
-    .back-btn{display:block;width:100%;padding:14px;margin:14px 0 0;background:transparent;border:2px solid var(--deep-blue);border-radius:12px;font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;color:var(--deep-blue);cursor:pointer;letter-spacing:0.04em;text-align:center;}
-
-    /* GIFT ITEMS SCREEN */
-    #gifts-screen{display:none;}
-    .profile-box{margin:14px 14px 0;background:var(--white);border-radius:12px;border:1.5px solid var(--border);padding:16px;}
-    .profile-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #eee;font-size:1.1rem;}
-    .profile-row:last-child{border-bottom:none;}
-    .profile-row strong{color:var(--deep-blue);min-width:130px;flex-shrink:0;}
-    .gift-item-row{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:8px;border-radius:8px;font-size:1.1rem;font-weight:700;}
-    .gift-received{background:#D4EDDA;border:1px solid #C3E6CB;color:var(--success);}
-    .gift-due{background:#FFF5F5;border:1px solid #FFCCCC;color:var(--red);}
-
-    /* PROGRAMS SCREEN */
-    #programs-screen{display:none;}
-    .program-day{margin:14px 14px 0;background:var(--white);border-radius:12px;border:1.5px solid var(--border);overflow:hidden;}
-    .program-day-header{background:linear-gradient(90deg,var(--deep-blue),var(--light-blue));padding:10px 16px;font-family:'Cinzel',serif;color:var(--gold);font-size:1.1rem;font-weight:700;letter-spacing:0.04em;}
-    .program-item{padding:10px 16px;border-bottom:1px solid #eee;font-size:1.05rem;color:#333;line-height:1.6;}
-    .program-item:last-child{border-bottom:none;}
-	  
   </style>
 </head>
 <body>
@@ -148,37 +119,6 @@
     <p id="not-event-day-sub">Please come back on the event day.</p>
   </div>
 
-<!-- MAIN MENU -->
-  <div id="main-menu">
-    <button class="menu-btn menu-btn-food" onclick="showSection('food')">🍽 Food</button>
-    <button class="menu-btn menu-btn-gifts" onclick="showSection('gifts')">🎁 Gift Items</button>
-    <button class="menu-btn menu-btn-programs" onclick="showSection('programs')">📋 Programs</button>
-    <div style="text-align:center;margin-top:10px;">
-      <button onclick="notYou()" style="background:transparent;border:2px solid var(--deep-blue);color:var(--deep-blue);font-family:'Cinzel',serif;font-size:1rem;font-weight:700;padding:12px 24px;border-radius:12px;cursor:pointer;width:100%;letter-spacing:0.04em;">Not You? Register Here</button>
-    </div>
-  </div>
-
-  <!-- GIFTS SCREEN -->
-  <div id="gifts-screen">
-    <div class="card">
-      <div class="card-header"><h2>Gift Items</h2></div>
-      <div class="card-body" style="padding:10px 0;">
-        <div id="profile-info"></div>
-        <div id="gifts-list" style="padding:0 14px;margin-top:10px;"></div>
-      </div>
-    </div>
-    <button class="back-btn" style="margin:14px;" onclick="showSection('menu')">← Back to Menu</button>
-  </div>
-
-  <!-- PROGRAMS SCREEN -->
-  <div id="programs-screen">
-    <div class="card">
-      <div class="card-header"><h2>Programs</h2></div>
-    </div>
-    <div id="programs-list"></div>
-    <button class="back-btn" style="margin:14px;" onclick="showSection('menu')">← Back to Menu</button>
-  </div>	
-	
   <!-- MEAL SCREEN -->
   <div id="meal-screen">
     <div class="card">
@@ -199,7 +139,9 @@
       </div>
     </div>
     <div class="group-info" id="group-info"></div>
-<button class="back-btn" style="margin:14px;" onclick="showSection('menu')">← Back to Menu</button>
+	<div style="text-align:center;margin:20px 14px 0;">
+    <button onclick="notYou()" style="background:transparent;border:2px solid var(--deep-blue);color:var(--deep-blue);font-family:'Cinzel',serif;font-size:1.1rem;font-weight:700;padding:14px 24px;border-radius:12px;cursor:pointer;width:100%;letter-spacing:0.04em;">Not You? Register Here</button>
+  </div>
   </div>
 
   <script>
@@ -352,18 +294,13 @@ const docId = snap.docs[0].id;
           btn.disabled=false; btn.innerHTML='ENTER'; return;
         }
 
-// Save guest data globally
-        currentGuestData = g;
-        currentDocId     = docId;
-
-        // Show main menu
-        document.getElementById('main-menu').style.display = 'block';
-
-        // Prepare meal screen in background
+        // Show meal screen
         const total       = (g.familyCount||0)+1;
         const currentMeal = getCurrentMeal();
         const dayKey      = `day${eventDay.num}`;
         const meals       = g.meals || {};
+
+        document.getElementById('meal-screen').style.display = 'block';
 
         if (!currentMeal) {
           document.getElementById('outside-hours').style.display = 'block';
@@ -477,127 +414,7 @@ compBox.innerHTML = `
         document.getElementById('group-info').innerHTML = infoHtml;
       });
     }
-// ── SECTION NAVIGATION ──
-    let currentGuestData = null;
-    let currentDocId     = null;
 
-    function showSection(section) {
-      document.getElementById('main-menu').style.display    = 'none';
-      document.getElementById('meal-screen').style.display  = 'none';
-      document.getElementById('gifts-screen').style.display = 'none';
-      document.getElementById('programs-screen').style.display = 'none';
-
-      if (section === 'menu') {
-        document.getElementById('main-menu').style.display = 'block';
-      } else if (section === 'food') {
-        document.getElementById('meal-screen').style.display = 'block';
-      } else if (section === 'gifts') {
-        document.getElementById('gifts-screen').style.display = 'block';
-        loadGiftsScreen();
-      } else if (section === 'programs') {
-        document.getElementById('programs-screen').style.display = 'block';
-        loadProgramsScreen();
-      }
-      window.scrollTo({ top:0, behavior:'smooth' });
-    }
-
-    async function loadGiftsScreen() {
-      if (!currentGuestData || !window._firebaseReady) return;
-      const g     = currentGuestData;
-      const total = (g.familyCount||0)+1;
-
-      // Fetch latest guest data for real time gifts
-      const snap = await window._getDoc(window._doc(window._db,'guests',currentDocId));
-      const latest = snap.exists() ? snap.data() : g;
-      const giftsGiven = latest.giftsGiven || {};
-      const meals      = latest.meals || {};
-
-      // Profile info
-      const days = getEventDays();
-      let profileHtml = `
-        <div class="profile-box">
-          <div class="profile-row"><strong>Name</strong>${g.name}</div>
-          <div class="profile-row"><strong>Batch Year</strong>${g.batch}</div>
-          <div class="profile-row"><strong>Security PIN</strong>${g.pin}</div>
-          <div class="profile-row"><strong>T-Shirt Size</strong>${g.tshirtSize>0 ? g.tshirtSize+' cm' : 'Not Specified'}</div>
-          <div class="profile-row"><strong>Family Members</strong>${g.familyCount||0}</div>
-        </div>
-        <div class="profile-box" style="margin-top:10px;">
-          <div style="font-family:'Cinzel',serif;font-size:1rem;font-weight:700;color:var(--deep-blue);margin-bottom:10px;">Food Status</div>`;
-
-      days.forEach(day => {
-        const dm = meals[`day${day.num}`] || {};
-        profileHtml += `
-          <div class="profile-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-            <strong>${day.label}</strong>
-            <div>
-              <strong>B</strong> <span class="meal-count-badge">${dm.breakfast||0}/${total}</span> &nbsp;
-              <strong>L</strong> <span class="meal-count-badge">${dm.lunch||0}/${total}</span> &nbsp;
-              <strong>D</strong> <span class="meal-count-badge">${dm.dinner||0}/${total}</span>
-            </div>
-          </div>`;
-      });
-      profileHtml += `</div>`;
-      document.getElementById('profile-info').innerHTML = profileHtml;
-
-      // Gift items
-      const configSnap = await window._getDoc(window._doc(window._db,'config','event'));
-      const giftItems  = configSnap.exists() ? (configSnap.data().giftItems || []) : [];
-      let giftsHtml = '';
-      if (!giftItems.length) {
-        giftsHtml = '<p style="text-align:center;color:#888;padding:14px;">No gift items configured.</p>';
-      } else {
-        giftItems.forEach((item, i) => {
-          const received = giftsGiven[item] || false;
-          giftsHtml += `
-            <div class="gift-item-row ${received?'gift-received':'gift-due'}">
-              <span style="flex:1;">${i+1}. ${item}</span>
-              <span>${received?'✅ Received':'⏳ Due'}</span>
-            </div>`;
-        });
-      }
-      document.getElementById('gifts-list').innerHTML = giftsHtml;
-
-      // Realtime updates for gifts
-      window._onSnapshot(window._doc(window._db,'guests',currentDocId), snap => {
-        if (!snap.exists()) return;
-        const updated    = snap.data();
-        const newGifts   = updated.giftsGiven || {};
-        let newHtml = '';
-        giftItems.forEach((item, i) => {
-          const received = newGifts[item] || false;
-          newHtml += `
-            <div class="gift-item-row ${received?'gift-received':'gift-due'}">
-              <span style="flex:1;">${i+1}. ${item}</span>
-              <span>${received?'✅ Received':'⏳ Due'}</span>
-            </div>`;
-        });
-        document.getElementById('gifts-list').innerHTML = newHtml;
-      });
-    }
-
-    async function loadProgramsScreen() {
-      if (!window._firebaseReady) return;
-      try {
-        const snap = await window._getDoc(window._doc(window._db,'config','event'));
-        if (!snap.exists()) { document.getElementById('programs-list').innerHTML = '<p style="text-align:center;color:#888;padding:20px;">No programs configured yet.</p>'; return; }
-        const programs = snap.data().programs || {};
-        const days     = getEventDays();
-        let html = '';
-        days.forEach(day => {
-          const items = programs[`day${day.num}`] || [];
-          html += `
-            <div class="program-day">
-              <div class="program-day-header">${day.label}</div>
-              ${items.length
-                ? items.map(item => `<div class="program-item">${item}</div>`).join('')
-                : '<div class="program-item" style="color:#888;">No programs listed yet.</div>'
-              }
-            </div>`;
-        });
-        document.getElementById('programs-list').innerHTML = html;
-      } catch(e) { console.error(e); }
-    }
 function notYou() {
       localStorage.removeItem('rkmvp_device_token');
       localStorage.removeItem('rkmvp_pin');
