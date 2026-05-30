@@ -535,6 +535,11 @@ function showSection(section) {
       document.getElementById('gifts-screen').style.display = 'none';
       document.getElementById('programs-screen').style.display = 'none';
       document.getElementById('photos-screen').style.display = 'none';
+      // Stop shuffle when leaving photos
+      if (section !== 'photos' && shuffleTimer) {
+        clearInterval(shuffleTimer);
+        shuffleTimer = null;
+      }
 
       if (section === 'menu') {
         document.getElementById('main-menu').style.display = 'block';
@@ -663,23 +668,47 @@ async function loadTunnelUrl() {
   } catch(e) { console.error('Tunnel URL load error:',e); }
 }
 
+let allPhotosList = [];
+let shuffleTimer  = null;
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function renderPhotos(list) {
+  const grid    = document.getElementById('photos-grid');
+  const countEl = document.getElementById('photo-count');
+  if (!list.length) {
+    grid.innerHTML = `<div class="photos-empty" style="grid-column:1/-1;"><span style="font-size:3rem;">📷</span><br>No photos yet.<br>Be the first to upload!</div>`;
+    countEl.textContent = '';
+    return;
+  }
+  countEl.textContent = `${list.length} photo${list.length>1?'s':''} shared`;
+  const shuffled = shuffleArray(list);
+  grid.innerHTML = shuffled.map(p => {
+    const src = `${TUNNEL_URL}${p.src}`;
+    return `<img class="photo-thumb" src="${src}" onclick="openLightbox('${src}')" loading="lazy"/>`;
+  }).join('');
+}
+
 async function loadPhotos() {
   try {
     const res  = await fetch(`${TUNNEL_URL}/list-photos`);
-    const list = await res.json();
-    const grid = document.getElementById('photos-grid');
-    const countEl = document.getElementById('photo-count');
-    if (!list.length) {
-      grid.innerHTML = `<div class="photos-empty" style="grid-column:1/-1;"><span style="font-size:3rem;">📷</span><br>No photos yet.<br>Be the first to upload!</div>`;
-      countEl.textContent = '';
-      return;
-    }
-    countEl.textContent = `${list.length} photo${list.length>1?'s':''} shared`;
-    grid.innerHTML = list.map(p => `
-      <img class="photo-thumb" src="${TUNNEL_URL}${p.src}"
-           onclick="openLightbox('${TUNNEL_URL}${p.src}')"
-           loading="lazy"/>
-    `).join('');
+    allPhotosList = await res.json();
+    renderPhotos(allPhotosList);
+    // Clear any existing timer
+    if (shuffleTimer) clearInterval(shuffleTimer);
+    // Reshuffle every 7 seconds
+    shuffleTimer = setInterval(() => {
+      if (document.getElementById('photos-screen').style.display !== 'none') {
+        renderPhotos(allPhotosList);
+      }
+    }, 7000);
   } catch(e) {
     document.getElementById('photos-grid').innerHTML = `<div class="photos-empty" style="grid-column:1/-1;">⚠️ Could not load photos.<br>Please try again.</div>`;
   }
@@ -706,10 +735,10 @@ async function uploadPhotos(files) {
       body: formData
     });
     const data = await res.json();
-    if (data.success) {
-progressEl.textContent = `✅ ${files.length} photo(s) uploaded successfully!`;
+if (data.success) {
+      progressEl.textContent = `✅ ${files.length} photo(s) uploaded successfully!`;
       setTimeout(() => { progressEl.style.display='none'; }, 3000);
-      loadPhotos();
+      appendNewPhotos(data.filenames);
     } else {
       progressEl.textContent = '❌ Upload failed. Try again.';
       setTimeout(() => { progressEl.style.display='none'; }, 3000);
@@ -729,6 +758,21 @@ function showUploadOptions() {
 
 function hideUploadOptions() {
   document.getElementById('upload-options').style.display = 'none';
+}
+
+function appendNewPhotos(filenames) {
+  const grid = document.getElementById('photos-grid');
+  const empty = grid.querySelector('.photos-empty');
+  if (empty) empty.remove();
+  const newImgs = filenames.map(f => {
+    const src = `${TUNNEL_URL}/photos/${f}`;
+    return `<img class="photo-thumb" src="${src}"
+      onclick="openLightbox('${src}')" loading="lazy"/>`;
+  }).join('');
+  grid.insertAdjacentHTML('afterbegin', newImgs);
+  const countEl = document.getElementById('photo-count');
+  const total = grid.querySelectorAll('.photo-thumb').length;
+  countEl.textContent = `${total} photo${total>1?'s':''} shared`;
 }
 
 function openLightbox(src) {
