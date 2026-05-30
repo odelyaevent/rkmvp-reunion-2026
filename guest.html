@@ -739,6 +739,7 @@ if (data.success) {
       progressEl.textContent = `✅ ${files.length} photo(s) uploaded successfully!`;
       setTimeout(() => { progressEl.style.display='none'; }, 3000);
       appendNewPhotos(data.filenames);
+allPhotosList = [...data.filenames.map(f => ({ src: `/photos/${f}` })), ...allPhotosList];
     } else {
       progressEl.textContent = '❌ Upload failed. Try again.';
       setTimeout(() => { progressEl.style.display='none'; }, 3000);
@@ -765,7 +766,7 @@ function appendNewPhotos(filenames) {
   const empty = grid.querySelector('.photos-empty');
   if (empty) empty.remove();
   const newImgs = filenames.map(f => {
-    const src = `${TUNNEL_URL}/photos/${f}`;
+    const src = `${TUNNEL_URL}/photos/${f}`.replace('/photos//photos/','/photos/');
     return `<img class="photo-thumb" src="${src}"
       onclick="openLightbox('${src}')" loading="lazy"/>`;
   }).join('');
