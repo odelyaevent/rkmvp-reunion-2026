@@ -700,7 +700,29 @@ async function uploadPhotos(files) {
     });
     const data = await res.json();
     if (data.success) {
-      progressEl.textCo
+progressEl.textContent = `✅ ${files.length} photo(s) uploaded successfully!`;
+      setTimeout(() => { progressEl.style.display='none'; }, 3000);
+      loadPhotos();
+    } else {
+      progressEl.textContent = '❌ Upload failed. Try again.';
+      setTimeout(() => { progressEl.style.display='none'; }, 3000);
+    }
+  } catch(e) {
+    progressEl.textContent = '❌ Upload error. Check connection.';
+    setTimeout(() => { progressEl.style.display='none'; }, 3000);
+  }
+  document.getElementById('photo-file-input').value = '';
+}
+
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('active');
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.getElementById('lightbox-img').src = '';
+}
 
 function notYou() {
       localStorage.removeItem('rkmvp_device_token');
